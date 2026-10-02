@@ -22,6 +22,7 @@ A modern, full-stack responsive web application for end-to-end event ticketing. 
 - [How to Clone & Run](#-how-to-clone--run)
   - [Prerequisites](#prerequisites)
   - [Step-by-Step Setup](#step-by-step-setup)
+  - [Testing the Machine Learning Model](#-testing-the-machine-learning-model)
   - [Available Scripts](#available-scripts)
 - [Architecture & Directory Structure](#-architecture--directory-structure)
 - [Tech Stack](#-tech-stack)
@@ -102,32 +103,52 @@ The platform includes four pre-seeded Cambodian demo profiles for testing withou
 ### Prerequisites
 Make sure you have installed on your computer:
 - **[Node.js](https://nodejs.org/)** (v18.0.0 or higher recommended)
+- **[Python](https://www.python.org/)** (v3.10 or higher for the ML backend)
 - **Git**
 
 ### Step-by-Step Setup
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/YimAyuVadna/Online-Ticket-.git
+   git clone https://github.com/YimAyuVadna/TicketPass.git
    ```
 
 2. **Navigate to the project directory**:
    ```bash
-   cd Online-Ticket-
+   cd TicketPass
    ```
 
-3. **Install dependencies**:
+3. **Start the Python ML Backend** (Terminal 1):
+   ```bash
+   cd ml-backend
+   pip install -r requirements.txt
+   python app.py
+   ```
+   > Starts the Decision Tree prediction API on `http://localhost:5000/predict`.
+
+4. **Start the React Frontend** (Terminal 2):
    ```bash
    npm install
-   ```
-
-4. **Start the local development server**:
-   ```bash
    npm run dev
    ```
 
 5. **Open your browser**:
    Visit [http://localhost:3000](http://localhost:3000) to view the application.
+
+---
+
+### 🤖 Testing the Machine Learning Model
+
+1. **Sign in as Staff**:
+   - Go to the Sign In page and click **Bopha Chea (Staff Scanner)** from the demo personas.
+2. **Open the AI Scanner**:
+   - Click **Launch AI Scanner** in the navigation bar.
+3. **Run One-Click Quick Tests**:
+   - Switch to the **Quick Test** tab inside the scanner modal:
+     - Click **Demo Digital Ticket** → Validates an online advance order (ABA payment, VIP tier) and classifies it as `DIGITAL PASS`.
+     - Click **Demo Physical Ticket** → Validates a walk-in box office order (Cash payment, same-day purchase) and classifies it as `PHYSICAL TICKET`.
+4. **Live Camera Scanning**:
+   - Use the **Camera Scan** tab to scan real digital passes from attendee phone screens or printed physical passes.
 
 ---
 
@@ -145,21 +166,30 @@ Make sure you have installed on your computer:
 ## 📂 Architecture & Directory Structure
 
 ```
-Online-Ticket-/
+TicketPass/
+├── ml-backend/             # Python Machine Learning Backend
+│   ├── data/               # Synthetic training data CSVs
+│   ├── models/             # Trained Decision Tree model (ticket_classifier.pkl)
+│   ├── outputs/            # Decision tree visualization diagrams
+│   ├── app.py              # ML API server & interactive testing page (port 5000)
+│   ├── generate_training_data.py # Dataset generation script
+│   ├── predict.py          # Prediction engine & feature preprocessing
+│   ├── train_model.py      # Decision tree training pipeline
+│   └── requirements.txt    # Python ML dependencies
 ├── public/                 # Static public assets
 ├── src/
 │   ├── components/
 │   │   ├── admin/          # Admin console, event creator, category & hero managers
 │   │   ├── auth/           # Sign In, Sign Up, and one-click Demo Persona cards
 │   │   ├── common/         # Reusable QR generator, modal wrappers, buttons
-│   │   ├── customer/       # Event catalog, hero showcase, event details & checkout
+│   │   ├── customer/       # Event catalog, hero showcase, event details, online booking
 │   │   ├── layout/         # Responsive navigation bar with spring active pills
 │   │   ├── profile/        # User profile and account preferences modal
-│   │   ├── scanner/        # Camera QR code reader with jsQR and entrance audit logs
-│   │   ├── staff/          # Staff checkpoint dashboard and assisted box office sales
+│   │   ├── scanner/        # Camera QR reader with jsQR, 4-pass decoder & ML badge
+│   │   ├── staff/          # Staff checkpoint dashboard, ML intelligence & box office sales
 │   │   └── tickets/        # Apple Wallet-style pass cards and ticket detail views
 │   ├── context/
-│   │   └── TicketContext.tsx  # Centralized React state management (Auth, Events, Passes)
+│   │   └── TicketContext.tsx  # Centralized React state management (Auth, Events, Passes, ML)
 │   ├── data/
 │   │   └── initialData.ts  # Pre-seeded events, categories, and test user personas
 │   ├── App.tsx             # Root application orchestrator and modal coordination
@@ -169,7 +199,7 @@ Online-Ticket-/
 ├── index.html              # HTML document root with Plus Jakarta Sans & JetBrains Mono
 ├── package.json            # Project dependencies and npm scripts
 ├── tsconfig.json           # Strict TypeScript configuration
-└── vite.config.ts          # Vite build and plugin configurations
+└── vite.config.ts          # Vite build, proxy (/predict -> port 5000), and plugins
 ```
 
 ---
@@ -181,6 +211,7 @@ Online-Ticket-/
 - **Build Tool**: [Vite 6](https://vitejs.dev/)
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Animation Physics**: [Motion](https://motion.dev/) (Framer Motion)
+- **Machine Learning**: [scikit-learn](https://scikit-learn.org/), [pandas](https://pandas.pydata.org/), [NumPy](https://numpy.org/), [Python 3](https://www.python.org/)
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **QR Code Generation**: [qrcode](https://github.com/soldair/node-qrcode)
 - **Live Camera QR Decoding**: [jsQR](https://github.com/cozmo/jsQR)
