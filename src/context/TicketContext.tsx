@@ -230,14 +230,6 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     saveStorage(STORAGE_KEYS.ML_STATS, mlScanStats);
   }, [mlScanStats]);
 
-  useEffect(() => {
-    saveStorage(STORAGE_KEYS.HERO_BANNER, heroBanner);
-  }, [heroBanner]);
-
-  useEffect(() => {
-    saveStorage(STORAGE_KEYS.CATEGORIES, categories);
-  }, [categories]);
-
   const switchUser = (userId: string) => {
     const found = users.find((u) => u.id === userId);
     if (found) {

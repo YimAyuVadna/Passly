@@ -25,7 +25,7 @@ import joblib
 import pandas as pd
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "ticket_classifier.pkl")
+MODEL_PATH = os.path.join(BASE_DIR, "models", "ticket_classifier.pkl")
 
 
 def load_classifier(path: str = MODEL_PATH):
@@ -45,8 +45,6 @@ def predict_ticket_type(order_data: dict, model_bundle: dict = None) -> dict:
     model = model_bundle["model"]
     feature_columns = model_bundle["feature_columns"]
     label_map = model_bundle["label_map"]
-    payment_map = model_bundle.get("payment_method_map", {})
-    tier_map = model_bundle.get("ticket_tier_map", {})
 
     # Flexible mapping dictionaries
     payment_map = {

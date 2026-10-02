@@ -29,11 +29,15 @@ from sklearn.metrics import (
     classification_report,
     confusion_matrix,
 )
+from sklearn.tree import export_text, plot_tree
+import matplotlib
+matplotlib.use("Agg")  # Non-interactive backend (no GUI window needed)
+import matplotlib.pyplot as plt
 
 # Resolve paths relative to script location
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(BASE_DIR, "data", "training_data.csv")
-MODEL_PATH = os.path.join(BASE_DIR, "ticket_classifier.pkl")
+MODEL_PATH = os.path.join(BASE_DIR, "models", "ticket_classifier.pkl")
 
 # Point 3.1 & Point 5: Binary Classification Task
 # Classification means predicting a discrete category/class rather than a continuous number (e.g. not $15.72).
@@ -164,6 +168,44 @@ def save_model(model, feature_cols, path: str):
     print(f"\n Model saved to: {path}")
 
 
+def visualize_tree(model, feature_cols, output_path: str = None):
+    """Generates a text-based and visual representation of the trained Decision Tree."""
+    if output_path is None:
+        output_path = os.path.join(BASE_DIR, "outputs", "decision_tree_visual.png")
+
+    # Text-based tree (console-friendly)
+    print("\n" + "=" * 55)
+    print(" Decision Tree Structure (Text)")
+    print("=" * 55)
+    tree_text = export_text(
+        model,
+        feature_names=feature_cols,
+    )
+    print(tree_text)
+
+    # Visual tree diagram (saved as PNG image)
+    plt.figure(figsize=(24, 12))
+    plot_tree(
+        model,
+        feature_names=feature_cols,
+        class_names=["DIGITAL", "PHYSICAL"],
+        filled=True,
+        rounded=True,
+        fontsize=8,
+        proportion=True,
+    )
+    plt.title(
+        "TicketPass Decision Tree — ML #1 Ticket Type Classifier",
+        fontsize=16,
+        fontweight="bold",
+        pad=20,
+    )
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f" Decision tree visualization saved to: {output_path}")
+
+
 if __name__ == "__main__":
     # Point 11: Complete Training Pipeline Flow
     # 1. Load CSV -> 2. Preprocess Data -> 3. Split Features & Label
@@ -171,3 +213,4 @@ if __name__ == "__main__":
     df = load_data(DATA_PATH)
     model, feature_cols = train_and_evaluate(df)
     save_model(model, feature_cols, MODEL_PATH)
+    visualize_tree(model, feature_cols)

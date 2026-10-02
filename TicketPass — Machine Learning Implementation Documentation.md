@@ -348,7 +348,7 @@ The testing data is used to check how well the trained model performs on data it
 The current Decision Tree uses:
 
 ```text
-max_depth = 5
+max_depth = 6
 ```
 
 This limits the maximum depth of the tree.

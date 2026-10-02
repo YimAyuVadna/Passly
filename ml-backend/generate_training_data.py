@@ -1,5 +1,4 @@
 
-import _collections_abc
 import os
 import numpy as np
 import pandas as pd
@@ -127,14 +126,4 @@ if __name__ == '__main__':
     print("\n" + "=" * 55)
     print(f" Attendance Data saved to: {attendance_path}")
     print(f" Total Historical Events: {len(df_attendance)}")
-    print("=" * 55)
-    
-
-        
-
-    
-        
-
-        
-
-    
+    print("=" * 55)
