@@ -8,10 +8,6 @@ import {
   Mail,
   Phone,
   AlertCircle,
-  Shield,
-  Calendar,
-  Layers,
-  Sparkles,
 } from 'lucide-react';
 import { useTicketContext } from '../../context/TicketContext';
 
@@ -143,23 +139,18 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, on
   ).length;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 backdrop-blur-md p-4 overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden text-zinc-900 border border-zinc-200/80 my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 overflow-y-auto">
+      <div className="relative w-full max-w-lg bg-white rounded-xl shadow-xl overflow-hidden text-zinc-900 border border-zinc-200 my-8">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 bg-zinc-50/70">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-zinc-900 text-white flex items-center justify-center shadow-xs">
-              <UserIcon className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-bold text-base text-zinc-900">Account Settings</h3>
-              <p className="text-xs text-zinc-400">Manage profile picture & personal details</p>
-            </div>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
+          <div>
+            <h3 className="font-semibold text-base text-zinc-900">Account Settings</h3>
+            <p className="text-xs text-zinc-400">Profile photo and personal details</p>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-xl transition cursor-pointer"
+            className="p-1.5 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-md transition cursor-pointer"
             aria-label="Close settings"
           >
             <X className="w-4 h-4" />
@@ -239,7 +230,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, on
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
                         onClick={() => fileInputRef.current?.click()}
-                        className={`p-3.5 rounded-2xl border-2 border-dashed text-center transition cursor-pointer ${
+                        className={`p-3.5 rounded-lg border-2 border-dashed text-center transition cursor-pointer ${
                           isDragging
                             ? 'border-zinc-900 bg-zinc-50'
                             : 'border-zinc-200/80 hover:border-zinc-400 bg-zinc-50/50'
@@ -253,14 +244,14 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, on
                           className="hidden"
                         />
                         <div className="flex items-center justify-center gap-2 text-xs font-medium text-zinc-700">
-                          <Upload className="w-4 h-4 text-zinc-500" />
+                          <Upload className="w-3.5 h-3.5 text-zinc-500" />
                           <span>Click to upload or drag photo here</span>
                         </div>
                         <p className="text-[10px] text-zinc-400 mt-0.5">PNG, JPG, SVG or WebP (max 2MB)</p>
                       </div>
 
                       {uploadError && (
-                        <div className="flex items-center gap-1.5 p-2 bg-rose-50 text-rose-700 rounded-xl text-xs border border-rose-200/60">
+                        <div className="flex items-center gap-1.5 p-2 bg-red-50 text-red-700 rounded-md text-xs border border-red-200/60">
                           <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                           <span>{uploadError}</span>
                         </div>
@@ -270,7 +261,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, on
                         <button
                           type="button"
                           onClick={handleRemoveAvatar}
-                          className="text-[11px] font-medium text-zinc-500 hover:text-rose-600 transition"
+                          className="text-[11px] font-medium text-zinc-500 hover:text-red-600 transition cursor-pointer"
                         >
                           Remove custom photo
                         </button>
@@ -283,59 +274,59 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, on
                 <div className="h-px bg-zinc-100" />
 
                 {/* Personal Information Inputs */}
-                <div className="space-y-3.5">
-                  <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider block">
+                <div className="space-y-3">
+                  <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block">
                     Personal Information
                   </span>
 
                   <div className="space-y-3">
                     <div>
                       <label className="block text-xs font-medium text-zinc-700 mb-1">
-                        Full Name <span className="text-rose-500">*</span>
+                        Full Name <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
-                        <UserIcon className="w-4 h-4 text-zinc-400 absolute left-3 top-2.5" />
+                        <UserIcon className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-2.5" />
                         <input
                           type="text"
                           required
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           placeholder="e.g. Chan Dara"
-                          className="w-full pl-9 pr-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition"
+                          className="w-full pl-9 pr-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 transition"
                         />
                       </div>
                     </div>
 
                     <div>
                       <label className="block text-xs font-medium text-zinc-700 mb-1">
-                        Email Address <span className="text-rose-500">*</span>
+                        Email Address <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
-                        <Mail className="w-4 h-4 text-zinc-400 absolute left-3 top-2.5" />
+                        <Mail className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-2.5" />
                         <input
                           type="email"
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="e.g. chandara@gmail.com"
-                          className="w-full pl-9 pr-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition"
+                          className="w-full pl-9 pr-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 transition"
                         />
                       </div>
                     </div>
 
                     <div>
                       <label className="block text-xs font-medium text-zinc-700 mb-1">
-                        Phone Number <span className="text-rose-500">*</span>
+                        Phone Number <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
-                        <Phone className="w-4 h-4 text-zinc-400 absolute left-3 top-2.5" />
+                        <Phone className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-2.5" />
                         <input
                           type="tel"
                           required
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="e.g. 012 345 678"
-                          className="w-full pl-9 pr-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-mono text-zinc-900 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition"
+                          className="w-full pl-9 pr-3 py-2 bg-white border border-zinc-200 rounded-md text-xs font-mono text-zinc-900 focus:outline-none focus:border-zinc-900 transition"
                         />
                       </div>
                     </div>
@@ -347,14 +338,14 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, on
             {/* TAB 2: ACCOUNT DETAILS */}
             {activeTab === 'account' && (
               <div className="space-y-4">
-                <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider block">
+                <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block">
                   Account Identity & Privileges
                 </span>
 
-                <div className="p-4 rounded-2xl border border-zinc-200/80 bg-zinc-50/70 space-y-3 text-xs">
+                <div className="p-4 rounded-lg border border-zinc-200 bg-zinc-50/70 space-y-3 text-xs">
                   <div className="flex items-center justify-between">
                     <span className="text-zinc-500">Access Tier</span>
-                    <span className="px-2 py-0.5 bg-zinc-900 text-white rounded-md text-[10px] font-mono font-semibold">
+                    <span className="px-2 py-0.5 bg-zinc-950 text-white rounded text-[10px] font-mono font-medium">
                       {currentUser.staffRole || currentUser.role}
                     </span>
                   </div>
@@ -378,20 +369,20 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, on
                   <div className="h-px bg-zinc-200/60 my-2" />
 
                   <div className="grid grid-cols-2 gap-3 text-center">
-                    <div className="p-2.5 bg-white rounded-xl border border-zinc-200/60">
-                      <span className="text-[10px] text-zinc-400 uppercase font-semibold block">
+                    <div className="p-2.5 bg-white rounded-md border border-zinc-200">
+                      <span className="text-[10px] text-zinc-400 uppercase font-mono block">
                         Orders
                       </span>
-                      <span className="text-lg font-bold text-zinc-900 font-mono">
+                      <span className="text-lg font-semibold text-zinc-900 font-mono">
                         {userOrdersCount}
                       </span>
                     </div>
 
-                    <div className="p-2.5 bg-white rounded-xl border border-zinc-200/60">
-                      <span className="text-[10px] text-zinc-400 uppercase font-semibold block">
+                    <div className="p-2.5 bg-white rounded-md border border-zinc-200">
+                      <span className="text-[10px] text-zinc-400 uppercase font-mono block">
                         Passes Held
                       </span>
-                      <span className="text-lg font-bold text-zinc-900 font-mono">
+                      <span className="text-lg font-semibold text-zinc-900 font-mono">
                         {userTicketsCount}
                       </span>
                     </div>
@@ -404,9 +395,9 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, on
           {/* Footer Actions */}
           <div className="p-4 px-6 bg-zinc-50 border-t border-zinc-100 flex items-center justify-between gap-3">
             {isSaved ? (
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
-                <Check className="w-4 h-4" />
-                <span>Profile updated successfully!</span>
+              <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-600">
+                <Check className="w-3.5 h-3.5" />
+                <span>Saved successfully!</span>
               </div>
             ) : (
               <span className="text-[11px] text-zinc-400">All updates persist automatically</span>
@@ -416,14 +407,14 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, on
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-200 rounded-full text-xs font-medium transition cursor-pointer"
+                className="px-3.5 py-1.5 bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-200 rounded-md text-xs font-medium transition cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSaved}
-                className="px-5 py-2 bg-zinc-900 hover:bg-zinc-800 disabled:bg-emerald-600 text-white font-semibold rounded-full text-xs shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+                className="px-4 py-1.5 bg-zinc-950 hover:bg-zinc-800 disabled:bg-emerald-600 text-white font-medium rounded-md text-xs shadow-xs transition flex items-center gap-1.5 cursor-pointer"
               >
                 {isSaved ? (
                   <>

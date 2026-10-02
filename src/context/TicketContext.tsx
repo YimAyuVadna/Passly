@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import {
   User,
   UserRole,
@@ -31,6 +31,48 @@ export const INITIAL_ML_STATS: MLScanStats = {
   physicalCount: 0,
   digitalPercent: 0,
   physicalPercent: 0,
+};
+
+/**
+ * Checks whether an event date has passed.
+ * Returns true if the event date is strictly before today, or if today has passed the event's end time.
+ */
+export const isEventExpired = (
+  eventDateStr?: string,
+  eventEndTimeStr?: string,
+  eventStartTimeStr?: string
+): boolean => {
+  if (!eventDateStr) return false;
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = String(now.getMonth() + 1).padStart(2, '0');
+  const currentDate = String(now.getDate()).padStart(2, '0');
+  const todayStr = `${currentYear}-${currentMonth}-${currentDate}`;
+
+  // If the event date (YYYY-MM-DD) is earlier than today, it has strictly passed
+  if (eventDateStr < todayStr) {
+    return true;
+  }
+
+  // If the event is today, check if the event's end time (or start time + 6 hours) has passed
+  if (eventDateStr === todayStr) {
+    const timeStr = eventEndTimeStr || eventStartTimeStr;
+    if (timeStr) {
+      const parts = timeStr.split(':');
+      const hours = parseInt(parts[0], 10);
+      const minutes = parseInt(parts[1] || '0', 10);
+      if (!isNaN(hours) && !isNaN(minutes)) {
+        const eventEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+        const cutoff = eventEndTimeStr ? eventEnd.getTime() : eventEnd.getTime() + 6 * 3600 * 1000;
+        if (now.getTime() > cutoff) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
 };
 
 interface PurchaseParams {
@@ -167,7 +209,17 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   );
   const [events, setEvents] = useState<EventItem[]>(() => loadStorage(STORAGE_KEYS.EVENTS, INITIAL_EVENTS));
   const [orders, setOrders] = useState<OrderItem[]>(() => loadStorage(STORAGE_KEYS.ORDERS, INITIAL_ORDERS));
-  const [tickets, setTickets] = useState<Ticket[]>(() => loadStorage(STORAGE_KEYS.TICKETS, INITIAL_TICKETS));
+  const [tickets, setTickets] = useState<Ticket[]>(() => {
+    const loaded = loadStorage(STORAGE_KEYS.TICKETS, INITIAL_TICKETS);
+    return loaded.map((t) => {
+      if (t.status === 'VALID' && isEventExpired(t.eventDate, undefined, t.eventTime)) {
+        return { ...t, status: 'EXPIRED' as TicketStatus };
+      }
+      return t;
+    });
+  });
+  const ticketsRef = useRef<Ticket[]>(tickets);
+
   const [scanLogs, setScanLogs] = useState<ScanLog[]>(() => loadStorage(STORAGE_KEYS.SCAN_LOGS, INITIAL_SCAN_LOGS));
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(() =>
     loadStorage(STORAGE_KEYS.AUDIT_LOGS, INITIAL_AUDIT_LOGS)
@@ -207,6 +259,7 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   }, [orders]);
 
   useEffect(() => {
+    ticketsRef.current = tickets;
     saveStorage(STORAGE_KEYS.TICKETS, tickets);
   }, [tickets]);
 
@@ -257,9 +310,19 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     customCreatedAt,
   }: PurchaseParams) => {
     const orderTimestamp = customCreatedAt || new Date().toISOString();
-    const orderSeq = orders.length + 1001;
+    let maxOrderSeq = 1000;
+    for (const o of orders) {
+      const match = o.orderNumber.match(/\d+$/);
+      if (match) {
+        const num = parseInt(match[0], 10);
+        if (!isNaN(num) && num > maxOrderSeq) {
+          maxOrderSeq = num;
+        }
+      }
+    }
+    const orderSeq = maxOrderSeq + 1;
     const orderNumber = `ORD-2026-${String(orderSeq).padStart(5, '0')}`;
-    const orderId = `ord-${Date.now()}`;
+    const orderId = `ord-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
 
     const totalAmount = ticketType.price * quantity;
 
@@ -297,18 +360,31 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       createdAt: orderTimestamp,
     };
 
-    // Generate N individual tickets with unique IDs and QR tokens
+    // Generate N individual tickets with guaranteed unique sequence numbers, IDs, and distinct QR tokens
+    const currentTicketList = ticketsRef.current && ticketsRef.current.length > 0 ? ticketsRef.current : tickets;
+    let maxTicketSeq = 934;
+    for (const t of currentTicketList) {
+      const match = t.ticketNumber.match(/\d+$/);
+      if (match) {
+        const num = parseInt(match[0], 10);
+        if (!isNaN(num) && num > maxTicketSeq) {
+          maxTicketSeq = num;
+        }
+      }
+    }
+
     const generatedTickets: Ticket[] = [];
+    const baseNow = Date.now();
     for (let i = 1; i <= quantity; i++) {
-      const ticketSeq = tickets.length + generatedTickets.length + 935;
+      const ticketSeq = maxTicketSeq + i;
       const ticketNumber = `TKT-2026-${String(ticketSeq).padStart(6, '0')}`;
-      const tokenSalt = Math.random().toString(36).substring(2, 8).toUpperCase();
+      const tokenSalt = `${baseNow.toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}-${i}`;
       const qrToken = `${ticketNumber}-SEC-${tokenSalt}`;
 
       const tktName = quantity > 1 && i > 1 ? `${customerInfo.name} (Guest ${i})` : customerInfo.name;
 
       const newTicket: Ticket = {
-        id: `tkt-${Date.now()}-${i}`,
+        id: `tkt-${baseNow}-${i}-${Math.random().toString(36).substring(2, 6)}`,
         ticketNumber,
         orderId,
         orderNumber,
@@ -351,7 +427,9 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     );
 
     setOrders((prev) => [newOrder, ...prev]);
-    setTickets((prev) => [...generatedTickets, ...prev]);
+    const updatedTickets = [...generatedTickets, ...currentTicketList];
+    ticketsRef.current = updatedTickets;
+    setTickets(updatedTickets);
 
     // Add Audit Log
     const newAudit: AuditLog = {
@@ -373,6 +451,10 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     let trimmed = qrTokenOrTicketNo.trim();
     const effectiveStaff = staffUser || currentUser;
     const now = new Date().toISOString();
+    const staffLabel = `${effectiveStaff.name} (${effectiveStaff.staffRole || effectiveStaff.role || 'Staff'})`;
+
+    // Always fetch the freshest synchronous tickets snapshot
+    const currentTickets = ticketsRef.current && ticketsRef.current.length > 0 ? ticketsRef.current : tickets;
 
     // Support compact cross-device ticket format: TP1:ticketNumber|name|paymentMethod|leadTime|tier|price|eventName
     if (trimmed.startsWith('TP1:')) {
@@ -381,10 +463,48 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         const [tktNo, custName, payMethod, leadHoursStr, tierName, priceStr, evName] = raw.split('|');
         trimmed = tktNo || trimmed;
 
-        const existing = tickets.find((t) => t.ticketNumber === trimmed || t.qrToken === trimmed);
+        const existing = currentTickets.find((t) => t.ticketNumber === trimmed || t.qrToken === trimmed);
         if (!existing) {
           const priceNum = parseFloat(priceStr) || 15;
           const leadHoursNum = parseFloat(leadHoursStr) || 48;
+          const evDate = new Date().toISOString().split('T')[0];
+
+          // Check if expired
+          const isExpired = isEventExpired(evDate);
+
+          if (isExpired) {
+            const importedExpiredTicket: Ticket = {
+              id: `tkt-imp-${tktNo}-${Date.now()}`,
+              ticketNumber: tktNo,
+              orderId: `ord-imp-${tktNo}`,
+              orderNumber: `ORD-${tktNo}`,
+              eventId: 'ev-001',
+              eventName: evName || 'General Admission Event',
+              eventDate: evDate,
+              eventTime: '19:00',
+              eventLocation: 'Main Entrance Gate',
+              customerId: 'cust-remote',
+              customerName: custName || 'Online Client',
+              customerPhone: '012 999 111',
+              customerEmail: 'attendee@example.com',
+              ticketTypeId: 'tier-imported',
+              ticketTypeName: tierName || 'Standard Pass',
+              price: priceNum,
+              qrToken: trimmed,
+              status: 'EXPIRED',
+              createdAt: new Date().toISOString(),
+            };
+            ticketsRef.current = [importedExpiredTicket, ...currentTickets];
+            setTickets((prev) => [importedExpiredTicket, ...prev]);
+
+            return {
+              status: 'EXPIRED',
+              ticket: importedExpiredTicket,
+              message: `This ticket has expired past the event date (${evDate}) and cannot be used for admission.`,
+            };
+          }
+
+          // First scan: admit attendee and immediately mark USED so it cannot be scanned twice
           const importedTicket: Ticket = {
             id: `tkt-imp-${tktNo}-${Date.now()}`,
             ticketNumber: tktNo,
@@ -392,7 +512,7 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             orderNumber: `ORD-${tktNo}`,
             eventId: 'ev-001',
             eventName: evName || 'General Admission Event',
-            eventDate: new Date().toISOString().split('T')[0],
+            eventDate: evDate,
             eventTime: '19:00',
             eventLocation: 'Main Entrance Gate',
             customerId: 'cust-remote',
@@ -403,7 +523,9 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             ticketTypeName: tierName || 'Standard Pass',
             price: priceNum,
             qrToken: trimmed,
-            status: 'VALID',
+            status: 'USED',
+            usedAt: now,
+            usedBy: staffLabel,
             createdAt: new Date().toISOString(),
           };
 
@@ -429,6 +551,7 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             createdAt: new Date(Date.now() - leadHoursNum * 3600 * 1000).toISOString(),
           };
 
+          ticketsRef.current = [importedTicket, ...currentTickets];
           setTickets((prev) => [importedTicket, ...prev]);
           setOrders((prev) => [importedOrder, ...prev]);
 
@@ -440,11 +563,11 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             eventName: importedTicket.eventName,
             customerName: importedTicket.customerName,
             staffId: effectiveStaff.id,
-            staffName: `${effectiveStaff.name} (${effectiveStaff.staffRole || effectiveStaff.role})`,
+            staffName: staffLabel,
             result: 'VALID',
             scannedAt: now,
             deviceInfo: 'Camera / Web Scanner',
-            notes: `Admitted attendee via compact portable pass.`,
+            notes: 'First scan: Entry approved. Ticket permanently updated to USED.',
           };
           setScanLogs((prev) => [scanLog, ...prev]);
 
@@ -460,17 +583,49 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       }
     }
 
-    // Support portable self-contained QR code from another device (e.g. laptop client -> phone scanner)
+    // Support portable self-contained QR code from another device
     if (trimmed.startsWith('{') && trimmed.includes('"tp":"v1"')) {
       try {
         const payload = JSON.parse(trimmed);
         trimmed = payload.qr || payload.tkt;
 
-        // If not already in tickets list on this device, automatically import it
-        const existing = tickets.find(
+        const existing = currentTickets.find(
           (t) => t.qrToken === trimmed || t.ticketNumber === payload.tkt || t.id === payload.id
         );
         if (!existing) {
+          const isExpired = isEventExpired(payload.date, undefined, payload.time);
+          if (isExpired) {
+            const importedExpiredTicket: Ticket = {
+              id: payload.id || `tkt-${Date.now()}`,
+              ticketNumber: payload.tkt,
+              orderId: `ord-${Date.now()}`,
+              orderNumber: `ORD-${Date.now()}`,
+              eventId: payload.ev,
+              eventName: payload.evName,
+              eventDate: payload.date,
+              eventTime: payload.time,
+              eventLocation: 'Main Entrance Gate',
+              customerId: 'cust-remote',
+              customerName: payload.name,
+              customerPhone: payload.phone || '012 999 111',
+              customerEmail: 'attendee@example.com',
+              ticketTypeId: 'tier-imported',
+              ticketTypeName: payload.tier,
+              price: payload.price,
+              qrToken: payload.qr,
+              status: 'EXPIRED',
+              createdAt: new Date().toISOString(),
+            };
+            ticketsRef.current = [importedExpiredTicket, ...currentTickets];
+            setTickets((prev) => [importedExpiredTicket, ...prev]);
+
+            return {
+              status: 'EXPIRED',
+              ticket: importedExpiredTicket,
+              message: `This ticket has expired past the event date (${payload.date}) and cannot be used for admission.`,
+            };
+          }
+
           const importedTicket: Ticket = {
             id: payload.id || `tkt-${Date.now()}`,
             ticketNumber: payload.tkt,
@@ -489,7 +644,9 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             ticketTypeName: payload.tier,
             price: payload.price,
             qrToken: payload.qr,
-            status: 'VALID',
+            status: 'USED',
+            usedAt: now,
+            usedBy: staffLabel,
             createdAt: new Date().toISOString(),
           };
 
@@ -515,6 +672,7 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             createdAt: new Date(Date.now() - (payload.lead || 48) * 3600 * 1000).toISOString(),
           };
 
+          ticketsRef.current = [importedTicket, ...currentTickets];
           setTickets((prev) => [importedTicket, ...prev]);
           setOrders((prev) => [importedOrder, ...prev]);
 
@@ -526,11 +684,11 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             eventName: importedTicket.eventName,
             customerName: importedTicket.customerName,
             staffId: effectiveStaff.id,
-            staffName: `${effectiveStaff.name} (${effectiveStaff.staffRole || effectiveStaff.role})`,
+            staffName: staffLabel,
             result: 'VALID',
             scannedAt: now,
             deviceInfo: 'Camera / Web Scanner',
-            notes: `Admitted attendee via portable pass.`,
+            notes: 'First scan: Entry approved. Ticket permanently updated to USED.',
           };
           setScanLogs((prev) => [scanLog, ...prev]);
 
@@ -546,24 +704,29 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       }
     }
 
-    // Find ticket by token or ticketNumber (exact or contained in URL/token string)
-    const targetTicket = tickets.find(
+    // Find ticket by token or ticketNumber (exact match first, then fallback to embedded token in URL/data)
+    let targetTicket = currentTickets.find(
       (t) =>
         t.qrToken.toLowerCase() === trimmed.toLowerCase() ||
         t.ticketNumber.toLowerCase() === trimmed.toLowerCase() ||
-        t.id.toLowerCase() === trimmed.toLowerCase() ||
-        (trimmed.length >= 6 &&
-          (trimmed.toLowerCase().includes(t.qrToken.toLowerCase()) ||
-            trimmed.toLowerCase().includes(t.ticketNumber.toLowerCase()) ||
-            trimmed.toLowerCase().includes(t.id.toLowerCase())))
+        t.id.toLowerCase() === trimmed.toLowerCase()
     );
+
+    if (!targetTicket && trimmed.length >= 6) {
+      targetTicket = currentTickets.find(
+        (t) =>
+          trimmed.toLowerCase().includes(t.qrToken.toLowerCase()) ||
+          trimmed.toLowerCase().includes(t.ticketNumber.toLowerCase()) ||
+          trimmed.toLowerCase().includes(t.id.toLowerCase())
+      );
+    }
 
     if (!targetTicket) {
       const scanLog: ScanLog = {
         id: `scan-${Date.now()}`,
         ticketNumber: trimmed,
         staffId: effectiveStaff.id,
-        staffName: `${effectiveStaff.name} (${effectiveStaff.staffRole || effectiveStaff.role})`,
+        staffName: staffLabel,
         result: 'INVALID',
         scannedAt: now,
         deviceInfo: 'Camera / Web Scanner',
@@ -579,7 +742,7 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     const event = events.find((e) => e.id === targetTicket.eventId);
 
-    // If already USED
+    // 1. STRICT CHECK: Has ticket already been USED? Prevent second entry!
     if (targetTicket.status === 'USED') {
       const scanLog: ScanLog = {
         id: `scan-${Date.now()}`,
@@ -589,7 +752,7 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         eventName: targetTicket.eventName,
         customerName: targetTicket.customerName,
         staffId: effectiveStaff.id,
-        staffName: `${effectiveStaff.name} (${effectiveStaff.staffRole || effectiveStaff.role})`,
+        staffName: staffLabel,
         result: 'ALREADY_USED',
         scannedAt: now,
         deviceInfo: 'Camera / Web Scanner',
@@ -601,7 +764,7 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         status: 'ALREADY_USED',
         ticket: targetTicket,
         event,
-        message: 'This ticket has already been checked in. Multiple entries are strictly prohibited.',
+        message: 'This ticket has already been used and checked in. Multiple entries are strictly prohibited.',
         alreadyUsedInfo: {
           usedAt: targetTicket.usedAt || now,
           usedBy: targetTicket.usedBy || 'Authorized Staff',
@@ -609,8 +772,8 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       };
     }
 
-    // If CANCELLED
-    if (targetTicket.status === 'CANCELLED') {
+    // 2. CHECK: Cancelled or Refunded
+    if (targetTicket.status === 'CANCELLED' || targetTicket.status === 'REFUNDED') {
       const scanLog: ScanLog = {
         id: `scan-${Date.now()}`,
         ticketId: targetTicket.id,
@@ -619,11 +782,11 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         eventName: targetTicket.eventName,
         customerName: targetTicket.customerName,
         staffId: effectiveStaff.id,
-        staffName: `${effectiveStaff.name} (${effectiveStaff.staffRole || effectiveStaff.role})`,
+        staffName: staffLabel,
         result: 'CANCELLED',
         scannedAt: now,
         deviceInfo: 'Camera / Web Scanner',
-        notes: 'Rejected entry: Ticket has been cancelled.',
+        notes: `Rejected entry: Ticket has been ${targetTicket.status.toLowerCase()}.`,
       };
       setScanLogs((prev) => [scanLog, ...prev]);
 
@@ -631,12 +794,29 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         status: 'CANCELLED',
         ticket: targetTicket,
         event,
-        message: 'This ticket has been cancelled or invalidated.',
+        message: `This ticket has been ${targetTicket.status.toLowerCase()} and cannot be used for admission.`,
       };
     }
 
-    // If REFUNDED or EXPIRED
-    if (targetTicket.status === 'REFUNDED' || targetTicket.status === 'EXPIRED') {
+    // 3. STRICT CHECK: Has event date expired?
+    const ticketEventDate = targetTicket.eventDate || event?.date;
+    const ticketEndTime = event?.endTime;
+    const ticketStartTime = targetTicket.eventTime || event?.startTime;
+
+    const hasExpired =
+      targetTicket.status === 'EXPIRED' ||
+      isEventExpired(ticketEventDate, ticketEndTime, ticketStartTime) ||
+      event?.status === 'COMPLETED';
+
+    if (hasExpired) {
+      const expiredTicket: Ticket = {
+        ...targetTicket,
+        status: 'EXPIRED',
+      };
+
+      ticketsRef.current = currentTickets.map((t) => (t.id === targetTicket.id ? expiredTicket : t));
+      setTickets((prev) => prev.map((t) => (t.id === targetTicket.id ? expiredTicket : t)));
+
       const scanLog: ScanLog = {
         id: `scan-${Date.now()}`,
         ticketId: targetTicket.id,
@@ -645,36 +825,33 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         eventName: targetTicket.eventName,
         customerName: targetTicket.customerName,
         staffId: effectiveStaff.id,
-        staffName: `${effectiveStaff.name} (${effectiveStaff.staffRole || effectiveStaff.role})`,
+        staffName: staffLabel,
         result: 'EXPIRED',
         scannedAt: now,
         deviceInfo: 'Camera / Web Scanner',
-        notes: `Ticket marked ${targetTicket.status}. Entry rejected.`,
+        notes: `Rejected entry: Event date (${ticketEventDate}) has passed. Ticket is expired.`,
       };
       setScanLogs((prev) => [scanLog, ...prev]);
 
       return {
         status: 'EXPIRED',
-        ticket: targetTicket,
+        ticket: expiredTicket,
         event,
-        message: `This ticket is ${targetTicket.status.toLowerCase()} and cannot be used for entry.`,
+        message: `This ticket is invalid because the event took place on ${ticketEventDate} and has expired.`,
       };
     }
 
-    // VALID: Atomically transition to USED!
-    const staffLabel = `${effectiveStaff.name} (${effectiveStaff.staffRole || 'Staff'})`;
+    // 4. VALID PASS: Immediately transition to USED so it can NEVER be scanned twice!
+    const updatedTicket: Ticket = {
+      ...targetTicket,
+      status: 'USED',
+      usedAt: now,
+      usedBy: staffLabel,
+    };
 
-    setTickets((prev) =>
-      prev.map((t) => {
-        if (t.id !== targetTicket.id) return t;
-        return {
-          ...t,
-          status: 'USED',
-          usedAt: now,
-          usedBy: staffLabel,
-        };
-      })
-    );
+    // Update synchronous ref first
+    ticketsRef.current = currentTickets.map((t) => (t.id === targetTicket.id ? updatedTicket : t));
+    setTickets((prev) => prev.map((t) => (t.id === targetTicket.id ? updatedTicket : t)));
 
     const scanLog: ScanLog = {
       id: `scan-${Date.now()}`,
@@ -688,7 +865,7 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       result: 'VALID',
       scannedAt: now,
       deviceInfo: 'Camera / Web Scanner',
-      notes: 'Entry approved. Status updated to USED.',
+      notes: 'First scan: Entry approved. Ticket permanently updated to USED.',
     };
     setScanLogs((prev) => [scanLog, ...prev]);
 
@@ -700,13 +877,6 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       timestamp: now,
     };
     setAuditLogs((prev) => [audit, ...prev]);
-
-    const updatedTicket: Ticket = {
-      ...targetTicket,
-      status: 'USED',
-      usedAt: now,
-      usedBy: staffLabel,
-    };
 
     return {
       status: 'VALID',

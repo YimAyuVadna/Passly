@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
 import {
   TicketProvider,
   useTicketContext,
@@ -182,14 +181,17 @@ function AppContent() {
         onProceedToCheckout={handleProceedToCheckout}
       />
 
-      <CheckoutModal
-        isOpen={checkoutData !== null}
-        onClose={() => setCheckoutData(null)}
-        event={checkoutData?.event || null}
-        ticketType={checkoutData?.ticketType || null}
-        quantity={checkoutData?.quantity || 1}
-        onSuccessViewTickets={handleCheckoutSuccess}
-      />
+      {checkoutData && (
+        <CheckoutModal
+          key={`checkout-${checkoutData.event.id}-${checkoutData.ticketType.id}-${checkoutData.quantity}`}
+          isOpen={true}
+          onClose={() => setCheckoutData(null)}
+          event={checkoutData.event}
+          ticketType={checkoutData.ticketType}
+          quantity={checkoutData.quantity}
+          onSuccessViewTickets={handleCheckoutSuccess}
+        />
+      )}
 
       <DigitalTicketModal
         ticket={activeDigitalTicket}
@@ -231,104 +233,105 @@ function AppContent() {
         onClose={() => setIsSettingsOpen(false)}
       />
 
-      {/* Mobile Floating Minimalist Navigation Dock */}
-      <div className="md:hidden fixed bottom-4 inset-x-4 z-40 max-w-sm mx-auto">
-        <div className="bg-white/90 backdrop-blur-xl border border-zinc-200/90 py-2 px-3 flex items-center justify-around rounded-full shadow-lg shadow-zinc-950/5">
-          <motion.button
-            whileTap={{ scale: 0.92 }}
+      {/* Mobile Docked Minimalist Navigation Bar */}
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-zinc-200/90 py-1 px-4">
+        <div className="max-w-md mx-auto flex items-center justify-around">
+          <button
+            type="button"
             onClick={() => setCurrentView('events')}
-            className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-full transition-colors cursor-pointer select-none ${
-              currentView === 'events' ? 'text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-600'
+            className={`flex flex-col items-center gap-0.5 py-1 px-3 transition-colors cursor-pointer select-none ${
+              currentView === 'events' ? 'text-zinc-950 font-medium' : 'text-zinc-400 hover:text-zinc-600'
             }`}
           >
             <Compass className="w-4 h-4" />
             <span className="text-[10px]">Events</span>
-          </motion.button>
+          </button>
 
-          <motion.button
-            whileTap={{ scale: 0.92 }}
+          <button
+            type="button"
             onClick={() => setCurrentView('my-tickets')}
-            className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-full transition-colors cursor-pointer select-none ${
-              currentView === 'my-tickets' ? 'text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-600'
+            className={`flex flex-col items-center gap-0.5 py-1 px-3 transition-colors cursor-pointer select-none ${
+              currentView === 'my-tickets' ? 'text-zinc-950 font-medium' : 'text-zinc-400 hover:text-zinc-600'
             }`}
           >
             <TicketIcon className="w-4 h-4" />
             <span className="text-[10px]">Passes</span>
-          </motion.button>
+          </button>
 
-          {/* Center Scan QR button: strictly visible to staff and admin only */}
+          {/* Center Scan QR button for staff and admin */}
           {isLoggedIn && (currentRole === 'STAFF' || currentRole === 'ADMIN') && (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.92 }}
+            <button
+              type="button"
               onClick={() => setIsScannerOpen(true)}
-              className="flex items-center justify-center w-10 h-10 bg-zinc-900 text-white rounded-full shadow-md hover:bg-zinc-800 transition-colors -my-1 cursor-pointer select-none"
+              className="flex items-center justify-center w-8 h-8 bg-zinc-950 text-white rounded-md hover:bg-zinc-800 transition-colors cursor-pointer select-none"
               title="Scan QR"
             >
               <Camera className="w-4 h-4" />
-            </motion.button>
+            </button>
           )}
 
           {isLoggedIn && (currentRole === 'STAFF' || currentRole === 'ADMIN') && (
-            <motion.button
-              whileTap={{ scale: 0.92 }}
+            <button
+              type="button"
               onClick={() => setCurrentView(currentRole === 'ADMIN' ? 'admin' : 'staff')}
-              className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-full transition-colors cursor-pointer select-none ${
+              className={`flex flex-col items-center gap-0.5 py-1 px-3 transition-colors cursor-pointer select-none ${
                 currentView === 'staff' || currentView === 'admin'
-                  ? 'text-zinc-900 font-semibold'
+                  ? 'text-zinc-950 font-medium'
                   : 'text-zinc-400 hover:text-zinc-600'
               }`}
             >
               {currentRole === 'ADMIN' ? <Shield className="w-4 h-4" /> : <HelpCircle className="w-4 h-4" />}
               <span className="text-[10px]">{currentRole === 'ADMIN' ? 'Console' : 'Staff'}</span>
-            </motion.button>
+            </button>
           )}
 
           {isLoggedIn ? (
-            <motion.button
-              whileTap={{ scale: 0.92 }}
+            <button
+              type="button"
               onClick={() => setIsSettingsOpen(true)}
-              className="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-full transition-colors cursor-pointer text-zinc-600 hover:text-zinc-900 select-none"
+              className="flex flex-col items-center gap-0.5 py-1 px-2.5 transition-colors cursor-pointer text-zinc-600 hover:text-zinc-900 select-none"
               title={`Account Settings (${currentUser.name})`}
             >
               <img
                 src={currentUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}
                 alt={currentUser.name}
-                className="w-4 h-4 rounded-full object-cover ring-1 ring-zinc-300"
+                className="w-4 h-4 rounded-full object-cover ring-1 ring-zinc-200"
               />
               <span className="text-[10px] font-medium truncate max-w-[48px]">
                 {currentUser.name.split(' ')[0]}
               </span>
-            </motion.button>
+            </button>
           ) : (
-            <motion.button
-              whileTap={{ scale: 0.92 }}
+            <button
+              type="button"
               onClick={() => setCurrentView('auth')}
-              className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-full transition-colors cursor-pointer select-none ${
-                currentView === 'auth' ? 'text-zinc-900 font-semibold' : 'text-zinc-400 hover:text-zinc-600'
+              className={`flex flex-col items-center gap-0.5 py-1 px-3 transition-colors cursor-pointer select-none ${
+                currentView === 'auth' ? 'text-zinc-950 font-medium' : 'text-zinc-400 hover:text-zinc-600'
               }`}
             >
               <LogIn className="w-4 h-4" />
               <span className="text-[10px]">Sign In</span>
-            </motion.button>
+            </button>
           )}
         </div>
       </div>
 
       {/* Modern Minimalist Footer */}
-      <footer className="border-t border-zinc-200/70 bg-white/60 py-8 px-4 text-xs text-zinc-400 mt-auto">
+      <footer className="border-t border-zinc-200/80 bg-white py-8 px-4 text-xs text-zinc-400 mt-auto">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-zinc-700">TicketPass</span>
-            <span>•</span>
-            <p>© 2026 Digital Ticket Buying Platform.</p>
+          <div className="flex items-center gap-2.5">
+            <span className="font-semibold text-xs text-zinc-900 tracking-tight">
+              TicketPass
+            </span>
+            <span className="text-zinc-300">/</span>
+            <p className="text-zinc-500 text-xs">Direct digital ticketing and checkpoint admission</p>
           </div>
-          <div className="flex items-center gap-4 text-zinc-500 text-[11px]">
-            <span>Instant Digital Passes</span>
+          <div className="flex items-center gap-4 text-zinc-400 text-xs">
+            <span>Events</span>
             <span>•</span>
-            <span>Verified QR Admission</span>
+            <span>Passes</span>
             <span>•</span>
-            <span>Official Box Office</span>
+            <span>Gate Checkpoint</span>
           </div>
         </div>
       </footer>

@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   X,
   Upload,
-  Sparkles,
   Calendar,
   Clock,
   MapPin,
@@ -164,23 +163,23 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/60 backdrop-blur-md p-4 overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden text-zinc-900 border border-zinc-200/80 my-8 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 backdrop-blur-xs p-4 overflow-y-auto">
+      <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-xl overflow-hidden text-zinc-900 border border-zinc-200/90 my-8 flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 bg-zinc-50/70">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 bg-white">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-zinc-900 text-white flex items-center justify-center shadow-xs">
-              <Sliders className="w-4 h-4" />
+            <div className="w-7 h-7 rounded-md bg-zinc-950 text-white flex items-center justify-center">
+              <Sliders className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-zinc-900">Hero Banner Editor</h3>
+              <h3 className="font-semibold text-sm text-zinc-950">Hero Banner Editor</h3>
               <p className="text-xs text-zinc-400">Manage headline, featured event, and backdrop media</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-xl transition cursor-pointer"
+            className="p-1.5 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-md transition cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -188,9 +187,9 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
 
         <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Visibility Switch */}
-          <div className="p-4 bg-zinc-50/80 border border-zinc-200/80 rounded-2xl flex items-center justify-between">
+          <div className="p-3.5 bg-zinc-50 border border-zinc-200/80 rounded-lg flex items-center justify-between">
             <div className="space-y-0.5">
-              <h4 className="font-semibold text-xs text-zinc-900">Display Hero Banner</h4>
+              <h4 className="font-medium text-xs text-zinc-900">Display Hero Banner</h4>
               <p className="text-[11px] text-zinc-500">
                 When enabled, this editorial spotlight appears at the top of the event catalog
               </p>
@@ -198,13 +197,13 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
             <button
               type="button"
               onClick={() => setEnabled(!enabled)}
-              className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
-                enabled ? 'bg-zinc-900' : 'bg-zinc-200'
+              className={`w-10 h-5.5 rounded-full transition-colors relative cursor-pointer ${
+                enabled ? 'bg-zinc-950' : 'bg-zinc-200'
               }`}
             >
               <span
                 className={`block w-4 h-4 rounded-full bg-white transition-transform transform ${
-                  enabled ? 'translate-x-6' : 'translate-x-1'
+                  enabled ? 'translate-x-5' : 'translate-x-1'
                 }`}
               />
             </button>
@@ -212,13 +211,13 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
 
           {/* Quick Autofill from Existing Event */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-semibold text-zinc-700">
+            <label className="block text-xs font-medium text-zinc-700">
               Link to Existing Event (Autofills details)
             </label>
             <select
               value={selectedEventId}
               onChange={(e) => handleEventSelect(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 cursor-pointer"
+              className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950 cursor-pointer"
             >
               <option value="">-- Custom Standalone Banner (No Event Link) --</option>
               {events.map((ev) => (
@@ -229,51 +228,66 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
             </select>
           </div>
 
-          {/* Live Mini Preview */}
+          {/* Live Mini Preview - Editorial Style */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-zinc-700 flex items-center gap-1">
+              <span className="text-xs font-medium text-zinc-700 flex items-center gap-1.5">
                 <Eye className="w-3.5 h-3.5 text-zinc-400" />
                 Live Preview
               </span>
-              <span className="text-[10px] text-zinc-400">Desktop presentation</span>
+              <span className="text-[10px] font-mono text-zinc-400 uppercase">Editorial Layout</span>
             </div>
 
-            <div className="relative rounded-2xl overflow-hidden bg-zinc-950 text-white p-5 border border-zinc-800 shadow-xs group min-h-[160px] flex flex-col justify-end">
-              <div className="absolute inset-0">
+            <div className="rounded-lg bg-zinc-50/50 border border-zinc-200/90 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex-1 space-y-2 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+                    {tag || 'Featured'}
+                  </span>
+                  <span className="text-[11px] text-zinc-400">•</span>
+                  <span className="text-[11px] text-zinc-600 font-medium">{category}</span>
+                </div>
+                <h4 className="text-sm font-semibold tracking-tight text-zinc-950 truncate">
+                  {title || 'Headline Event Title'}
+                </h4>
+                <p className="text-[11px] text-zinc-500 line-clamp-1 leading-relaxed">
+                  {description || 'Event description and highlights preview will appear here.'}
+                </p>
+                <div className="flex items-center gap-2.5 text-[10px] text-zinc-400 font-medium">
+                  {date && (
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3 text-zinc-400" />
+                      {date}
+                    </span>
+                  )}
+                  {startTime && (
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-zinc-400" />
+                      {startTime}
+                    </span>
+                  )}
+                  {location && (
+                    <span className="flex items-center gap-1 truncate">
+                      <MapPin className="w-3 h-3 text-zinc-400" />
+                      {location}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="w-28 sm:w-36 aspect-[16/10] rounded-md overflow-hidden bg-zinc-100 border border-zinc-200 shrink-0">
                 {image ? (
                   <img
                     src={image}
                     alt={title}
-                    className="w-full h-full object-cover opacity-60"
+                    className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="w-full h-full bg-zinc-900 flex items-center justify-center text-zinc-600">
-                    <ImageIcon className="w-8 h-8 opacity-40" />
+                  <div className="w-full h-full flex items-center justify-center text-zinc-400">
+                    <ImageIcon className="w-5 h-5 opacity-40" />
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent" />
-              </div>
-
-              <div className="relative z-10 space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-0.5 bg-white/20 backdrop-blur-md text-white text-[10px] font-semibold rounded-full uppercase tracking-wider">
-                    {tag || 'Featured Experience'}
-                  </span>
-                  <span className="text-[11px] text-zinc-300 font-medium">{category}</span>
-                </div>
-                <h2 className="text-lg sm:text-xl font-extrabold tracking-tight text-white leading-snug line-clamp-1">
-                  {title || 'Headline Event Title'}
-                </h2>
-                <p className="text-[11px] text-zinc-300 line-clamp-1 leading-relaxed">
-                  {description || 'Event description and highlights preview will appear here.'}
-                </p>
-                <div className="flex items-center gap-3 text-[10px] text-zinc-300 pt-0.5">
-                  {date && <span>📅 {date}</span>}
-                  {startTime && <span>⏰ {startTime}</span>}
-                  {location && <span>📍 {location}</span>}
-                </div>
               </div>
             </div>
           </div>
@@ -290,7 +304,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 value={tag}
                 onChange={(e) => setTag(e.target.value)}
                 placeholder="e.g. Featured Experience"
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
               />
             </div>
 
@@ -304,7 +318,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 placeholder="e.g. Concert, Conference"
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
               />
             </div>
 
@@ -318,7 +332,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Neon Pulse EDM Night 2026"
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs font-semibold text-zinc-900 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs font-semibold text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
               />
             </div>
 
@@ -332,7 +346,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="A compelling description for the hero card..."
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
               />
             </div>
 
@@ -342,7 +356,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
               />
             </div>
 
@@ -352,7 +366,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
               />
             </div>
 
@@ -363,7 +377,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="e.g. Diamond Island Exhibition Center"
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
               />
             </div>
 
@@ -374,14 +388,14 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 value={buttonText}
                 onChange={(e) => setButtonText(e.target.value)}
                 placeholder="e.g. Reserve Tickets"
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
               />
             </div>
           </div>
 
           {/* Image Upload & URL input */}
           <div className="space-y-2 pt-1">
-            <label className="block text-xs font-semibold text-zinc-700">
+            <label className="block text-xs font-medium text-zinc-700">
               Hero Banner Image (URL or Upload) <span className="text-rose-500">*</span>
             </label>
 
@@ -392,7 +406,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 value={image}
                 onChange={(e) => setImage(e.target.value)}
                 placeholder="https://images.unsplash.com/..."
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-xl text-xs text-zinc-900 font-mono focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900"
+                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 font-mono focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
               />
 
               <div
@@ -400,10 +414,10 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`p-4 rounded-2xl border-2 border-dashed text-center transition cursor-pointer ${
+                className={`p-4 rounded-lg border border-dashed text-center transition cursor-pointer ${
                   isDragging
-                    ? 'border-zinc-900 bg-zinc-50'
-                    : 'border-zinc-200/80 hover:border-zinc-400 bg-zinc-50/50'
+                    ? 'border-zinc-950 bg-zinc-50'
+                    : 'border-zinc-300 hover:border-zinc-400 bg-zinc-50/50'
                 }`}
               >
                 <input
@@ -414,7 +428,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                   className="hidden"
                 />
                 <div className="flex items-center justify-center gap-2 text-xs font-medium text-zinc-700">
-                  <Upload className="w-4 h-4 text-zinc-500" />
+                  <Upload className="w-3.5 h-3.5 text-zinc-500" />
                   <span>Upload local image file</span>
                 </div>
                 <p className="text-[10px] text-zinc-400 mt-0.5">
@@ -423,7 +437,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
               </div>
 
               {uploadError && (
-                <div className="flex items-center gap-1.5 p-2 bg-rose-50 text-rose-700 rounded-xl text-xs border border-rose-200/60">
+                <div className="flex items-center gap-1.5 p-2.5 bg-rose-50 text-rose-700 rounded-md text-xs border border-rose-200/80">
                   <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                   <span>{uploadError}</span>
                 </div>
@@ -447,7 +461,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-200 rounded-full text-xs font-medium transition cursor-pointer"
+              className="px-3.5 py-1.5 bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-200 rounded-md text-xs font-medium transition cursor-pointer"
             >
               Cancel
             </button>
@@ -455,12 +469,12 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
               type="button"
               onClick={handleSave}
               disabled={isSaved}
-              className="px-5 py-2 bg-zinc-900 hover:bg-zinc-800 disabled:bg-emerald-600 text-white font-semibold rounded-full text-xs shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-1.5 bg-zinc-950 hover:bg-zinc-800 disabled:bg-emerald-600 text-white font-medium rounded-md text-xs shadow-xs transition flex items-center gap-1.5 cursor-pointer"
             >
               {isSaved ? (
                 <>
                   <Check className="w-3.5 h-3.5" />
-                  <span>Saved!</span>
+                  <span>Saved</span>
                 </>
               ) : (
                 <span>Save Banner</span>

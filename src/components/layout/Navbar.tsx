@@ -13,7 +13,6 @@ import {
   LogIn,
   LogOut,
   Settings,
-  Sparkles,
 } from 'lucide-react';
 import { useTicketContext } from '../../context/TicketContext';
 
@@ -74,32 +73,27 @@ export const Navbar: React.FC<NavbarProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-zinc-200/70 transition-colors">
+    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-zinc-200/80 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-4">
+        <div className="flex items-center justify-between h-14 gap-4">
           {/* Logo & Navigation */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-7">
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ opacity: 0.8 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => onChangeView('events')}
-              className="flex items-center gap-2.5 text-left group focus:outline-none cursor-pointer select-none"
+              className="flex items-center gap-2 text-left group focus:outline-none cursor-pointer select-none"
             >
-              <div className="w-9 h-9 rounded-xl bg-zinc-900 text-white flex items-center justify-center shadow-xs group-hover:scale-[1.03] transition-transform">
-                <Ticket className="w-4 h-4 -rotate-12 stroke-[2.2]" />
+              <div className="w-7 h-7 rounded-md bg-zinc-950 text-white flex items-center justify-center">
+                <Ticket className="w-3.5 h-3.5 stroke-[2]" />
               </div>
-              <div className="flex flex-col">
-                <span className="font-bold text-sm tracking-tight text-zinc-900 flex items-center gap-1">
-                  Ticket<span className="text-zinc-500 font-normal">Pass</span>
-                </span>
-                <span className="text-[10px] font-medium text-zinc-400 tracking-wide uppercase">
-                  Digital Tickets
-                </span>
-              </div>
+              <span className="font-semibold text-sm tracking-tight text-zinc-950">
+                TicketPass
+              </span>
             </motion.button>
 
-            {/* Desktop Navigation Pills with Smooth Sliding Pill */}
-            <nav className="hidden md:flex items-center gap-1 bg-zinc-100/80 p-1 rounded-full border border-zinc-200/60 relative">
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-0.5 bg-zinc-100/70 p-1 rounded-lg border border-zinc-200/60 relative">
               {navTabs
                 .filter((tab) => tab.show)
                 .map((tab) => {
@@ -108,26 +102,25 @@ export const Navbar: React.FC<NavbarProps> = ({
                   return (
                     <motion.button
                       key={tab.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.96 }}
+                      whileTap={{ scale: 0.97 }}
                       onClick={() => onChangeView(tab.id)}
-                      className={`relative px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer z-10 select-none ${
+                      className={`relative px-3 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer z-10 select-none ${
                         isActive
                           ? tab.id === 'admin'
                             ? 'text-white'
                             : 'text-zinc-950 font-semibold'
-                          : 'text-zinc-600 hover:text-zinc-900'
+                          : 'text-zinc-500 hover:text-zinc-900'
                       }`}
                     >
                       {isActive && (
                         <motion.div
                           layoutId="navbar-active-pill"
-                          className={`absolute inset-0 rounded-full shadow-xs -z-10 ${
+                          className={`absolute inset-0 rounded-md shadow-xs -z-10 ${
                             tab.id === 'admin'
                               ? 'bg-zinc-900'
-                              : 'bg-white border border-zinc-200/60'
+                              : 'bg-white border border-zinc-200/70'
                           }`}
-                          transition={{ type: 'spring', bounce: 0.15, duration: 0.35 }}
+                          transition={{ type: 'spring', bounce: 0.1, duration: 0.3 }}
                         />
                       )}
                       <Icon
@@ -136,7 +129,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                             ? 'text-zinc-300'
                             : isActive
                             ? 'text-zinc-900'
-                            : 'text-zinc-500'
+                            : 'text-zinc-400'
                         }`}
                       />
                       <span>{tab.label}</span>
@@ -147,59 +140,55 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Right Action Group */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             {/* Buy Pass Online Simulation Button */}
             {onOpenOnlineBooking && (
               <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.96 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={onOpenOnlineBooking}
                 title="Simulate Online Client Pass Purchase & QR Generation"
-                className="px-3.5 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-full text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer select-none"
+                className="px-3 py-1.5 bg-white hover:bg-zinc-50 text-zinc-900 border border-zinc-200 rounded-md text-xs font-medium transition cursor-pointer select-none flex items-center gap-1.5 shadow-2xs"
               >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Buy Pass Online</span>
+                <Ticket className="w-3.5 h-3.5 text-zinc-600" />
+                <span>Simulate Pass</span>
               </motion.button>
             )}
 
-            {/* Quick staff action buttons: strictly visible to staff and admin only */}
+            {/* Quick staff action buttons */}
             {isLoggedIn && (currentUser.role === 'STAFF' || currentUser.role === 'ADMIN') && (
               <>
-                <div className="hidden sm:flex items-center gap-2">
+                <div className="hidden sm:flex items-center gap-1.5">
                   <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.96 }}
+                    whileTap={{ scale: 0.97 }}
                     onClick={onOpenScanner}
                     title="Scan QR Code"
-                    className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-full text-xs font-medium transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer select-none"
+                    className="px-3 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-md text-xs font-medium transition flex items-center gap-1.5 cursor-pointer select-none shadow-xs"
                   >
-                    <Camera className="w-3.5 h-3.5" />
+                    <Camera className="w-3.5 h-3.5 text-zinc-300" />
                     <span>Scan QR</span>
                   </motion.button>
 
                   <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.96 }}
+                    whileTap={{ scale: 0.97 }}
                     onClick={onOpenAssistedPurchase}
                     title="Staff Assisted Purchase"
-                    className="px-3 py-1.5 bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200/80 rounded-full text-xs font-medium transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer select-none"
+                    className="px-3 py-1.5 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-200 rounded-md text-xs font-medium transition flex items-center gap-1.5 cursor-pointer select-none"
                   >
                     <ShoppingBag className="w-3.5 h-3.5 text-zinc-500" />
                     <span>Assisted Sale</span>
                   </motion.button>
                 </div>
-                <div className="h-4 w-px bg-zinc-200 hidden sm:block mx-1" />
+                <div className="h-4 w-px bg-zinc-200 hidden sm:block mx-0.5" />
               </>
             )}
 
-            {/* Auth Section: Only show User Profile if logged in; Only show Sign In if logged out */}
+            {/* Auth Section */}
             {isLoggedIn ? (
               <div className="relative" ref={userMenuRef}>
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center gap-2 p-1.5 pr-2.5 rounded-full bg-zinc-100/80 hover:bg-zinc-200/70 border border-zinc-200/60 transition-colors focus:outline-none cursor-pointer select-none"
+                  className="flex items-center gap-2 px-2 py-1 rounded-md bg-white hover:bg-zinc-50 border border-zinc-200 transition-colors focus:outline-none cursor-pointer select-none"
                   title="User Profile & Settings"
                 >
                   <img
@@ -208,29 +197,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                       'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'
                     }
                     alt={currentUser.name}
-                    className="w-6 h-6 rounded-full object-cover ring-1 ring-white"
+                    className="w-5 h-5 rounded-full object-cover ring-1 ring-zinc-200"
                     referrerPolicy="no-referrer"
                   />
                   <div className="text-left hidden lg:block">
-                    <span className="font-semibold text-xs text-zinc-800 leading-tight block">
+                    <span className="font-medium text-xs text-zinc-900 leading-tight block">
                       {currentUser.name}
                     </span>
-                    <span className="text-[10px] text-zinc-500 font-medium leading-none block">
-                      {currentUser.staffRole || currentUser.role}
-                    </span>
                   </div>
-                  <ChevronDown className="w-3.5 h-3.5 text-zinc-400 ml-0.5" />
+                  <ChevronDown className="w-3 h-3 text-zinc-400" />
                 </motion.button>
 
                 {/* User Profile Dropdown with AnimatePresence */}
                 <AnimatePresence>
                   {isUserMenuOpen && (
                     <motion.div
-                      initial={{ opacity: 0, y: 6, scale: 0.96 }}
+                      initial={{ opacity: 0, y: 4, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 6, scale: 0.96 }}
-                      transition={{ duration: 0.15, ease: 'easeOut' }}
-                      className="absolute right-0 mt-2 w-60 bg-white rounded-2xl shadow-xl border border-zinc-200/80 py-2 z-50 text-xs origin-top-right"
+                      exit={{ opacity: 0, y: 4, scale: 0.98 }}
+                      transition={{ duration: 0.12, ease: 'easeOut' }}
+                      className="absolute right-0 mt-1.5 w-56 bg-white rounded-xl shadow-lg border border-zinc-200 py-1.5 z-50 text-xs origin-top-right"
                     >
                       <div className="px-4 py-2.5 border-b border-zinc-100">
                         <div className="flex items-center justify-between mb-1">
@@ -297,20 +283,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             ) : currentView === 'auth' ? (
               <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.96 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => onChangeView('events')}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium text-zinc-700 hover:text-zinc-950 bg-zinc-100/80 hover:bg-zinc-200/70 border border-zinc-200/60 transition-colors cursor-pointer select-none"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-zinc-700 hover:text-zinc-950 bg-zinc-100/80 hover:bg-zinc-200/70 border border-zinc-200/60 transition-colors cursor-pointer select-none"
               >
                 <Compass className="w-3.5 h-3.5" />
                 <span>Browse Events</span>
               </motion.button>
             ) : (
               <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.96 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => onChangeView('auth')}
-                className="flex items-center gap-1.5 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded-full text-xs font-semibold transition-colors shadow-xs cursor-pointer select-none"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-md text-xs font-medium transition-colors shadow-xs cursor-pointer select-none"
               >
                 <LogIn className="w-3.5 h-3.5" />
                 <span>Sign In</span>
@@ -321,7 +305,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <motion.button
               whileTap={{ scale: 0.92 }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-zinc-600 hover:text-zinc-900 rounded-full hover:bg-zinc-100 transition-colors cursor-pointer"
+              className="md:hidden p-1.5 text-zinc-600 hover:text-zinc-900 rounded-md hover:bg-zinc-100 transition-colors cursor-pointer"
               aria-label="Toggle navigation menu"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -376,10 +360,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onOpenOnlineBooking();
                   setIsMobileMenuOpen(false);
                 }}
-                className="w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer bg-blue-50 text-blue-700 hover:bg-blue-100"
+                className="w-full p-2.5 rounded-xl text-left text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer bg-zinc-100 hover:bg-zinc-200/80 text-zinc-900 border border-zinc-200/60"
               >
-                <Sparkles className="w-4 h-4 text-blue-600" />
-                <span>Buy Pass Online (Simulation)</span>
+                <Ticket className="w-4 h-4 text-zinc-700" />
+                <span>Simulate Pass</span>
               </button>
             )}
 

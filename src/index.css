@@ -9,6 +9,7 @@
 html {
   overflow-y: scroll;
   scrollbar-gutter: stable;
+  scroll-behavior: smooth;
 }
 
 /* Base style refinements */
@@ -16,22 +17,24 @@ body {
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   -webkit-tap-highlight-color: transparent;
   overflow-x: hidden;
+  background-color: #fafafa;
+  color: #18181b;
 }
 
 /* Sleek minimalist scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
+  background: #e4e4e7;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
+  background: #a1a1aa;
 }
 
 /* Print utilities for ticket passes */
@@ -43,3 +46,24 @@ body {
     display: none !important;
   }
 }
+
+/* QR Scanner Reticle Laser Sweep Animation */
+@keyframes laser-sweep {
+  0% {
+    top: 0%;
+    opacity: 0.8;
+  }
+  50% {
+    top: calc(100% - 2px);
+    opacity: 1;
+  }
+  100% {
+    top: 0%;
+    opacity: 0.8;
+  }
+}
+
+.animate-laser {
+  animation: laser-sweep 2.4s ease-in-out infinite;
+}
+

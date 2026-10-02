@@ -6,17 +6,10 @@ import {
   Mail,
   User as UserIcon,
   Phone,
-  Shield,
-  Camera,
-  Compass,
   ArrowRight,
-  CheckCircle2,
-  Sparkles,
   Eye,
   EyeOff,
   UserCheck,
-  ChevronRight,
-  Layers,
 } from 'lucide-react';
 import { useTicketContext } from '../../context/TicketContext';
 import { User, UserRole } from '../../types';
@@ -138,49 +131,38 @@ export const AuthView: React.FC<AuthViewProps> = ({
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
-      {/* Header Banner */}
-      <div className="text-center space-y-2 max-w-2xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100 border border-zinc-200/80 text-zinc-700 text-xs font-medium shadow-2xs">
-          <Ticket className="w-3.5 h-3.5 -rotate-12 text-zinc-900" />
-          <span>TicketPass Access Portal</span>
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">
-          Sign in or explore demo portals
+    <div className="max-w-5xl mx-auto space-y-6 px-4 py-4 sm:py-8">
+      {/* Header */}
+      <div className="space-y-1 text-center max-w-sm mx-auto">
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
+          Account Access
         </h1>
-        <p className="text-xs sm:text-sm text-zinc-500 max-w-lg mx-auto leading-relaxed">
-          Manage your personal tickets, access gate checkpoint scanners, or control platform administration.
+        <p className="text-xs text-zinc-500">
+          Sign in to your wallet or select a demo account
         </p>
       </div>
 
       {/* Guest Booking Gate Notice */}
       {authNotice && (
-        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/90 rounded-2xl p-4 sm:p-5 shadow-xs flex items-start gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
-            <Ticket className="w-5 h-5 -rotate-12" />
+        <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-4 flex items-center justify-between text-xs text-zinc-800">
+          <div className="flex items-center gap-2">
+            <Ticket className="w-4 h-4 text-zinc-600 shrink-0" />
+            <span>{authNotice}</span>
           </div>
-          <div className="flex-1 space-y-1">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-amber-950">Sign In Required to Complete Booking</h3>
-              {pendingEventName && (
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold uppercase tracking-wider bg-amber-200/80 text-amber-900">
-                  {pendingEventName}
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-amber-800 leading-relaxed">
-              {authNotice} Select a demo profile on the right or sign in below to instantly continue your checkout.
-            </p>
-          </div>
+          {pendingEventName && (
+            <span className="font-medium text-zinc-900 font-mono text-[11px]">
+              {pendingEventName}
+            </span>
+          )}
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Auth Card (Tabs: Sign In / Create Account) */}
-        <div className="lg:col-span-6 bg-white rounded-3xl border border-zinc-200/80 shadow-xs p-6 sm:p-8 lg:p-9 space-y-6">
+        <div className="lg:col-span-6 bg-white rounded-xl border border-zinc-200/90 shadow-xs p-6 sm:p-8 space-y-6">
           {/* Active Session Notice if already signed in */}
           {isLoggedIn && (
-            <div className="p-4 sm:p-5 bg-zinc-50 border border-zinc-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="p-4 bg-zinc-50 border border-zinc-200 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <img
                   src={
@@ -188,18 +170,18 @@ export const AuthView: React.FC<AuthViewProps> = ({
                     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'
                   }
                   alt={currentUser.name}
-                  className="w-11 h-11 rounded-full object-cover ring-2 ring-white shadow-xs"
+                  className="w-10 h-10 rounded-full object-cover border border-zinc-200"
                 />
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] font-semibold text-zinc-500">
-                      Currently Signed In
+                    <span className="text-[11px] font-medium text-zinc-400">
+                      Signed In
                     </span>
-                    <span className="px-1.5 py-0.5 bg-zinc-200/70 text-zinc-700 rounded text-[10px] font-mono font-medium">
+                    <span className="px-1.5 py-0.5 bg-zinc-200 text-zinc-700 rounded text-[10px] font-mono font-medium">
                       {currentUser.staffRole || currentUser.role}
                     </span>
                   </div>
-                  <p className="text-sm font-bold text-zinc-900">{currentUser.name}</p>
+                  <p className="text-sm font-semibold text-zinc-900">{currentUser.name}</p>
                   <p className="text-xs text-zinc-500 truncate max-w-[200px]">{currentUser.email}</p>
                 </div>
               </div>
@@ -208,14 +190,14 @@ export const AuthView: React.FC<AuthViewProps> = ({
                 <button
                   type="button"
                   onClick={() => onAuthSuccess(currentUser.role)}
-                  className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold shadow-xs transition cursor-pointer"
+                  className="px-3.5 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-md text-xs font-medium transition cursor-pointer"
                 >
                   Continue
                 </button>
                 <button
                   type="button"
                   onClick={logout}
-                  className="px-3.5 py-2 bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-200/80 rounded-xl text-xs font-medium transition cursor-pointer"
+                  className="px-3.5 py-1.5 bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 rounded-md text-xs font-medium transition cursor-pointer"
                 >
                   Sign Out
                 </button>
@@ -223,24 +205,24 @@ export const AuthView: React.FC<AuthViewProps> = ({
             </div>
           )}
 
-          {/* Segmented Mode Selector with Sliding Background Animation */}
-          <div className="relative flex bg-zinc-100 p-1.5 rounded-2xl border border-zinc-200/60 text-xs font-semibold">
+          {/* Segmented Mode Selector */}
+          <div className="relative flex bg-zinc-100 p-1 rounded-lg border border-zinc-200/80 text-xs font-medium">
             <button
               type="button"
               onClick={() => {
                 setMode('signin');
                 setSignInError(null);
               }}
-              className={`relative flex-1 py-2.5 px-4 rounded-xl transition-colors cursor-pointer z-10 ${
+              className={`relative flex-1 py-2 px-4 rounded-md transition-colors cursor-pointer z-10 ${
                 mode === 'signin'
-                  ? 'text-zinc-950 font-bold'
+                  ? 'text-zinc-950 font-semibold'
                   : 'text-zinc-500 hover:text-zinc-900'
               }`}
             >
               {mode === 'signin' && (
                 <motion.div
                   layoutId="auth-active-tab-pill"
-                  className="absolute inset-0 bg-white rounded-xl shadow-xs border border-zinc-200/50 -z-10"
+                  className="absolute inset-0 bg-white rounded-md shadow-xs border border-zinc-200/80 -z-10"
                   transition={{ type: 'spring', bounce: 0.15, duration: 0.35 }}
                 />
               )}
@@ -252,16 +234,16 @@ export const AuthView: React.FC<AuthViewProps> = ({
                 setMode('signup');
                 setSignUpError(null);
               }}
-              className={`relative flex-1 py-2.5 px-4 rounded-xl transition-colors cursor-pointer z-10 ${
+              className={`relative flex-1 py-2 px-4 rounded-md transition-colors cursor-pointer z-10 ${
                 mode === 'signup'
-                  ? 'text-zinc-950 font-bold'
+                  ? 'text-zinc-950 font-semibold'
                   : 'text-zinc-500 hover:text-zinc-900'
               }`}
             >
               {mode === 'signup' && (
                 <motion.div
                   layoutId="auth-active-tab-pill"
-                  className="absolute inset-0 bg-white rounded-xl shadow-xs border border-zinc-200/50 -z-10"
+                  className="absolute inset-0 bg-white rounded-md shadow-xs border border-zinc-200/80 -z-10"
                   transition={{ type: 'spring', bounce: 0.15, duration: 0.35 }}
                 />
               )}
@@ -284,70 +266,70 @@ export const AuthView: React.FC<AuthViewProps> = ({
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.18, ease: 'easeOut' }}
                   onSubmit={handleSignInSubmit}
-                  className="space-y-5 w-full"
+                  className="space-y-4 w-full"
                 >
                   {signInError && (
-                    <div className="p-3.5 sm:p-4 bg-rose-50 border border-rose-200/80 text-rose-700 rounded-xl text-xs font-medium">
+                    <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-xs font-medium">
                       {signInError}
                     </div>
                   )}
 
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-semibold text-zinc-700">
+                  <div className="space-y-1">
+                    <label className="block text-xs font-medium text-zinc-700">
                       Email or Phone Number
                     </label>
                     <div className="relative">
-                      <Mail className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <Mail className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
                       <input
                         type="text"
                         required
                         value={signInIdentifier}
                         onChange={(e) => setSignInIdentifier(e.target.value)}
                         placeholder="e.g. chandara@gmail.com or 012 345 678"
-                        className="w-full pl-11 pr-4 py-3 bg-zinc-50/80 border border-zinc-200 rounded-xl text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:bg-white focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition shadow-2xs"
+                        className="w-full pl-9 pr-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
                       />
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <label className="block text-xs font-semibold text-zinc-700">
+                      <label className="block text-xs font-medium text-zinc-700">
                         Password
                       </label>
-                      <span className="text-[11px] text-zinc-400">Any demo password</span>
+                      <span className="text-[10px] text-zinc-400">Any demo password</span>
                     </div>
                     <div className="relative">
-                      <Lock className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <Lock className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
                       <input
                         type={showPassword ? 'text' : 'password'}
                         value={signInPassword}
                         onChange={(e) => setSignInPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full pl-11 pr-11 py-3 bg-zinc-50/80 border border-zinc-200 rounded-xl text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:bg-white focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition shadow-2xs"
+                        className="w-full pl-9 pr-9 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 p-1.5 rounded-lg"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 p-1"
                       >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                       </button>
                     </div>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-3.5 px-4 bg-zinc-950 hover:bg-zinc-800 text-white font-semibold rounded-xl transition shadow-xs flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer mt-2"
+                    className="w-full py-2.5 px-4 bg-zinc-950 hover:bg-zinc-800 text-white font-medium rounded-md transition shadow-xs flex items-center justify-center gap-2 text-xs cursor-pointer mt-2"
                   >
-                    <span>Sign In to Platform</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span>Sign In</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </button>
 
-                  <div className="pt-2 text-center">
+                  <div className="pt-1 text-center">
                     <button
                       type="button"
                       onClick={onBrowseAsGuest}
-                      className="text-xs text-zinc-500 hover:text-zinc-900 transition font-medium cursor-pointer"
+                      className="text-xs text-zinc-400 hover:text-zinc-900 transition font-medium cursor-pointer"
                     >
                       Continue browsing events as Guest &rarr;
                     </button>
@@ -361,113 +343,113 @@ export const AuthView: React.FC<AuthViewProps> = ({
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.18, ease: 'easeOut' }}
                   onSubmit={handleSignUpSubmit}
-                  className="space-y-5 w-full"
+                  className="space-y-4 w-full"
                 >
                   {signUpError && (
-                    <div className="p-3.5 sm:p-4 bg-rose-50 border border-rose-200/80 text-rose-700 rounded-xl text-xs font-medium">
+                    <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-xs font-medium">
                       {signUpError}
                     </div>
                   )}
 
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-semibold text-zinc-700">
+                  <div className="space-y-1">
+                    <label className="block text-xs font-medium text-zinc-700">
                       Full Name <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
-                      <UserIcon className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                      <UserIcon className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
                       <input
                         type="text"
                         required
                         value={signUpName}
                         onChange={(e) => setSignUpName(e.target.value)}
                         placeholder="e.g. Chan Dara"
-                        className="w-full pl-11 pr-4 py-3 bg-zinc-50/80 border border-zinc-200 rounded-xl text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:bg-white focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition shadow-2xs"
+                        className="w-full pl-9 pr-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
                       />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-semibold text-zinc-700">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="block text-xs font-medium text-zinc-700">
                         Email Address <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative">
-                        <Mail className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <Mail className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
                         <input
                           type="email"
                           required
                           value={signUpEmail}
                           onChange={(e) => setSignUpEmail(e.target.value)}
                           placeholder="chandara@gmail.com"
-                          className="w-full pl-11 pr-4 py-3 bg-zinc-50/80 border border-zinc-200 rounded-xl text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:bg-white focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition shadow-2xs"
+                          className="w-full pl-9 pr-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
                         />
                       </div>
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-semibold text-zinc-700">
+                    <div className="space-y-1">
+                      <label className="block text-xs font-medium text-zinc-700">
                         Phone Number <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative">
-                        <Phone className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <Phone className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
                         <input
                           type="tel"
                           required
                           value={signUpPhone}
                           onChange={(e) => setSignUpPhone(e.target.value)}
                           placeholder="012 345 678"
-                          className="w-full pl-11 pr-4 py-3 bg-zinc-50/80 border border-zinc-200 rounded-xl text-xs sm:text-sm font-mono text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:bg-white focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition shadow-2xs"
+                          className="w-full pl-9 pr-3 py-2 bg-white border border-zinc-200 rounded-md text-xs font-mono text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Password & Confirm Password */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-semibold text-zinc-700">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="block text-xs font-medium text-zinc-700">
                         Create Password <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative">
-                        <Lock className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <Lock className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
                         <input
                           type={showSignUpPassword ? 'text' : 'password'}
                           required
                           value={signUpPassword}
                           onChange={(e) => setSignUpPassword(e.target.value)}
                           placeholder="Min. 6 characters"
-                          className="w-full pl-11 pr-11 py-3 bg-zinc-50/80 border border-zinc-200 rounded-xl text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:bg-white focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition shadow-2xs"
+                          className="w-full pl-9 pr-9 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
                         />
                         <button
                           type="button"
                           onClick={() => setShowSignUpPassword(!showSignUpPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 p-1.5 rounded-lg"
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 p-1"
                         >
-                          {showSignUpPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          {showSignUpPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                         </button>
                       </div>
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-semibold text-zinc-700">
+                    <div className="space-y-1">
+                      <label className="block text-xs font-medium text-zinc-700">
                         Confirm Password <span className="text-rose-500">*</span>
                       </label>
                       <div className="relative">
-                        <Lock className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <Lock className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
                         <input
                           type={showSignUpConfirmPassword ? 'text' : 'password'}
                           required
                           value={signUpConfirmPassword}
                           onChange={(e) => setSignUpConfirmPassword(e.target.value)}
                           placeholder="Re-enter password"
-                          className="w-full pl-11 pr-11 py-3 bg-zinc-50/80 border border-zinc-200 rounded-xl text-xs sm:text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:bg-white focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition shadow-2xs"
+                          className="w-full pl-9 pr-9 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
                         />
                         <button
                           type="button"
                           onClick={() => setShowSignUpConfirmPassword(!showSignUpConfirmPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 p-1.5 rounded-lg"
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 p-1"
                         >
-                          {showSignUpConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          {showSignUpConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                         </button>
                       </div>
                     </div>
@@ -475,17 +457,17 @@ export const AuthView: React.FC<AuthViewProps> = ({
 
                   <button
                     type="submit"
-                    className="w-full py-3.5 px-4 bg-zinc-950 hover:bg-zinc-800 text-white font-semibold rounded-xl transition shadow-xs flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer mt-2"
+                    className="w-full py-2.5 px-4 bg-zinc-950 hover:bg-zinc-800 text-white font-medium rounded-md transition shadow-xs flex items-center justify-center gap-2 text-xs cursor-pointer mt-2"
                   >
-                    <UserCheck className="w-4 h-4" />
-                    <span>Create Account & Sign In</span>
+                    <UserCheck className="w-3.5 h-3.5" />
+                    <span>Create Account</span>
                   </button>
 
-                  <div className="pt-2 text-center">
+                  <div className="pt-1 text-center">
                     <button
                       type="button"
                       onClick={onBrowseAsGuest}
-                      className="text-xs text-zinc-500 hover:text-zinc-900 transition font-medium cursor-pointer"
+                      className="text-xs text-zinc-400 hover:text-zinc-900 transition font-medium cursor-pointer"
                     >
                       Continue browsing events as Guest &rarr;
                     </button>
@@ -496,124 +478,86 @@ export const AuthView: React.FC<AuthViewProps> = ({
           </motion.div>
         </div>
 
-        {/* Right Column: Demo Personas (Moved from Navbar) */}
+        {/* Right Column: Demo Personas */}
         <div className="lg:col-span-6 space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              <h3 className="font-bold text-sm text-zinc-900">
-                Interactive Demo Personas
-              </h3>
-            </div>
-            <span className="text-[11px] text-zinc-400 font-medium">
-              One-click instant login
+            <h3 className="font-semibold text-sm text-zinc-900">
+              Demo Accounts
+            </h3>
+            <span className="text-xs text-zinc-400">
+              Instant login
             </span>
           </div>
 
-          <p className="text-xs text-zinc-500 leading-relaxed">
-            Select any pre-configured test profile below to explore different roles and security scopes without typing passwords.
-          </p>
-
           {/* Demo Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3.5 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {users.map((persona) => {
               const isCurrent = currentUser.id === persona.id;
 
               const roleTag =
                 persona.role === 'ADMIN'
-                  ? 'Admin Console'
+                  ? 'Admin'
                   : persona.role === 'STAFF'
                   ? persona.staffRole === 'SENIOR_STAFF'
                     ? 'Senior Staff'
-                    : 'Staff Scanner'
-                  : 'Customer Wallet';
-
-              const roleBadgeColor =
-                persona.role === 'ADMIN'
-                  ? 'bg-zinc-900 text-white'
-                  : persona.role === 'STAFF'
-                  ? 'bg-amber-50 text-amber-800 border-amber-200'
-                  : 'bg-emerald-50 text-emerald-700 border-emerald-200';
-
-              const capabilities =
-                persona.role === 'ADMIN'
-                  ? 'Event listings, sales ratio charts, staff accounts, system audit'
-                  : persona.role === 'STAFF'
-                  ? 'Camera QR validation, check-in logs, walk-in box office sale'
-                  : 'Event catalog, instant multi-pass checkout, Apple Wallet passbook';
+                    : 'Staff'
+                  : 'Customer';
 
               return (
                 <div
                   key={persona.id}
-                  className={`bg-white rounded-2xl border p-5 space-y-3.5 transition flex flex-col justify-between ${
+                  className={`bg-white rounded-xl border p-4 space-y-3 transition flex flex-col justify-between ${
                     isCurrent
-                      ? 'border-zinc-900 ring-1 ring-zinc-900 shadow-sm'
-                      : 'border-zinc-200/80 hover:border-zinc-300 shadow-2xs'
+                      ? 'border-zinc-950 ring-1 ring-zinc-950'
+                      : 'border-zinc-200 hover:border-zinc-300'
                   }`}
                 >
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <img
-                          src={persona.avatar}
-                          alt={persona.name}
-                          className="w-10 h-10 rounded-full object-cover border border-zinc-200 shrink-0 shadow-2xs"
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <h4 className="font-semibold text-xs text-zinc-900 leading-tight truncate">
-                            {persona.name}
-                          </h4>
-                          <span
-                            className="text-[11px] text-zinc-400 font-mono truncate block mt-0.5"
-                            title={persona.email}
-                          >
-                            {persona.email}
-                          </span>
-                        </div>
+                  <div className="flex items-start justify-between gap-2.5">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                      <img
+                        src={persona.avatar}
+                        alt={persona.name}
+                        className="w-9 h-9 rounded-full object-cover border border-zinc-200 shrink-0"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-medium text-xs text-zinc-900 truncate">
+                          {persona.name}
+                        </h4>
+                        <span
+                          className="text-[11px] text-zinc-400 truncate block"
+                          title={persona.email}
+                        >
+                          {persona.email}
+                        </span>
                       </div>
-
-                      <span
-                        className={`shrink-0 px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold border whitespace-nowrap self-start ${roleBadgeColor}`}
-                      >
-                        {roleTag}
-                      </span>
                     </div>
 
-                    <p className="text-[11px] text-zinc-500 leading-relaxed">
-                      {capabilities}
-                    </p>
+                    <span className="shrink-0 px-2 py-0.5 rounded text-[10px] font-mono text-zinc-600 bg-zinc-100 border border-zinc-200">
+                      {roleTag}
+                    </span>
                   </div>
 
-                  <div className="pt-2.5 border-t border-zinc-100 flex items-center justify-between gap-2">
+                  <div className="pt-2 border-t border-zinc-100 flex items-center justify-between gap-2">
                     <button
                       type="button"
                       onClick={() => handleAutofillPersona(persona)}
-                      className="text-[11px] text-zinc-400 hover:text-zinc-700 font-medium cursor-pointer transition py-1"
-                      title="Fill email into sign in form"
+                      className="text-[11px] text-zinc-400 hover:text-zinc-700 transition cursor-pointer"
                     >
-                      Fill Form
+                      Autofill
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleSelectDemoPersona(persona)}
-                      className="py-2 px-3.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                      className="py-1.5 px-3 bg-zinc-950 hover:bg-zinc-800 text-white rounded-md text-xs font-medium transition cursor-pointer"
                     >
                       <span>Sign In</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
               );
             })}
-          </div>
-
-          <div className="p-4 sm:p-5 bg-zinc-100/70 border border-zinc-200/80 rounded-2xl text-xs text-zinc-600 flex items-start gap-3">
-            <Layers className="w-4 h-4 text-zinc-500 shrink-0 mt-0.5" />
-            <p className="text-[11px] leading-relaxed">
-              <strong>Tip:</strong> You can switch roles at any time from this page. Role-based security routes will automatically adjust based on whether you are signed in as an Attendee, Staff Checkpoint, or Admin.
-            </p>
           </div>
         </div>
       </div>

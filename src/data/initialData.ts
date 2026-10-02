@@ -500,7 +500,7 @@ export const INITIAL_TICKETS: Ticket[] = [
     ticketTypeName: 'Standard Seat',
     price: 8,
     qrToken: 'TKT-2026-000932-SECURE-WALKIN-CASH',
-    status: 'VALID',
+    status: 'EXPIRED',
     createdAt: '2026-09-28T16:30:00Z',
   }
 ];

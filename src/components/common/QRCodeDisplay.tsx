@@ -42,7 +42,7 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
   if (error) {
     return (
       <div
-        className={`flex items-center justify-center bg-zinc-100 text-zinc-400 text-xs rounded-2xl p-4 text-center ${className}`}
+        className={`flex items-center justify-center bg-zinc-100 text-zinc-400 text-xs rounded-lg p-4 text-center ${className}`}
         style={{ width: size, height: size }}
       >
         QR Error
@@ -53,24 +53,24 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
   if (!dataUrl) {
     return (
       <div
-        className={`flex items-center justify-center bg-zinc-50 animate-pulse rounded-2xl ${className}`}
+        className={`flex items-center justify-center bg-zinc-50 rounded-lg border border-zinc-200 ${className}`}
         style={{ width: size, height: size }}
       >
-        <div className="w-6 h-6 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
     <div
-      className={`relative inline-block bg-white p-2.5 rounded-2xl border border-zinc-200/80 shadow-2xs ${className}`}
+      className={`relative inline-block bg-white p-2.5 rounded-lg border border-zinc-200/90 shadow-xs ${className}`}
     >
       <img
         src={dataUrl}
         alt="Admission QR Code"
         width={size}
         height={size}
-        className="block rounded-xl"
+        className="block rounded-md"
         referrerPolicy="no-referrer"
       />
     </div>

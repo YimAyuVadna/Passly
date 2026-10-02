@@ -8,14 +8,10 @@ import {
   XCircle,
   Clock,
   Ticket as TicketIcon,
-  TrendingUp,
-  DollarSign,
   QrCode,
-  Sliders,
   Tag,
   Edit3,
   Plus,
-  Bot,
 } from 'lucide-react';
 import { Ticket } from '../../types';
 import { useTicketContext } from '../../context/TicketContext';
@@ -87,41 +83,38 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Staff Operational Header */}
-      <div className="bg-zinc-950 rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden border border-zinc-800 shadow-sm">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-white rounded-2xl p-6 sm:p-8 border border-zinc-200 shadow-xs">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <div className="flex items-center gap-2 mb-2.5">
-              <span className="px-2.5 py-1 bg-white/10 border border-white/10 text-zinc-300 rounded-lg text-[11px] font-mono uppercase tracking-wider">
-                Staff Operations
-              </span>
-              <span className="text-xs text-zinc-400">
-                Operator: <strong className="text-white font-medium">{currentUser.name}</strong>
-              </span>
+            <div className="flex items-center gap-2 mb-1.5 text-xs text-zinc-400">
+              <span className="font-mono uppercase tracking-wider text-[11px]">Staff Portal</span>
+              <span>•</span>
+              <span>Operator: <strong className="text-zinc-900 font-medium">{currentUser.name}</strong></span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-900">
               Gate Checkpoint & Box Office
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-xl">
-              Real-time ticket scanning, validation log tracking, and customer assisted checkout.
+            <p className="text-xs sm:text-sm text-zinc-500 mt-1 max-w-xl">
+              Ticket scanning, entrance logs, and customer assisted checkout.
             </p>
           </div>
 
-          {/* Core Action Buttons */}
-          <div className="flex flex-wrap items-center gap-3">
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2.5">
             <button
               onClick={onOpenScanner}
-              className="px-4 sm:px-5 py-2.5 sm:py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-xl transition shadow-xs flex items-center gap-2 text-xs sm:text-sm cursor-pointer"
+              className="px-4 py-2.5 bg-zinc-950 hover:bg-zinc-800 text-white font-medium rounded-lg transition flex items-center gap-2 text-xs cursor-pointer shadow-xs"
             >
-              <Camera className="w-4 h-4" />
-              <span>Scan Ticket (Camera)</span>
+              <Camera className="w-4 h-4 text-zinc-300" />
+              <span>Scan Pass</span>
             </button>
 
             <button
               onClick={onOpenAssistedPurchase}
-              className="px-4 sm:px-5 py-2.5 sm:py-3 bg-white hover:bg-zinc-100 text-zinc-950 font-semibold rounded-xl transition shadow-xs flex items-center gap-2 text-xs sm:text-sm cursor-pointer"
+              className="px-4 py-2.5 bg-white hover:bg-zinc-50 text-zinc-800 font-medium rounded-lg border border-zinc-200 transition flex items-center gap-2 text-xs cursor-pointer shadow-xs"
             >
-              <ShoppingBag className="w-4 h-4 text-zinc-900" />
-              <span>Buy For Customer</span>
+              <ShoppingBag className="w-4 h-4 text-zinc-600" />
+              <span>Assisted Sale</span>
             </button>
           </div>
         </div>
@@ -129,39 +122,34 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
 
       {/* Senior Staff Merchandising & Storefront Controls */}
       {isSeniorStaff && (
-        <div className="bg-white rounded-2xl border border-zinc-200/80 p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center shrink-0">
-              <Sliders className="w-5 h-5" />
+        <div className="bg-white rounded-xl border border-zinc-200 p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-zinc-900">Storefront Controls</h3>
+              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-zinc-100 text-zinc-700">Senior Staff / Admin</span>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-semibold text-zinc-900">Storefront & Merchandising Controls</h3>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-purple-100 text-purple-700">Senior Staff / Admin</span>
-              </div>
-              <p className="text-xs text-zinc-500 mt-0.5">
-                Manage the public homepage hero banner, headlines, and catalog event categories.
-              </p>
-            </div>
+            <p className="text-xs text-zinc-500 mt-0.5">
+              Manage homepage hero spotlight and event categories.
+            </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => setIsCreateEventModalOpen(true)}
-              className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-medium transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-3 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-md text-xs font-medium transition flex items-center gap-1.5 cursor-pointer shadow-xs"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Create Event</span>
             </button>
             <button
               onClick={() => setIsHeroModalOpen(true)}
-              className="px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-medium transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-3 py-1.5 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-200 rounded-md text-xs font-medium transition flex items-center gap-1.5 cursor-pointer"
             >
-              <Edit3 className="w-3.5 h-3.5" />
-              <span>Edit Hero Banner</span>
+              <Edit3 className="w-3.5 h-3.5 text-zinc-500" />
+              <span>Hero Banner</span>
             </button>
             <button
               onClick={() => setIsCategoryModalOpen(true)}
-              className="px-3.5 py-2 bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-200 rounded-xl text-xs font-medium transition flex items-center gap-1.5 cursor-pointer"
+              className="px-3 py-1.5 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-200 rounded-md text-xs font-medium transition flex items-center gap-1.5 cursor-pointer"
             >
               <Tag className="w-3.5 h-3.5 text-zinc-500" />
               <span>Categories</span>
@@ -170,103 +158,86 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
         </div>
       )}
 
-      {/* Machine Learning Phase 4: Pass Distribution Intelligence Card */}
-      <div className="bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 rounded-2xl border border-zinc-800 p-5 shadow-xs text-white">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center shrink-0">
-              <Bot className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-semibold text-white">Machine Learning Pass Intelligence</h3>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-sky-500/20 text-sky-300 border border-sky-500/30">
-                  DecisionTree ML #1
-                </span>
-              </div>
-              <p className="text-xs text-zinc-400 mt-0.5">
-                Real-time supervised classification of scanned passes into Digital (Online) vs Physical (Counter Walk-in).
-              </p>
-            </div>
+      {/* Pass Distribution Statistics Card */}
+      <div className="bg-white rounded-xl border border-zinc-200 p-5 shadow-xs text-zinc-900">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-100 pb-3">
+          <div>
+            <h3 className="text-sm font-semibold text-zinc-900">Pass Verification Telemetry</h3>
+            <p className="text-xs text-zinc-500 mt-0.5">
+              Distribution of verified admissions: Digital Online vs Box Office Counter.
+            </p>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={onOpenScanner}
-              className="px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-3 py-1.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-md text-xs font-medium transition flex items-center gap-1.5 cursor-pointer"
             >
               <Camera className="w-3.5 h-3.5" />
-              <span>Launch AI Scanner</span>
+              <span>Scanner</span>
             </button>
           </div>
         </div>
 
         {/* Breakdown Statistics */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-4">
-          {/* Total Classified */}
-          <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-3.5">
+          <div className="bg-zinc-50 border border-zinc-100 rounded-lg p-3.5">
             <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider block">
-              AI-Classified Passes
+              Verified Passes
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-bold font-mono text-white">
+              <span className="text-2xl font-bold font-mono text-zinc-900">
                 {mlScanStats.totalScanned}
               </span>
-              <span className="text-[11px] text-zinc-500">total evaluated</span>
+              <span className="text-[11px] text-zinc-400">total scans</span>
             </div>
           </div>
 
-          {/* Digital Passes */}
-          <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-3.5">
+          <div className="bg-zinc-50 border border-zinc-100 rounded-lg p-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-medium text-sky-400 uppercase tracking-wider">
-                🖥️ Digital (Online)
+              <span className="text-[11px] font-medium text-zinc-600 uppercase tracking-wider">
+                Digital (Online)
               </span>
-              <span className="text-xs font-mono font-semibold text-sky-300">
+              <span className="text-xs font-mono font-semibold text-zinc-900">
                 {mlScanStats.digitalPercent}%
               </span>
             </div>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-bold font-mono text-sky-300">
+              <span className="text-2xl font-bold font-mono text-zinc-900">
                 {mlScanStats.digitalCount}
               </span>
-              <span className="text-[11px] text-zinc-500">passes</span>
+              <span className="text-[11px] text-zinc-400">passes</span>
             </div>
           </div>
 
-          {/* Physical Passes */}
-          <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-3.5">
+          <div className="bg-zinc-50 border border-zinc-100 rounded-lg p-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-medium text-amber-400 uppercase tracking-wider">
-                🎫 Physical (Walk-in)
+              <span className="text-[11px] font-medium text-zinc-600 uppercase tracking-wider">
+                Physical (Counter)
               </span>
-              <span className="text-xs font-mono font-semibold text-amber-300">
+              <span className="text-xs font-mono font-semibold text-zinc-900">
                 {mlScanStats.physicalPercent}%
               </span>
             </div>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-bold font-mono text-amber-300">
+              <span className="text-2xl font-bold font-mono text-zinc-900">
                 {mlScanStats.physicalCount}
               </span>
-              <span className="text-[11px] text-zinc-500">passes</span>
+              <span className="text-[11px] text-zinc-400">passes</span>
             </div>
           </div>
         </div>
 
-        {/* Visual Ratio Progress Bar */}
-        <div className="mt-4 pt-3 border-t border-zinc-800/60">
-          <div className="flex justify-between text-[11px] text-zinc-400 mb-1.5 font-mono">
-            <span>Digital: {mlScanStats.digitalCount} ({mlScanStats.digitalPercent}%)</span>
-            <span>Physical: {mlScanStats.physicalCount} ({mlScanStats.physicalPercent}%)</span>
-          </div>
-          <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden flex">
+        {/* Visual Progress Line */}
+        <div className="mt-4 pt-3 border-t border-zinc-100">
+          <div className="w-full h-1 bg-zinc-100 rounded-full overflow-hidden flex">
             <div
-              className="bg-sky-500 h-full transition-all duration-500"
+              className="bg-zinc-900 h-full transition-all duration-300"
               style={{ width: `${mlScanStats.totalScanned > 0 ? mlScanStats.digitalPercent : 50}%` }}
               title="Digital Ratio"
             />
             <div
-              className="bg-amber-500 h-full transition-all duration-500"
+              className="bg-zinc-300 h-full transition-all duration-300"
               style={{ width: `${mlScanStats.totalScanned > 0 ? mlScanStats.physicalPercent : 50}%` }}
               title="Physical Ratio"
             />
@@ -275,91 +246,69 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
       </div>
 
       {/* KPI Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-zinc-200/80 shadow-xs flex items-center justify-between">
-          <div>
-            <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider block">
-              Checked In (Used)
-            </span>
-            <span className="text-2xl sm:text-3xl font-bold text-zinc-900 font-mono mt-1 block">
-              {totalScanned}
-            </span>
-            <span className="text-[11px] text-emerald-600 font-medium">Verified at entrance</span>
-          </div>
-          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-            <CheckCircle2 className="w-5 h-5" />
-          </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="bg-white p-4 sm:p-5 rounded-xl border border-zinc-200 shadow-xs">
+          <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block">
+            Checked In
+          </span>
+          <span className="text-2xl sm:text-3xl font-semibold text-zinc-950 font-mono mt-1 block">
+            {totalScanned}
+          </span>
+          <span className="text-[11px] text-zinc-500">Verified at gate</span>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-zinc-200/80 shadow-xs flex items-center justify-between">
-          <div>
-            <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider block">
-              Active / Remaining
-            </span>
-            <span className="text-2xl sm:text-3xl font-bold text-zinc-900 font-mono mt-1 block">
-              {validRemaining}
-            </span>
-            <span className="text-[11px] text-zinc-400 font-medium">Pending entrance check-in</span>
-          </div>
-          <div className="w-11 h-11 rounded-xl bg-zinc-100 text-zinc-700 flex items-center justify-center">
-            <TicketIcon className="w-5 h-5" />
-          </div>
+        <div className="bg-white p-4 sm:p-5 rounded-xl border border-zinc-200 shadow-xs">
+          <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block">
+            Remaining
+          </span>
+          <span className="text-2xl sm:text-3xl font-semibold text-zinc-950 font-mono mt-1 block">
+            {validRemaining}
+          </span>
+          <span className="text-[11px] text-zinc-500">Pending entrance</span>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-zinc-200/80 shadow-xs flex items-center justify-between">
-          <div>
-            <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider block">
-              Tickets Sold
-            </span>
-            <span className="text-2xl sm:text-3xl font-bold text-zinc-900 font-mono mt-1 block">
-              {totalSoldToday}
-            </span>
-            <span className="text-[11px] text-zinc-400 font-medium">Across all events</span>
-          </div>
-          <div className="w-11 h-11 rounded-xl bg-zinc-100 text-zinc-700 flex items-center justify-center">
-            <TrendingUp className="w-5 h-5" />
-          </div>
+        <div className="bg-white p-4 sm:p-5 rounded-xl border border-zinc-200 shadow-xs">
+          <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block">
+            Tickets Sold
+          </span>
+          <span className="text-2xl sm:text-3xl font-semibold text-zinc-950 font-mono mt-1 block">
+            {totalSoldToday}
+          </span>
+          <span className="text-[11px] text-zinc-500">Total attendance volume</span>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-zinc-200/80 shadow-xs flex items-center justify-between">
-          <div>
-            <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider block">
-              Staff Assisted Sales
-            </span>
-            <span className="text-2xl sm:text-3xl font-bold text-zinc-900 font-mono mt-1 block">
-              ${totalStaffRevenue.toFixed(2)}
-            </span>
-            <span className="text-[11px] text-zinc-500 font-medium">
-              {staffSalesOrders.length} assisted orders
-            </span>
-          </div>
-          <div className="w-11 h-11 rounded-xl bg-zinc-100 text-zinc-800 flex items-center justify-center">
-            <DollarSign className="w-5 h-5" />
-          </div>
+        <div className="bg-white p-4 sm:p-5 rounded-xl border border-zinc-200 shadow-xs">
+          <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block">
+            Assisted Sales
+          </span>
+          <span className="text-2xl sm:text-3xl font-semibold text-zinc-950 font-mono mt-1 block">
+            ${totalStaffRevenue.toFixed(2)}
+          </span>
+          <span className="text-[11px] text-zinc-500">{staffSalesOrders.length} counter orders</span>
         </div>
       </div>
 
       {/* Manual Search & Fallback Validation */}
-      <div className="bg-white rounded-3xl p-6 border border-zinc-200/80 shadow-xs space-y-4">
+      <div className="bg-white rounded-xl p-5 sm:p-6 border border-zinc-200 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="font-semibold text-base text-zinc-900 flex items-center gap-2">
-              <Search className="w-4 h-4 text-zinc-600" />
-              Customer & Ticket Lookup / Manual Entry
+            <h3 className="font-semibold text-sm text-zinc-900 flex items-center gap-2">
+              <Search className="w-3.5 h-3.5 text-zinc-500" />
+              Ticket Lookup & Manual Check In
             </h3>
             <p className="text-xs text-zinc-400 mt-0.5">
               Search by Ticket Number, Order ID, Customer Name, Phone, or Email
             </p>
           </div>
 
-          <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <div className="relative w-full sm:w-72">
+            <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="e.g. TKT-2026, Dara, 012..."
-              className="w-full pl-9 pr-4 py-2 bg-zinc-50/80 border border-zinc-200 rounded-xl text-xs font-medium text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:bg-white focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition"
+              placeholder="Search ticket #, name, phone..."
+              className="w-full pl-8 pr-3 py-1.5 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
             />
           </div>
         </div>
@@ -384,18 +333,18 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
                 {matchedTickets.map((t) => (
                   <div
                     key={t.id}
-                    className="p-4 rounded-2xl border border-zinc-200/80 bg-zinc-50/40 hover:bg-white transition space-y-3"
+                    className="p-3.5 rounded-lg border border-zinc-200 bg-white space-y-3"
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <span className="font-mono text-xs font-semibold text-zinc-900">
+                        <span className="font-mono text-xs font-medium text-zinc-900">
                           {t.ticketNumber}
                         </span>
-                        <h4 className="font-semibold text-sm text-zinc-900 mt-0.5">{t.eventName}</h4>
-                        <p className="text-xs text-zinc-500">{t.ticketTypeName} • ${t.price.toFixed(2)}</p>
+                        <h4 className="font-medium text-xs text-zinc-900 mt-0.5">{t.eventName}</h4>
+                        <p className="text-[11px] text-zinc-500">{t.ticketTypeName} • ${t.price.toFixed(2)}</p>
                       </div>
                       <span
-                        className={`px-2 py-0.5 text-[11px] font-mono font-medium rounded-md ${
+                        className={`px-2 py-0.5 text-[10px] font-mono font-medium rounded ${
                           t.status === 'VALID'
                             ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                             : t.status === 'USED'
@@ -407,13 +356,13 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
                       </span>
                     </div>
 
-                    <div className="text-xs text-zinc-600 space-y-0.5 border-t border-zinc-200/60 pt-2.5">
+                    <div className="text-xs text-zinc-600 space-y-0.5 border-t border-zinc-100 pt-2 text-[11px]">
                       <p>
-                        <span className="text-zinc-400 font-medium">Customer:</span> {t.customerName}
+                        <span className="text-zinc-400">Customer:</span> {t.customerName}
                       </p>
                       <p>
-                        <span className="text-zinc-400 font-medium">Phone:</span> {t.customerPhone} •{' '}
-                        <span className="text-zinc-400 font-medium">Order:</span> {t.orderNumber}
+                        <span className="text-zinc-400">Phone:</span> {t.customerPhone} •{' '}
+                        <span className="text-zinc-400">Order:</span> {t.orderNumber}
                       </p>
                     </div>
 
@@ -421,14 +370,14 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
                       {t.status === 'VALID' && (
                         <button
                           onClick={() => handleManualValidate(t)}
-                          className="flex-1 py-2 px-3 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold transition cursor-pointer"
+                          className="flex-1 py-1.5 px-3 bg-zinc-950 hover:bg-zinc-800 text-white rounded-md text-xs font-medium transition cursor-pointer"
                         >
-                          Mark as Used (Check In)
+                          Check In
                         </button>
                       )}
                       <button
                         onClick={() => onSelectTicket(t)}
-                        className="py-2 px-3 bg-white border border-zinc-200 hover:bg-zinc-50 text-zinc-800 rounded-xl text-xs font-medium transition flex items-center gap-1.5 cursor-pointer"
+                        className="py-1.5 px-3 bg-white border border-zinc-200 hover:bg-zinc-50 text-zinc-800 rounded-md text-xs font-medium transition flex items-center gap-1.5 cursor-pointer"
                       >
                         <QrCode className="w-3.5 h-3.5 text-zinc-500" />
                         <span>View Pass</span>
@@ -438,7 +387,7 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-zinc-400 py-4 text-center bg-zinc-50/50 rounded-xl border border-zinc-200/60">
+              <p className="text-xs text-zinc-400 py-4 text-center bg-zinc-50 rounded-lg border border-zinc-200">
                 No tickets matching "{searchQuery}".
               </p>
             )}
@@ -447,24 +396,24 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
       </div>
 
       {/* Recent Scans History */}
-      <div className="bg-white rounded-3xl p-6 border border-zinc-200/80 shadow-xs space-y-4">
+      <div className="bg-white rounded-xl p-5 sm:p-6 border border-zinc-200 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="font-semibold text-base text-zinc-900 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-zinc-600" />
-              Real-time Scan History & Entrance Logs
+            <h3 className="font-semibold text-sm text-zinc-900 flex items-center gap-2">
+              <Clock className="w-3.5 h-3.5 text-zinc-500" />
+              Entrance Scan Logs
             </h3>
             <p className="text-xs text-zinc-400 mt-0.5">
-              Live audit trail of all entrance checkpoint QR validations
+              Live audit trail of gate ticket validations
             </p>
           </div>
 
-          <div className="flex items-center gap-1 bg-zinc-100 p-1 rounded-xl border border-zinc-200/50">
+          <div className="flex items-center gap-0.5 bg-zinc-100 p-0.5 rounded-md border border-zinc-200">
             {(['ALL', 'VALID', 'ALREADY_USED', 'INVALID'] as const).map((filter) => (
               <button
                 key={filter}
                 onClick={() => setFilterResult(filter)}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
+                className={`px-2.5 py-1 rounded text-xs font-medium transition cursor-pointer ${
                   filterResult === filter
                     ? 'bg-white text-zinc-900 shadow-xs font-semibold'
                     : 'text-zinc-500 hover:text-zinc-900'
@@ -477,35 +426,35 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
         </div>
 
         {/* Scans Table */}
-        <div className="overflow-x-auto rounded-2xl border border-zinc-200/80">
+        <div className="overflow-x-auto rounded-lg border border-zinc-200">
           <table className="w-full text-left text-xs text-zinc-600">
-            <thead className="bg-zinc-50 text-zinc-400 text-[11px] font-semibold uppercase tracking-wider border-b border-zinc-200/80">
+            <thead className="bg-zinc-50 text-zinc-400 text-[10px] font-mono uppercase tracking-wider border-b border-zinc-200">
               <tr>
-                <th className="px-4 py-3">Time</th>
-                <th className="px-4 py-3">Ticket / Code</th>
-                <th className="px-4 py-3">Event</th>
-                <th className="px-4 py-3">Attendee</th>
-                <th className="px-4 py-3">Staff Member</th>
-                <th className="px-4 py-3">Outcome</th>
+                <th className="px-3.5 py-2.5">Time</th>
+                <th className="px-3.5 py-2.5">Ticket</th>
+                <th className="px-3.5 py-2.5">Event</th>
+                <th className="px-3.5 py-2.5">Attendee</th>
+                <th className="px-3.5 py-2.5">Staff</th>
+                <th className="px-3.5 py-2.5">Outcome</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100 font-normal">
               {filteredScans.slice(0, 15).map((log) => (
                 <tr key={log.id} className="hover:bg-zinc-50/70 transition">
-                  <td className="px-4 py-3 font-mono text-zinc-500">
+                  <td className="px-3.5 py-2.5 font-mono text-zinc-400">
                     {new Date(log.scannedAt).toLocaleTimeString()}
                   </td>
-                  <td className="px-4 py-3 font-mono font-semibold text-zinc-900">
+                  <td className="px-3.5 py-2.5 font-mono font-medium text-zinc-900">
                     {log.ticketNumber || 'N/A'}
                   </td>
-                  <td className="px-4 py-3 truncate max-w-[160px] text-zinc-700">{log.eventName || 'General Entrance'}</td>
-                  <td className="px-4 py-3 font-medium text-zinc-900">
+                  <td className="px-3.5 py-2.5 truncate max-w-[160px] text-zinc-700">{log.eventName || 'General Entrance'}</td>
+                  <td className="px-3.5 py-2.5 text-zinc-900">
                     {log.customerName || 'Walk-in Guest'}
                   </td>
-                  <td className="px-4 py-3 text-zinc-600">{log.staffName}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-3.5 py-2.5 text-zinc-500">{log.staffName}</td>
+                  <td className="px-3.5 py-2.5">
                     <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md font-mono text-[11px] font-medium ${
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded font-mono text-[10px] font-medium ${
                         log.result === 'VALID'
                           ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                           : log.result === 'ALREADY_USED'
@@ -513,9 +462,6 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
                           : 'bg-rose-50 text-rose-700 border border-rose-200'
                       }`}
                     >
-                      {log.result === 'VALID' && <CheckCircle2 className="w-3 h-3" />}
-                      {log.result === 'ALREADY_USED' && <AlertTriangle className="w-3 h-3" />}
-                      {log.result === 'INVALID' && <XCircle className="w-3 h-3" />}
                       {log.result}
                     </span>
                   </td>

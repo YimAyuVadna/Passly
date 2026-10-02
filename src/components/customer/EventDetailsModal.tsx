@@ -57,37 +57,45 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4 overflow-y-auto">
-      <div className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl overflow-hidden text-zinc-900 border border-zinc-200/80 my-8 max-h-[90vh] flex flex-col">
-        {/* Floating Close Button */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 overflow-y-auto">
+      <div className="relative w-full max-w-xl bg-white rounded-xl shadow-xl overflow-hidden text-zinc-900 border border-zinc-200 my-8 max-h-[90vh] flex flex-col">
+        {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-zinc-950/60 hover:bg-zinc-950 text-white flex items-center justify-center transition backdrop-blur-md"
+          className="absolute top-3.5 right-3.5 z-20 w-7 h-7 rounded-md bg-white/90 hover:bg-white text-zinc-700 hover:text-zinc-950 border border-zinc-200/80 flex items-center justify-center transition cursor-pointer shadow-xs"
           aria-label="Close dialog"
         >
-          <X className="w-4 h-4" />
+          <X className="w-3.5 h-3.5" />
         </button>
 
         {/* Scrollable Modal Body */}
         <div className="overflow-y-auto flex-1">
-          {/* Header Banner */}
-          <div className="relative h-60 w-full bg-zinc-900 overflow-hidden">
+          {/* Crisp Framed Poster */}
+          <div className="relative aspect-[16/9] w-full bg-zinc-100 overflow-hidden border-b border-zinc-100">
             <img
               src={event.image}
               alt={event.name}
-              className="w-full h-full object-cover opacity-75"
+              className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+          </div>
 
-            <div className="absolute bottom-5 left-6 right-6 text-white space-y-1.5">
-              <span className="px-2.5 py-0.5 bg-white/20 backdrop-blur-md text-[11px] font-semibold rounded-full uppercase tracking-wider">
-                {event.category}
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
+          <div className="p-6 space-y-6">
+            {/* Title & Metadata */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs text-zinc-400">
+                <span className="font-mono uppercase text-[10px] text-zinc-700 bg-zinc-100 px-2 py-0.5 rounded">
+                  {event.category}
+                </span>
+                <span>•</span>
+                <span className="text-zinc-500">{event.organizer}</span>
+              </div>
+
+              <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-zinc-950 leading-snug">
                 {event.name}
               </h2>
-              <div className="flex items-center gap-3 text-xs text-zinc-300 flex-wrap font-medium pt-0.5">
+
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-zinc-500 pt-0.5">
                 <span className="flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 text-zinc-400" />
                   {event.date}
@@ -97,28 +105,22 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                   {event.startTime} - {event.endTime}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Building className="w-3.5 h-3.5 text-zinc-400" />
-                  {event.organizer}
+                  <MapPin className="w-3.5 h-3.5 text-zinc-400" />
+                  {event.location}
                 </span>
               </div>
             </div>
-          </div>
 
-          <div className="p-6 space-y-6">
-            {/* Location block */}
-            <div className="flex items-start gap-3 p-3.5 bg-zinc-50 rounded-2xl border border-zinc-200/60">
-              <div className="w-8 h-8 rounded-xl bg-white text-zinc-800 flex items-center justify-center shrink-0 border border-zinc-200/80 shadow-2xs">
-                <MapPin className="w-4 h-4" />
-              </div>
-              <div className="text-xs">
-                <h4 className="font-semibold text-zinc-900">{event.location}</h4>
-                <p className="text-zinc-500 mt-0.5">{event.address}</p>
-              </div>
+            {/* Location & Address */}
+            <div className="p-3 bg-zinc-50 rounded-lg border border-zinc-100 text-xs">
+              <span className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider block">Venue</span>
+              <p className="font-medium text-zinc-900 mt-0.5">{event.location}</p>
+              <p className="text-zinc-500 mt-0.5">{event.address}</p>
             </div>
 
             {/* Description */}
             <div className="space-y-1.5">
-              <h4 className="font-bold text-xs uppercase tracking-wider text-zinc-400">
+              <h4 className="font-medium text-xs uppercase tracking-wider text-zinc-400">
                 About Event
               </h4>
               <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed">
@@ -129,13 +131,13 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
             {/* Ticket Tier Selection */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-xs uppercase tracking-wider text-zinc-400">
+                <h4 className="font-medium text-xs uppercase tracking-wider text-zinc-400">
                   Select Admission Tier
                 </h4>
-                <span className="text-[11px] text-zinc-400 font-medium">Digital QR Pass</span>
+                <span className="text-[11px] text-zinc-400 font-mono">Digital QR Pass</span>
               </div>
 
-              <div className="grid gap-2.5">
+              <div className="grid gap-2">
                 {event.ticketTypes.map((type) => {
                   const left = type.quantity - type.sold;
                   const isSold = left <= 0;
@@ -145,27 +147,27 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                     <div
                       key={type.id}
                       onClick={() => !isSold && setSelectedTypeId(type.id)}
-                      className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                      className={`p-3.5 rounded-lg border transition-colors cursor-pointer flex items-center justify-between ${
                         isSelected
-                          ? 'border-zinc-900 bg-zinc-50/80 shadow-2xs'
+                          ? 'border-zinc-950 bg-zinc-50/50'
                           : isSold
-                          ? 'border-zinc-200 bg-zinc-50/50 opacity-50 cursor-not-allowed'
-                          : 'border-zinc-200/80 hover:border-zinc-300 bg-white'
+                          ? 'border-zinc-200 bg-zinc-50/50 opacity-40 cursor-not-allowed'
+                          : 'border-zinc-200 hover:border-zinc-300 bg-white'
                       }`}
                     >
-                      <div className="space-y-1 pr-4">
+                      <div className="space-y-0.5 pr-4">
                         <div className="flex items-center gap-2">
                           <div
-                            className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                              isSelected ? 'border-zinc-900 bg-zinc-900 text-white' : 'border-zinc-300'
+                            className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
+                              isSelected ? 'border-zinc-950 bg-zinc-950 text-white' : 'border-zinc-300'
                             }`}
                           >
-                            {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                            {isSelected && <Check className="w-2 h-2 stroke-[3]" />}
                           </div>
-                          <span className="font-semibold text-sm text-zinc-900">{type.name}</span>
+                          <span className="font-semibold text-xs text-zinc-950">{type.name}</span>
                         </div>
-                        <p className="text-xs text-zinc-500 pl-6">{type.description}</p>
-                        <div className="text-[11px] text-zinc-400 pl-6">
+                        <p className="text-xs text-zinc-500 pl-5">{type.description}</p>
+                        <div className="text-[11px] text-zinc-400 pl-5">
                           {isSold ? (
                             <span className="text-rose-600 font-medium">Sold Out</span>
                           ) : (
@@ -175,10 +177,10 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                       </div>
 
                       <div className="text-right shrink-0">
-                        <span className="text-base font-extrabold text-zinc-900 font-mono block">
+                        <span className="text-sm font-bold text-zinc-900 font-mono block">
                           ${type.price.toFixed(2)}
                         </span>
-                        <span className="text-[10px] text-zinc-400 uppercase tracking-wider">each</span>
+                        <span className="text-[10px] text-zinc-400 font-sans">each</span>
                       </div>
                     </div>
                   );
@@ -188,29 +190,29 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
 
             {/* Quantity Stepper */}
             {isAvailable && (
-              <div className="p-3.5 bg-zinc-50 rounded-2xl border border-zinc-200/70 flex items-center justify-between">
+              <div className="p-3 bg-zinc-50 rounded-lg border border-zinc-100 flex items-center justify-between">
                 <div>
-                  <span className="font-semibold text-xs text-zinc-800 block">Quantity</span>
+                  <span className="font-medium text-xs text-zinc-800 block">Quantity</span>
                   <span className="text-[11px] text-zinc-400">Up to 10 passes</span>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <button
                     onClick={handleDecrement}
                     disabled={quantity <= 1}
-                    className="w-8 h-8 rounded-full bg-white border border-zinc-200 flex items-center justify-center text-zinc-700 hover:bg-zinc-100 disabled:opacity-40 transition shadow-2xs"
+                    className="w-7 h-7 rounded-md bg-white border border-zinc-200 flex items-center justify-center text-zinc-700 hover:bg-zinc-100 disabled:opacity-40 transition cursor-pointer"
                   >
-                    <Minus className="w-3.5 h-3.5" />
+                    <Minus className="w-3 h-3" />
                   </button>
-                  <span className="w-6 text-center font-bold text-sm text-zinc-900 font-mono">
+                  <span className="w-6 text-center font-semibold text-xs text-zinc-900 font-mono">
                     {quantity}
                   </span>
                   <button
                     onClick={handleIncrement}
                     disabled={quantity >= Math.min(remaining, 10)}
-                    className="w-8 h-8 rounded-full bg-white border border-zinc-200 flex items-center justify-center text-zinc-700 hover:bg-zinc-100 disabled:opacity-40 transition shadow-2xs"
+                    className="w-7 h-7 rounded-md bg-white border border-zinc-200 flex items-center justify-center text-zinc-700 hover:bg-zinc-100 disabled:opacity-40 transition cursor-pointer"
                   >
-                    <Plus className="w-3.5 h-3.5" />
+                    <Plus className="w-3 h-3" />
                   </button>
                 </div>
               </div>
@@ -219,7 +221,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
             {/* Admission Rules */}
             {event.rules && event.rules.length > 0 && (
               <div className="border-t border-zinc-100 pt-4 space-y-2">
-                <h4 className="font-bold text-[11px] uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                <h4 className="font-medium text-[11px] uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
                   <ShieldCheck className="w-3.5 h-3.5 text-zinc-400" />
                   Admission Rules
                 </h4>
@@ -234,12 +236,12 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
         </div>
 
         {/* Footer Checkout Bar */}
-        <div className="p-4 sm:p-5 bg-white border-t border-zinc-200/80 flex items-center justify-between gap-4">
+        <div className="p-4 bg-white border-t border-zinc-200/80 flex items-center justify-between gap-4">
           <div>
             <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-medium">
               Total Due
             </span>
-            <span className="text-xl font-black text-zinc-900 font-mono">
+            <span className="text-lg font-bold text-zinc-900 font-mono">
               ${subtotal.toFixed(2)}
             </span>
           </div>
@@ -248,7 +250,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
             <button
               onClick={handleCheckout}
               disabled={!isAvailable}
-              className="px-6 py-2.5 bg-zinc-900 hover:bg-zinc-800 disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-semibold rounded-full shadow-xs transition-all text-xs flex items-center gap-1.5 cursor-pointer"
+              className="px-5 py-2.5 bg-zinc-950 hover:bg-zinc-800 disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-medium rounded-lg shadow-xs transition-colors text-xs flex items-center gap-1.5 cursor-pointer"
             >
               <span>Continue to Checkout</span>
             </button>
@@ -257,7 +259,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
               <button
                 onClick={handleCheckout}
                 disabled={!isAvailable}
-                className="px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-semibold rounded-full shadow-xs transition-all text-xs flex items-center gap-1.5 cursor-pointer"
+                className="px-5 py-2.5 bg-zinc-950 hover:bg-zinc-800 disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-medium rounded-lg shadow-xs transition-colors text-xs flex items-center gap-1.5 cursor-pointer"
               >
                 <LogIn className="w-3.5 h-3.5" />
                 <span>Sign In to Book</span>

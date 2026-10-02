@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, MapPin, ArrowRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { EventItem } from '../../types';
 
 interface EventCardProps {
@@ -12,85 +12,72 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onSelect }) => {
   const totalAvailable = event.ticketTypes.reduce((acc, t) => acc + (t.quantity - t.sold), 0);
   const isSoldOut = totalAvailable <= 0;
 
+  // Format clean date
+  const formatDate = (dateStr: string) => {
+    try {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      }
+    } catch {
+      // Fallback
+    }
+    return dateStr;
+  };
+
   return (
     <article
       onClick={() => onSelect(event)}
-      className="group bg-white rounded-2xl border border-zinc-200/80 overflow-hidden hover:border-zinc-300 hover:shadow-md transition-all duration-300 flex flex-col h-full cursor-pointer"
+      className="group flex flex-col cursor-pointer transition-all duration-200"
     >
-      {/* Banner Image */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-zinc-100">
+      {/* Clean Poster Image */}
+      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-zinc-100 border border-zinc-200/80 mb-3">
         <img
           src={event.image}
           alt={event.name}
-          className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
+          className="w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-300 ease-out"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute top-3 left-3">
-          <span className="px-2.5 py-1 text-[11px] font-medium rounded-full bg-zinc-950/70 backdrop-blur-md text-white border border-white/15">
-            {event.category}
-          </span>
-        </div>
-        <div className="absolute top-3 right-3">
-          {isSoldOut ? (
-            <span className="px-2.5 py-1 text-[11px] font-semibold rounded-full bg-rose-500/90 backdrop-blur-md text-white shadow-xs">
+        {isSoldOut && (
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+            <span className="text-[11px] font-medium text-white uppercase tracking-wider px-2.5 py-1 bg-black/80 rounded-md">
               Sold Out
             </span>
-          ) : (
-            <span className="px-2.5 py-1 text-[11px] font-medium rounded-full bg-white/90 backdrop-blur-md text-zinc-900 border border-zinc-200/60 shadow-2xs">
-              {totalAvailable} left
-            </span>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
-      {/* Content */}
-      <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-4">
-        <div className="space-y-2">
-          <h3 className="font-bold text-base text-zinc-900 line-clamp-1 group-hover:text-zinc-700 transition-colors">
+      {/* Clean Content */}
+      <div className="space-y-1 flex-1 flex flex-col justify-between">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-xs text-zinc-400">
+            <span>{formatDate(event.date)}</span>
+            <span>•</span>
+            <span>{event.startTime}</span>
+            <span>•</span>
+            <span className="text-zinc-600">{event.category}</span>
+          </div>
+
+          <h3 className="font-semibold text-base text-zinc-900 group-hover:text-zinc-600 transition-colors tracking-tight line-clamp-1">
             {event.name}
           </h3>
 
-          <div className="space-y-1 text-xs text-zinc-500 font-medium">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-              <span>{event.date}</span>
-              <span className="text-zinc-300">•</span>
-              <Clock className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-              <span>{event.startTime}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-              <span className="truncate">{event.location}</span>
-            </div>
-          </div>
-
-          <p className="text-xs text-zinc-500 line-clamp-2 leading-relaxed pt-1">
-            {event.description}
+          <p className="text-xs text-zinc-500 line-clamp-1">
+            {event.location}
           </p>
         </div>
 
-        {/* Price & Action */}
-        <div className="pt-3 border-t border-zinc-100 flex items-center justify-between">
-          <div>
-            <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider block">
-              From
-            </span>
-            <span className="text-base font-extrabold text-zinc-900 font-mono">
-              ${minPrice.toFixed(2)}
-            </span>
-          </div>
+        {/* Minimal Price & Arrow */}
+        <div className="pt-2 flex items-center justify-between text-xs">
+          <span className="font-mono text-zinc-900 font-medium">
+            From ${minPrice.toFixed(2)}
+          </span>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect(event);
-            }}
-            className="px-3.5 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-full text-xs font-medium transition-all flex items-center gap-1 shadow-xs group-hover:scale-[1.02]"
-          >
-            <span>Details</span>
-            <ArrowRight className="w-3 h-3" />
-          </button>
+          <span className="text-zinc-400 group-hover:text-zinc-900 flex items-center gap-0.5 transition-colors">
+            <span>Tickets</span>
+            <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+          </span>
         </div>
       </div>
     </article>
