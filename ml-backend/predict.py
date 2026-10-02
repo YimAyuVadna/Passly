@@ -48,31 +48,71 @@ def predict_ticket_type(order_data: dict, model_bundle: dict = None) -> dict:
     payment_map = model_bundle.get("payment_method_map", {})
     tier_map = model_bundle.get("ticket_tier_map", {})
 
+    # Flexible mapping dictionaries
+    payment_map = {
+        "CASH": 0,
+        "COUNTER": 1,
+        "QR_PAYMENT": 1,
+        "CARD": 2,
+        "ABA": 3,
+        "ONLINE": 3,
+        **model_bundle.get("payment_method_map", {})
+    }
+    tier_map = {
+        "GA": 0,
+        "GENERAL": 0,
+        "STANDARD": 0,
+        "STUDENT": 0,
+        "EARLY_BIRD": 1,
+        "REGULAR": 1,
+        "VIP": 2,
+        "PREMIUM": 2,
+        "EXECUTIVE": 2,
+        **model_bundle.get("ticket_tier_map", {})
+    }
+    day_map = {
+        "MONDAY": 0, "TUESDAY": 1, "WEDNESDAY": 2, "THURSDAY": 3,
+        "FRIDAY": 4, "SATURDAY": 5, "SUNDAY": 6
+    }
+
     # 1. Preprocess categorical values to numeric formats (Point 10)
-    raw_payment = order_data.get("payment_method", 0)
+    raw_payment = order_data.get("payment_method", order_data.get("paymentMethod", 0))
     if isinstance(raw_payment, str):
         payment_method = payment_map.get(raw_payment.upper(), 0)
     else:
         payment_method = int(raw_payment)
 
-    raw_tier = order_data.get("ticket_tier", 0)
+    raw_tier = order_data.get("ticket_tier", order_data.get("ticketTier", 0))
     if isinstance(raw_tier, str):
-        ticket_tier = tier_map.get(raw_tier.upper(), 0)
+        # Check if tier string contains keywords
+        upper_tier = raw_tier.upper()
+        if "VIP" in upper_tier or "PREMIUM" in upper_tier or "EXECUTIVE" in upper_tier:
+            ticket_tier = 2
+        elif "EARLY" in upper_tier or "REGULAR" in upper_tier:
+            ticket_tier = 1
+        else:
+            ticket_tier = tier_map.get(upper_tier, 0)
     else:
         ticket_tier = int(raw_tier)
 
-    raw_notes = order_data.get("has_notes", 0)
+    raw_notes = order_data.get("has_notes", order_data.get("hasNotes", 0))
     if isinstance(raw_notes, str):
         has_notes = 1 if raw_notes.strip().lower() in ["1", "true", "yes"] else 0
     else:
         has_notes = 1 if bool(raw_notes) else 0
 
-    unit_price = float(order_data.get("unit_price", 15.0))
+    unit_price = float(order_data.get("unit_price", order_data.get("unitPrice", 15.0)))
     quantity = int(order_data.get("quantity", 1))
-    total_amount = float(order_data.get("total_amount", unit_price * quantity))
-    hour_of_purchase = int(order_data.get("hour_of_purchase", 12))
-    day_of_week = int(order_data.get("day_of_week", 0))
-    time_since_purchase_hours = float(order_data.get("time_since_purchase_hours", 24.0))
+    total_amount = float(order_data.get("total_amount", order_data.get("totalAmount", unit_price * quantity)))
+    hour_of_purchase = int(order_data.get("hour_of_purchase", order_data.get("hourOfPurchase", 12)))
+
+    raw_day = order_data.get("day_of_week", order_data.get("dayOfWeek", 0))
+    if isinstance(raw_day, str):
+        day_of_week = day_map.get(raw_day.upper(), 0)
+    else:
+        day_of_week = int(raw_day)
+
+    time_since_purchase_hours = float(order_data.get("time_since_purchase_hours", order_data.get("timeSincePurchaseHours", 24.0)))
 
     # 2. Build feature dictionary ordered exactly by feature_columns (Point 8)
     row = {
@@ -93,9 +133,17 @@ def predict_ticket_type(order_data: dict, model_bundle: dict = None) -> dict:
     pred_class_id = int(model.predict(df_input)[0])
     pred_label = label_map.get(pred_class_id, "UNKNOWN")
 
+    # Calculate confidence probability
+    try:
+        probabilities = model.predict_proba(df_input)[0]
+        confidence = round(float(max(probabilities)), 4)
+    except Exception:
+        confidence = 0.95
+
     return {
         "prediction_code": pred_class_id,
         "ticket_type": pred_label,
+        "confidence": confidence,
         "input_features": row,
     }
 

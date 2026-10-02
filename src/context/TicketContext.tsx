@@ -13,6 +13,8 @@ import {
   TicketStatus,
   ScanResultStatus,
   HeroBannerConfig,
+  MLTicketType,
+  MLScanStats,
 } from '../types';
 import {
   INITIAL_USERS,
@@ -22,6 +24,14 @@ import {
   INITIAL_SCAN_LOGS,
   INITIAL_AUDIT_LOGS,
 } from '../data/initialData';
+
+export const INITIAL_ML_STATS: MLScanStats = {
+  totalScanned: 0,
+  digitalCount: 0,
+  physicalCount: 0,
+  digitalPercent: 0,
+  physicalPercent: 0,
+};
 
 interface PurchaseParams {
   event: EventItem;
@@ -36,6 +46,7 @@ interface PurchaseParams {
   paymentMethod: PaymentMethod;
   source: OrderSource;
   staffCreator?: User;
+  customCreatedAt?: string;
 }
 
 export interface ValidationResponse {
@@ -86,6 +97,9 @@ interface TicketContextType {
   auditLogs: AuditLog[];
   heroBanner: HeroBannerConfig;
   categories: string[];
+  mlScanStats: MLScanStats;
+  getOrderByTicketId: (ticketId: string) => OrderItem | undefined;
+  recordMLScan: (type: MLTicketType) => void;
   updateHeroBanner: (updates: Partial<HeroBannerConfig>) => void;
   resetHeroBanner: () => void;
   addCategory: (categoryName: string) => void;
@@ -123,6 +137,7 @@ const STORAGE_KEYS = {
   IS_LOGGED_IN: 'dtbp_is_logged_in_v2',
   HERO_BANNER: 'dtbp_hero_banner_v2',
   CATEGORIES: 'dtbp_categories_v2',
+  ML_STATS: 'dtbp_ml_stats_v2',
 };
 
 function loadStorage<T>(key: string, fallback: T): T {
@@ -162,6 +177,9 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   );
   const [categories, setCategories] = useState<string[]>(() =>
     loadStorage(STORAGE_KEYS.CATEGORIES, DEFAULT_CATEGORIES)
+  );
+  const [mlScanStats, setMlScanStats] = useState<MLScanStats>(() =>
+    loadStorage(STORAGE_KEYS.ML_STATS, INITIAL_ML_STATS)
   );
 
   const currentUser = users.find((u) => u.id === currentUserId) || users[0];
@@ -208,6 +226,18 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     saveStorage(STORAGE_KEYS.CATEGORIES, categories);
   }, [categories]);
 
+  useEffect(() => {
+    saveStorage(STORAGE_KEYS.ML_STATS, mlScanStats);
+  }, [mlScanStats]);
+
+  useEffect(() => {
+    saveStorage(STORAGE_KEYS.HERO_BANNER, heroBanner);
+  }, [heroBanner]);
+
+  useEffect(() => {
+    saveStorage(STORAGE_KEYS.CATEGORIES, categories);
+  }, [categories]);
+
   const switchUser = (userId: string) => {
     const found = users.find((u) => u.id === userId);
     if (found) {
@@ -232,8 +262,9 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     paymentMethod,
     source,
     staffCreator,
+    customCreatedAt,
   }: PurchaseParams) => {
-    const orderTimestamp = new Date().toISOString();
+    const orderTimestamp = customCreatedAt || new Date().toISOString();
     const orderSeq = orders.length + 1001;
     const orderNumber = `ORD-2026-${String(orderSeq).padStart(5, '0')}`;
     const orderId = `ord-${Date.now()}`;
@@ -347,9 +378,181 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     qrTokenOrTicketNo: string,
     staffUser?: User
   ): ValidationResponse => {
-    const trimmed = qrTokenOrTicketNo.trim();
+    let trimmed = qrTokenOrTicketNo.trim();
     const effectiveStaff = staffUser || currentUser;
     const now = new Date().toISOString();
+
+    // Support compact cross-device ticket format: TP1:ticketNumber|name|paymentMethod|leadTime|tier|price|eventName
+    if (trimmed.startsWith('TP1:')) {
+      try {
+        const raw = trimmed.substring(4);
+        const [tktNo, custName, payMethod, leadHoursStr, tierName, priceStr, evName] = raw.split('|');
+        trimmed = tktNo || trimmed;
+
+        const existing = tickets.find((t) => t.ticketNumber === trimmed || t.qrToken === trimmed);
+        if (!existing) {
+          const priceNum = parseFloat(priceStr) || 15;
+          const leadHoursNum = parseFloat(leadHoursStr) || 48;
+          const importedTicket: Ticket = {
+            id: `tkt-imp-${tktNo}-${Date.now()}`,
+            ticketNumber: tktNo,
+            orderId: `ord-imp-${tktNo}`,
+            orderNumber: `ORD-${tktNo}`,
+            eventId: 'ev-001',
+            eventName: evName || 'General Admission Event',
+            eventDate: new Date().toISOString().split('T')[0],
+            eventTime: '19:00',
+            eventLocation: 'Main Entrance Gate',
+            customerId: 'cust-remote',
+            customerName: custName || 'Online Client',
+            customerPhone: '012 999 111',
+            customerEmail: 'attendee@example.com',
+            ticketTypeId: 'tier-imported',
+            ticketTypeName: tierName || 'Standard Pass',
+            price: priceNum,
+            qrToken: trimmed,
+            status: 'VALID',
+            createdAt: new Date().toISOString(),
+          };
+
+          const importedOrder: OrderItem = {
+            id: importedTicket.orderId,
+            orderNumber: importedTicket.orderNumber,
+            customerId: importedTicket.customerId,
+            customerName: importedTicket.customerName,
+            customerPhone: importedTicket.customerPhone,
+            customerEmail: importedTicket.customerEmail,
+            eventId: importedTicket.eventId,
+            eventName: importedTicket.eventName,
+            ticketTypeId: importedTicket.ticketTypeId,
+            ticketTypeName: importedTicket.ticketTypeName,
+            quantity: 1,
+            unitPrice: importedTicket.price,
+            totalAmount: importedTicket.price,
+            paymentStatus: 'PAID',
+            paymentMethod: (payMethod as any) || 'ONLINE',
+            source: 'ONLINE',
+            createdBy: 'online',
+            createdByName: importedTicket.customerName,
+            createdAt: new Date(Date.now() - leadHoursNum * 3600 * 1000).toISOString(),
+          };
+
+          setTickets((prev) => [importedTicket, ...prev]);
+          setOrders((prev) => [importedOrder, ...prev]);
+
+          const scanLog: ScanLog = {
+            id: `scan-${Date.now()}`,
+            ticketId: importedTicket.id,
+            ticketNumber: importedTicket.ticketNumber,
+            eventId: importedTicket.eventId,
+            eventName: importedTicket.eventName,
+            customerName: importedTicket.customerName,
+            staffId: effectiveStaff.id,
+            staffName: `${effectiveStaff.name} (${effectiveStaff.staffRole || effectiveStaff.role})`,
+            result: 'VALID',
+            scannedAt: now,
+            deviceInfo: 'Camera / Web Scanner',
+            notes: `Admitted attendee via compact portable pass.`,
+          };
+          setScanLogs((prev) => [scanLog, ...prev]);
+
+          return {
+            status: 'VALID',
+            ticket: importedTicket,
+            event: events.find((e) => e.id === importedTicket.eventId) || events[0],
+            message: `Checked in successfully. Attendee ${importedTicket.customerName} admitted!`,
+          };
+        }
+      } catch (err) {
+        console.error('Compact TP1 token parsing error:', err);
+      }
+    }
+
+    // Support portable self-contained QR code from another device (e.g. laptop client -> phone scanner)
+    if (trimmed.startsWith('{') && trimmed.includes('"tp":"v1"')) {
+      try {
+        const payload = JSON.parse(trimmed);
+        trimmed = payload.qr || payload.tkt;
+
+        // If not already in tickets list on this device, automatically import it
+        const existing = tickets.find(
+          (t) => t.qrToken === trimmed || t.ticketNumber === payload.tkt || t.id === payload.id
+        );
+        if (!existing) {
+          const importedTicket: Ticket = {
+            id: payload.id || `tkt-${Date.now()}`,
+            ticketNumber: payload.tkt,
+            orderId: `ord-${Date.now()}`,
+            orderNumber: `ORD-${Date.now()}`,
+            eventId: payload.ev,
+            eventName: payload.evName,
+            eventDate: payload.date,
+            eventTime: payload.time,
+            eventLocation: 'Main Entrance Gate',
+            customerId: 'cust-remote',
+            customerName: payload.name,
+            customerPhone: payload.phone || '012 999 111',
+            customerEmail: 'attendee@example.com',
+            ticketTypeId: 'tier-imported',
+            ticketTypeName: payload.tier,
+            price: payload.price,
+            qrToken: payload.qr,
+            status: 'VALID',
+            createdAt: new Date().toISOString(),
+          };
+
+          const importedOrder: OrderItem = {
+            id: importedTicket.orderId,
+            orderNumber: importedTicket.orderNumber,
+            customerId: importedTicket.customerId,
+            customerName: importedTicket.customerName,
+            customerPhone: importedTicket.customerPhone,
+            customerEmail: importedTicket.customerEmail,
+            eventId: importedTicket.eventId,
+            eventName: importedTicket.eventName,
+            ticketTypeId: importedTicket.ticketTypeId,
+            ticketTypeName: importedTicket.ticketTypeName,
+            quantity: 1,
+            unitPrice: importedTicket.price,
+            totalAmount: importedTicket.price,
+            paymentStatus: 'PAID',
+            paymentMethod: payload.pay || 'ONLINE',
+            source: 'ONLINE',
+            createdBy: 'online',
+            createdByName: payload.name || 'Online Customer',
+            createdAt: new Date(Date.now() - (payload.lead || 48) * 3600 * 1000).toISOString(),
+          };
+
+          setTickets((prev) => [importedTicket, ...prev]);
+          setOrders((prev) => [importedOrder, ...prev]);
+
+          const scanLog: ScanLog = {
+            id: `scan-${Date.now()}`,
+            ticketId: importedTicket.id,
+            ticketNumber: importedTicket.ticketNumber,
+            eventId: importedTicket.eventId,
+            eventName: importedTicket.eventName,
+            customerName: importedTicket.customerName,
+            staffId: effectiveStaff.id,
+            staffName: `${effectiveStaff.name} (${effectiveStaff.staffRole || effectiveStaff.role})`,
+            result: 'VALID',
+            scannedAt: now,
+            deviceInfo: 'Camera / Web Scanner',
+            notes: `Admitted attendee via portable pass.`,
+          };
+          setScanLogs((prev) => [scanLog, ...prev]);
+
+          return {
+            status: 'VALID',
+            ticket: importedTicket,
+            event: events.find((e) => e.id === importedTicket.eventId),
+            message: `Checked in successfully. Attendee ${importedTicket.customerName} admitted!`,
+          };
+        }
+      } catch (err) {
+        console.error('Portable QR parsing error:', err);
+      }
+    }
 
     // Find ticket by token or ticketNumber (exact or contained in URL/token string)
     const targetTicket = tickets.find(
@@ -721,6 +924,27 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setCategories(DEFAULT_CATEGORIES);
   };
 
+  const getOrderByTicketId = (ticketId: string): OrderItem | undefined => {
+    const ticket = tickets.find((t) => t.id === ticketId);
+    if (!ticket) return undefined;
+    return orders.find((o) => o.id === ticket.orderId);
+  };
+
+  const recordMLScan = (type: MLTicketType) => {
+    setMlScanStats((prev) => {
+      const nextDigital = type === 'DIGITAL' ? prev.digitalCount + 1 : prev.digitalCount;
+      const nextPhysical = type === 'PHYSICAL' ? prev.physicalCount + 1 : prev.physicalCount;
+      const nextTotal = nextDigital + nextPhysical;
+      return {
+        totalScanned: nextTotal,
+        digitalCount: nextDigital,
+        physicalCount: nextPhysical,
+        digitalPercent: nextTotal > 0 ? Math.round((nextDigital / nextTotal) * 100) : 0,
+        physicalPercent: nextTotal > 0 ? Math.round((nextPhysical / nextTotal) * 100) : 0,
+      };
+    });
+  };
+
   const resetAllData = () => {
     setUsers(INITIAL_USERS);
     setCurrentUserId('usr-customer-1');
@@ -732,6 +956,7 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setAuditLogs(INITIAL_AUDIT_LOGS);
     setHeroBanner(DEFAULT_HERO_BANNER);
     setCategories(DEFAULT_CATEGORIES);
+    setMlScanStats(INITIAL_ML_STATS);
     localStorage.clear();
   };
 
@@ -749,6 +974,9 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         auditLogs,
         heroBanner,
         categories,
+        mlScanStats,
+        getOrderByTicketId,
+        recordMLScan,
         updateHeroBanner,
         resetHeroBanner,
         addCategory,

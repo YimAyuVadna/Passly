@@ -16,6 +16,7 @@ import { StaffAssistedPurchaseModal } from './components/staff/StaffAssistedPurc
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AuthView } from './components/auth/AuthView';
 import { UserSettingsModal } from './components/profile/UserSettingsModal';
+import { OnlineBookingModal } from './components/customer/OnlineBookingModal';
 import { EventItem, TicketType, Ticket, UserRole } from './types';
 import { Compass, Ticket as TicketIcon, Camera, Shield, HelpCircle, LogIn } from 'lucide-react';
 
@@ -35,6 +36,8 @@ function AppContent() {
   } | null>(null);
   const [activeDigitalTicket, setActiveDigitalTicket] = useState<Ticket | null>(null);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [scannerInitialToken, setScannerInitialToken] = useState<string | null>(null);
+  const [isOnlineBookingOpen, setIsOnlineBookingOpen] = useState(false);
   const [isAssistedPurchaseOpen, setIsAssistedPurchaseOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -100,12 +103,19 @@ function AppContent() {
     }
   };
 
+  const handleTestScanTicket = (ticket: Ticket) => {
+    setIsOnlineBookingOpen(false);
+    setScannerInitialToken(ticket.qrToken);
+    setIsScannerOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-[#fafafa] flex flex-col font-sans text-zinc-900 pb-20 md:pb-0 selection:bg-zinc-900 selection:text-white">
       {/* Top Navbar */}
       <Navbar
         currentView={currentView}
         onChangeView={setCurrentView}
+        onOpenOnlineBooking={() => setIsOnlineBookingOpen(true)}
         onOpenScanner={() => {
           if (isLoggedIn && (currentRole === 'STAFF' || currentRole === 'ADMIN')) {
             setIsScannerOpen(true);
@@ -125,6 +135,7 @@ function AppContent() {
           <EventsCatalogView
             events={events}
             onSelectEvent={(ev) => setSelectedEventDetails(ev)}
+            onOpenOnlineBooking={() => setIsOnlineBookingOpen(true)}
           />
         )}
 
@@ -187,10 +198,24 @@ function AppContent() {
         onSelectTicket={(t) => setActiveDigitalTicket(t)}
       />
 
-      {/* Staff Checkpoint Scanner: Restricted to authorized staff and admin only */}
+      {/* Checkpoint Scanner: Staff gate operations or direct Online Booking Test Scanner */}
       <QRScannerModal
-        isOpen={isScannerOpen && isLoggedIn && (currentRole === 'STAFF' || currentRole === 'ADMIN')}
-        onClose={() => setIsScannerOpen(false)}
+        isOpen={
+          isScannerOpen &&
+          (scannerInitialToken !== null || (isLoggedIn && (currentRole === 'STAFF' || currentRole === 'ADMIN')))
+        }
+        onClose={() => {
+          setIsScannerOpen(false);
+          setScannerInitialToken(null);
+        }}
+        initialTokenToScan={scannerInitialToken}
+      />
+
+      {/* Online Client Booking & QR Simulation Modal */}
+      <OnlineBookingModal
+        isOpen={isOnlineBookingOpen}
+        onClose={() => setIsOnlineBookingOpen(false)}
+        onTestScanTicket={handleTestScanTicket}
       />
 
       {/* Staff Assisted Purchase Modal: Restricted to authorized staff and admin only */}

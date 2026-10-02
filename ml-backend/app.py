@@ -176,6 +176,8 @@ class MLPredictionHandler(BaseHTTPRequestHandler):
                     "status": "success",
                     "ticket_type": result["ticket_type"],
                     "prediction_code": result["prediction_code"],
+                    "confidence": result.get("confidence", 0.95),
+                    "input_features": result.get("input_features", {}),
                 }
                 self.wfile.write(json.dumps(response).encode("utf-8"))
             except Exception as e:

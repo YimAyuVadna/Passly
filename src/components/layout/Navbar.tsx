@@ -13,6 +13,7 @@ import {
   LogIn,
   LogOut,
   Settings,
+  Sparkles,
 } from 'lucide-react';
 import { useTicketContext } from '../../context/TicketContext';
 
@@ -22,6 +23,7 @@ interface NavbarProps {
   onOpenScanner: () => void;
   onOpenAssistedPurchase: () => void;
   onOpenSettings?: () => void;
+  onOpenOnlineBooking?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -30,6 +32,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenScanner,
   onOpenAssistedPurchase,
   onOpenSettings,
+  onOpenOnlineBooking,
 }) => {
   const { currentUser, isLoggedIn, logout, resetAllData } = useTicketContext();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -145,6 +148,20 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Right Action Group */}
           <div className="flex items-center gap-2.5">
+            {/* Buy Pass Online Simulation Button */}
+            {onOpenOnlineBooking && (
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={onOpenOnlineBooking}
+                title="Simulate Online Client Pass Purchase & QR Generation"
+                className="px-3.5 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-full text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer select-none"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Buy Pass Online</span>
+              </motion.button>
+            )}
+
             {/* Quick staff action buttons: strictly visible to staff and admin only */}
             {isLoggedIn && (currentUser.role === 'STAFF' || currentUser.role === 'ADMIN') && (
               <>
@@ -352,6 +369,19 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Ticket className="w-4 h-4" />
               <span>My Digital Passes</span>
             </button>
+
+            {onOpenOnlineBooking && (
+              <button
+                onClick={() => {
+                  onOpenOnlineBooking();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer bg-blue-50 text-blue-700 hover:bg-blue-100"
+              >
+                <Sparkles className="w-4 h-4 text-blue-600" />
+                <span>Buy Pass Online (Simulation)</span>
+              </button>
+            )}
 
             {isLoggedIn && (currentUser.role === 'STAFF' || currentUser.role === 'ADMIN') && (
               <button

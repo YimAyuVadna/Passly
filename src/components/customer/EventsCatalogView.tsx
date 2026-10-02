@@ -21,11 +21,13 @@ import { EventFormModal } from '../admin/EventFormModal';
 interface EventsCatalogViewProps {
   events: EventItem[];
   onSelectEvent: (event: EventItem) => void;
+  onOpenOnlineBooking?: () => void;
 }
 
 export const EventsCatalogView: React.FC<EventsCatalogViewProps> = ({
   events,
   onSelectEvent,
+  onOpenOnlineBooking,
 }) => {
   const { heroBanner, categories, currentUser, isLoggedIn, createEvent } = useTicketContext();
 
@@ -164,6 +166,36 @@ export const EventsCatalogView: React.FC<EventsCatalogViewProps> = ({
             className="px-3.5 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-full font-semibold transition cursor-pointer shrink-0"
           >
             Enable & Customize
+          </button>
+        </div>
+      )}
+
+      {/* Interactive Simulation Banner: Online Client Pass & QR Generation */}
+      {onOpenOnlineBooking && (
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-900 to-zinc-950 p-5 sm:p-6 text-white shadow-lg border border-blue-800/60 flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full bg-blue-500/25 text-blue-300 text-[10px] font-bold uppercase tracking-wider border border-blue-400/30 flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-blue-400" />
+                Online Client Simulator
+              </span>
+              <span className="text-xs text-blue-200/80 font-medium">Decision Tree Pass Intelligence</span>
+            </div>
+            <h3 className="text-base sm:text-lg font-bold tracking-tight text-white">
+              Simulate Online Client Pass Purchase & Instant QR Generation
+            </h3>
+            <p className="text-xs text-blue-100/80 max-w-2xl leading-relaxed">
+              Experience the end-to-end client flow: submit an online booking with ABA KHQR / Card, auto-generate a secure QR admission pass, download the image, and test gate checkpoint scanning.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onOpenOnlineBooking}
+            className="px-5 py-3 bg-blue-500 hover:bg-blue-400 text-white font-semibold rounded-2xl text-xs shadow-md flex items-center justify-center gap-2 transition cursor-pointer shrink-0 self-start md:self-center hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Simulate Online Booking</span>
+            <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       )}

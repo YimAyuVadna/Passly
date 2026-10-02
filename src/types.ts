@@ -139,3 +139,34 @@ export interface HeroBannerConfig {
   buttonText: string;
   eventId?: string;
 }
+
+export type MLTicketType = 'DIGITAL' | 'PHYSICAL';
+
+export interface MLPredictionFeatures {
+  paymentMethod: string;
+  unitPrice: number;
+  quantity: number;
+  totalAmount: number;
+  hourOfPurchase: number;
+  dayOfWeek: number;
+  hasNotes: boolean;
+  ticketTier: string;
+  timeSincePurchaseHours: number;
+}
+
+export interface MLPredictionResult {
+  status: 'success' | 'error';
+  ticketType: MLTicketType;
+  predictionCode: number;
+  confidence: number;
+  inputFeatures?: MLPredictionFeatures;
+  explanation?: string;
+}
+
+export interface MLScanStats {
+  totalScanned: number;
+  digitalCount: number;
+  physicalCount: number;
+  digitalPercent: number;
+  physicalPercent: number;
+}

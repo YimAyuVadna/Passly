@@ -15,6 +15,7 @@ import {
   Tag,
   Edit3,
   Plus,
+  Bot,
 } from 'lucide-react';
 import { Ticket } from '../../types';
 import { useTicketContext } from '../../context/TicketContext';
@@ -33,7 +34,7 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
   onOpenAssistedPurchase,
   onSelectTicket,
 }) => {
-  const { tickets, scanLogs, orders, currentUser, markTicketStatus, createEvent } = useTicketContext();
+  const { tickets, scanLogs, orders, currentUser, markTicketStatus, createEvent, mlScanStats } = useTicketContext();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterResult, setFilterResult] = useState<'ALL' | 'VALID' | 'ALREADY_USED' | 'INVALID'>('ALL');
@@ -168,6 +169,110 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
           </div>
         </div>
       )}
+
+      {/* Machine Learning Phase 4: Pass Distribution Intelligence Card */}
+      <div className="bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 rounded-2xl border border-zinc-800 p-5 shadow-xs text-white">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-800/80 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center shrink-0">
+              <Bot className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-white">Machine Learning Pass Intelligence</h3>
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                  DecisionTree ML #1
+                </span>
+              </div>
+              <p className="text-xs text-zinc-400 mt-0.5">
+                Real-time supervised classification of scanned passes into Digital (Online) vs Physical (Counter Walk-in).
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={onOpenScanner}
+              className="px-3.5 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+            >
+              <Camera className="w-3.5 h-3.5" />
+              <span>Launch AI Scanner</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Breakdown Statistics */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-4">
+          {/* Total Classified */}
+          <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-3.5">
+            <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider block">
+              AI-Classified Passes
+            </span>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-bold font-mono text-white">
+                {mlScanStats.totalScanned}
+              </span>
+              <span className="text-[11px] text-zinc-500">total evaluated</span>
+            </div>
+          </div>
+
+          {/* Digital Passes */}
+          <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-3.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-medium text-sky-400 uppercase tracking-wider">
+                🖥️ Digital (Online)
+              </span>
+              <span className="text-xs font-mono font-semibold text-sky-300">
+                {mlScanStats.digitalPercent}%
+              </span>
+            </div>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-bold font-mono text-sky-300">
+                {mlScanStats.digitalCount}
+              </span>
+              <span className="text-[11px] text-zinc-500">passes</span>
+            </div>
+          </div>
+
+          {/* Physical Passes */}
+          <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-3.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-medium text-amber-400 uppercase tracking-wider">
+                🎫 Physical (Walk-in)
+              </span>
+              <span className="text-xs font-mono font-semibold text-amber-300">
+                {mlScanStats.physicalPercent}%
+              </span>
+            </div>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-bold font-mono text-amber-300">
+                {mlScanStats.physicalCount}
+              </span>
+              <span className="text-[11px] text-zinc-500">passes</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Visual Ratio Progress Bar */}
+        <div className="mt-4 pt-3 border-t border-zinc-800/60">
+          <div className="flex justify-between text-[11px] text-zinc-400 mb-1.5 font-mono">
+            <span>Digital: {mlScanStats.digitalCount} ({mlScanStats.digitalPercent}%)</span>
+            <span>Physical: {mlScanStats.physicalCount} ({mlScanStats.physicalPercent}%)</span>
+          </div>
+          <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden flex">
+            <div
+              className="bg-sky-500 h-full transition-all duration-500"
+              style={{ width: `${mlScanStats.totalScanned > 0 ? mlScanStats.digitalPercent : 50}%` }}
+              title="Digital Ratio"
+            />
+            <div
+              className="bg-amber-500 h-full transition-all duration-500"
+              style={{ width: `${mlScanStats.totalScanned > 0 ? mlScanStats.physicalPercent : 50}%` }}
+              title="Physical Ratio"
+            />
+          </div>
+        </div>
+      </div>
 
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

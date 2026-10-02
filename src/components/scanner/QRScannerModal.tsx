@@ -15,16 +15,24 @@ import {
   UploadCloud,
   FlipHorizontal,
   Image as ImageIcon,
+  Bot,
+  Zap,
 } from 'lucide-react';
 import { useTicketContext, ValidationResponse } from '../../context/TicketContext';
+import { MLPredictionResult, MLTicketType, Ticket, OrderItem } from '../../types';
 
 interface QRScannerModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialTokenToScan?: string | null;
 }
 
-export const QRScannerModal: React.FC<QRScannerModalProps> = ({ isOpen, onClose }) => {
-  const { validateTicketByQr, tickets, currentUser } = useTicketContext();
+export const QRScannerModal: React.FC<QRScannerModalProps> = ({
+  isOpen,
+  onClose,
+  initialTokenToScan,
+}) => {
+  const { validateTicketByQr, tickets, currentUser, getOrderByTicketId, recordMLScan } = useTicketContext();
 
   const [activeTab, setActiveTab] = useState<'camera' | 'upload' | 'manual' | 'demo'>('camera');
   const [manualCode, setManualCode] = useState('');
@@ -36,6 +44,12 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({ isOpen, onClose 
   const [cameraActive, setCameraActive] = useState<boolean>(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isDraggingFile, setIsDraggingFile] = useState<boolean>(false);
+  const [isDecodingPhoto, setIsDecodingPhoto] = useState<boolean>(false);
+
+  // Machine Learning Phase 4 state
+  const [mlResult, setMlResult] = useState<MLPredictionResult | null>(null);
+  const [isMLLoading, setIsMLLoading] = useState<boolean>(false);
+  const [mlError, setMlError] = useState<string | null>(null);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -156,22 +170,124 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({ isOpen, onClose 
     setCameraActive(false);
   };
 
-  const handleDetectedCode = (code: string) => {
-    if (isProcessing || validationResult) return;
+  // Machine Learning Phase 4: Predict DIGITAL vs PHYSICAL pass format
+  const fetchMLPrediction = async (ticket: Ticket, order?: OrderItem) => {
+    setIsMLLoading(true);
+    setMlError(null);
+    setMlResult(null);
+
+    const purchasedDate = order ? new Date(order.createdAt) : new Date(ticket.createdAt);
+    const eventDateStr = ticket.eventDate + 'T' + (ticket.eventTime.length === 5 ? ticket.eventTime + ':00' : ticket.eventTime);
+    const eventDateTime = new Date(eventDateStr).getTime();
+    const rawLeadTime = (eventDateTime - purchasedDate.getTime()) / (1000 * 3600);
+    const leadTimeHours = Math.max(0.5, Math.round(rawLeadTime * 10) / 10);
+
+    const isVip = ticket.ticketTypeName.toUpperCase().includes('VIP') || ticket.ticketTypeName.toUpperCase().includes('PREMIUM');
+    const isEarly = ticket.ticketTypeName.toUpperCase().includes('EARLY');
+    const tierCode = isVip ? 'VIP' : isEarly ? 'EARLY_BIRD' : 'GA';
+
+    const payload = {
+      payment_method: order ? order.paymentMethod : 'ONLINE',
+      unit_price: order ? order.unitPrice : ticket.price,
+      quantity: order ? order.quantity : 1,
+      total_amount: order ? order.totalAmount : ticket.price,
+      hour_of_purchase: purchasedDate.getHours(),
+      day_of_week: purchasedDate.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase(),
+      has_notes: Boolean(order?.notes && order.notes.trim().length > 0),
+      ticket_tier: tierCode,
+      time_since_purchase_hours: leadTimeHours || 24.0,
+    };
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+    try {
+      const host = window.location.hostname;
+      let res: Response;
+      try {
+        res = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+      } catch {
+        res = await fetch(`http://${host}:5000/predict`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+      }
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`);
+      }
+
+      const json = await res.json();
+      const ticketType: MLTicketType = json.ticket_type === 'PHYSICAL' ? 'PHYSICAL' : 'DIGITAL';
+      const confidenceVal = typeof json.confidence === 'number' ? json.confidence : 0.95;
+
+      const predictionResult: MLPredictionResult = {
+        status: 'success',
+        ticketType,
+        predictionCode: json.prediction_code !== undefined ? json.prediction_code : (ticketType === 'DIGITAL' ? 0 : 1),
+        confidence: confidenceVal,
+        inputFeatures: {
+          paymentMethod: String(payload.payment_method),
+          unitPrice: payload.unit_price,
+          quantity: payload.quantity,
+          totalAmount: payload.total_amount,
+          hourOfPurchase: payload.hour_of_purchase,
+          dayOfWeek: purchasedDate.getDay(),
+          hasNotes: payload.has_notes,
+          ticketTier: payload.ticket_tier,
+          timeSincePurchaseHours: payload.time_since_purchase_hours,
+        },
+        explanation:
+          ticketType === 'DIGITAL'
+            ? `Classified as DIGITAL (Online Pass) via ${payload.payment_method} channel with ${payload.time_since_purchase_hours}h advance purchase lead time.`
+            : `Classified as PHYSICAL (Counter Pass) via ${payload.payment_method} channel and same-day walk-in lead time.`,
+      };
+
+      setMlResult(predictionResult);
+      recordMLScan(ticketType);
+    } catch (err: any) {
+      clearTimeout(timeoutId);
+      console.warn('ML Prediction Service offline:', err);
+      setMlError('ML Service Offline — Core QR validation approved entry. (Start python app.py on port 5000)');
+    } finally {
+      setIsMLLoading(false);
+    }
+  };
+
+  const handleDetectedCode = (code: string, force: boolean = false) => {
+    if (isProcessing || (validationResult && !force)) return;
     setIsProcessing(true);
     stopCamera();
 
     const res = validateTicketByQr(code, currentUser);
     setValidationResult(res);
 
-    if (res.status === 'VALID') {
+    if (res.status === 'VALID' && res.ticket) {
       playFeedbackSound('valid');
+      const order = getOrderByTicketId(res.ticket.id);
+      fetchMLPrediction(res.ticket, order);
     } else {
       playFeedbackSound('invalid');
     }
 
     setIsProcessing(false);
   };
+
+  // If opened with an initial token from the Online Booking test flow, automatically trigger scan
+  useEffect(() => {
+    if (isOpen && initialTokenToScan) {
+      setActiveTab('demo');
+      handleDetectedCode(initialTokenToScan, true);
+    }
+  }, [isOpen, initialTokenToScan]);
 
   // Continuous frame scanner loop
   const tickScan = () => {
@@ -209,46 +325,131 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({ isOpen, onClose 
     }
   };
 
-  // Image file QR decoder
-  const processImageFile = (file: File) => {
+  // Optimized high-performance image QR decoder (prevents browser freezing on Galaxy J7 Prime / 13MP cameras)
+  const processImageFile = async (file: File) => {
     setUploadError(null);
     if (!file.type.startsWith('image/')) {
       setUploadError('Please select an image file (PNG, JPG, WebP, etc.).');
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    setIsDecodingPhoto(true);
 
-        if (ctx) {
-          ctx.drawImage(img, 0, 0, img.width, img.height);
-          const imageData = ctx.getImageData(0, 0, img.width, img.height);
-          const qrCode = jsQR(imageData.data, imageData.width, imageData.height, {
-            inversionAttempts: 'attemptBoth',
-          });
+    // Yield control briefly so mobile browser can render the decoding spinner
+    await new Promise((resolve) => setTimeout(resolve, 60));
 
-          if (qrCode && qrCode.data) {
-            handleDetectedCode(qrCode.data);
-          } else {
-            setUploadError('No QR code found in this image. Please ensure the ticket QR is sharp and well-lit.');
+    const objectUrl = URL.createObjectURL(file);
+    const img = new Image();
+
+    img.onload = async () => {
+      try {
+        // Fast path 1: Native hardware-accelerated BarcodeDetector (Chrome Android / modern browsers)
+        if ('BarcodeDetector' in window) {
+          try {
+            const barcodeDetector = new (window as any).BarcodeDetector({ formats: ['qr_code'] });
+            const barcodes = await barcodeDetector.detect(img);
+            if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+              URL.revokeObjectURL(objectUrl);
+              setIsDecodingPhoto(false);
+              handleDetectedCode(barcodes[0].rawValue);
+              return;
+            }
+          } catch (e) {
+            console.warn('Native BarcodeDetector pass skipped, falling back to downscaled canvas:', e);
           }
         }
-      };
-      img.onerror = () => {
-        setUploadError('Could not render image file. Please try another image.');
-      };
-      img.src = event.target?.result as string;
+
+        const naturalW = img.naturalWidth || img.width;
+        const naturalH = img.naturalHeight || img.height;
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+        if (!ctx) {
+          throw new Error('Canvas 2D context unavailable');
+        }
+
+        let detectedCode: string | null = null;
+
+        // Pass 2: High-clarity 1400px downscale (preserves fine QR finder pattern ratios)
+        const maxDim = 1400;
+        const scale = Math.min(1, maxDim / Math.max(naturalW, naturalH));
+        canvas.width = Math.round(naturalW * scale);
+        canvas.height = Math.round(naturalH * scale);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let res = jsQR(imgData.data, canvas.width, canvas.height, { inversionAttempts: 'attemptBoth' });
+        if (res?.data) {
+          detectedCode = res.data;
+        }
+
+        // Pass 3: Center-Crop (middle 65% of photo) - zooms in directly on the laptop screen
+        if (!detectedCode) {
+          const cropW = Math.round(naturalW * 0.65);
+          const cropH = Math.round(naturalH * 0.65);
+          const cropX = Math.round((naturalW - cropW) / 2);
+          const cropY = Math.round((naturalH - cropH) / 2);
+
+          const cropScale = Math.min(1, 1200 / Math.max(cropW, cropH));
+          canvas.width = Math.round(cropW * cropScale);
+          canvas.height = Math.round(cropH * cropScale);
+          ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, canvas.width, canvas.height);
+
+          imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          res = jsQR(imgData.data, canvas.width, canvas.height, { inversionAttempts: 'attemptBoth' });
+          if (res?.data) {
+            detectedCode = res.data;
+          }
+        }
+
+        // Pass 4: Screen Glare Removal & Contrast Binarization on the Center Crop
+        // Laptop screens have strong backlight reflections that wash out dark modules to gray.
+        if (!detectedCode) {
+          const d = imgData.data;
+          let minL = 255;
+          let maxL = 0;
+          for (let i = 0; i < d.length; i += 16) {
+            const l = (d[i] * 299 + d[i + 1] * 587 + d[i + 2] * 114) / 1000;
+            if (l < minL) minL = l;
+            if (l > maxL) maxL = l;
+          }
+          const thresh = minL + (maxL - minL) * 0.45;
+          for (let i = 0; i < d.length; i += 4) {
+            const l = (d[i] * 299 + d[i + 1] * 587 + d[i + 2] * 114) / 1000;
+            const v = l > thresh ? 255 : 0;
+            d[i] = v;
+            d[i + 1] = v;
+            d[i + 2] = v;
+          }
+          res = jsQR(d, canvas.width, canvas.height, { inversionAttempts: 'attemptBoth' });
+          if (res?.data) {
+            detectedCode = res.data;
+          }
+        }
+
+        URL.revokeObjectURL(objectUrl);
+        setIsDecodingPhoto(false);
+
+        if (detectedCode) {
+          handleDetectedCode(detectedCode);
+        } else {
+          setUploadError('No QR code detected in this photo. Please hold your phone steady about 20-30 cm from the screen, making sure the QR pass is sharp and fills the camera view.');
+        }
+      } catch (err: any) {
+        URL.revokeObjectURL(objectUrl);
+        setIsDecodingPhoto(false);
+        console.error('Photo decode error:', err);
+        setUploadError(`Failed to process photo: ${err.message || 'Error decoding image'}`);
+      }
     };
-    reader.onerror = () => {
-      setUploadError('Failed to read image file.');
+
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      setIsDecodingPhoto(false);
+      setUploadError('Could not render image file from camera. Please try again.');
     };
-    reader.readAsDataURL(file);
+
+    img.src = objectUrl;
   };
 
   const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -270,6 +471,9 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({ isOpen, onClose 
     setValidationResult(null);
     setManualCode('');
     setUploadError(null);
+    setMlResult(null);
+    setIsMLLoading(false);
+    setMlError(null);
     if (activeTab === 'camera') {
       startCamera();
     }
@@ -481,6 +685,91 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({ isOpen, onClose 
                 </div>
               )}
 
+              {/* Detailed ML Inspector Card (Shown for VALID tickets) */}
+              {validationResult.status === 'VALID' && (
+                <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 space-y-3 shadow-inner">
+                  <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-lg bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center">
+                        <Bot className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-xs font-semibold text-white">AI Classification Inspector</span>
+                    </div>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-zinc-800/80 text-zinc-300 border border-zinc-700/60">
+                      Decision Tree ML #1
+                    </span>
+                  </div>
+
+                  {isMLLoading && (
+                    <div className="py-4 flex items-center justify-center gap-2.5 text-xs text-zinc-400">
+                      <div className="w-4 h-4 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" />
+                      <span>Extracting order features & evaluating Decision Tree...</span>
+                    </div>
+                  )}
+
+                  {mlError && (
+                    <div className="p-3 bg-amber-500/10 border border-amber-500/25 rounded-xl flex items-center gap-2.5 text-[11px] text-amber-300">
+                      <Zap className="w-4 h-4 shrink-0 text-amber-400" />
+                      <span>{mlError}</span>
+                    </div>
+                  )}
+
+                  {mlResult && (
+                    <div className="space-y-3">
+                      {/* Prediction Badge Banner */}
+                      <div className="flex items-center justify-between bg-zinc-950/80 p-3 rounded-xl border border-zinc-800/90">
+                        <div className="flex items-center gap-2.5">
+                          {mlResult.ticketType === 'DIGITAL' ? (
+                            <span className="px-3 py-1 bg-sky-500/20 border border-sky-500/40 text-sky-300 font-bold text-xs rounded-lg flex items-center gap-1.5 shadow-[0_0_12px_rgba(14,165,233,0.3)]">
+                              <span>🖥️</span>
+                              <span>DIGITAL PASS</span>
+                            </span>
+                          ) : (
+                            <span className="px-3 py-1 bg-amber-500/20 border border-amber-500/40 text-amber-300 font-bold text-xs rounded-lg flex items-center gap-1.5 shadow-[0_0_12px_rgba(245,158,11,0.3)]">
+                              <span>🎫</span>
+                              <span>PHYSICAL PASS</span>
+                            </span>
+                          )}
+                          <span className="text-[11px] text-zinc-400">
+                            {mlResult.ticketType === 'DIGITAL' ? 'Online / Advance Booking' : 'Walk-in Box Office Counter'}
+                          </span>
+                        </div>
+                        <span className="text-xs font-mono font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/25">
+                          {Math.round(mlResult.confidence * 100)}% Confidence
+                        </span>
+                      </div>
+
+                      {/* 4 Feature Inspection Pills */}
+                      {mlResult.inputFeatures && (
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                          <div className="p-2.5 bg-zinc-950/60 border border-zinc-800/80 rounded-xl">
+                            <span className="text-zinc-500 block text-[10px]">Payment Channel</span>
+                            <span className="font-semibold text-zinc-200">{mlResult.inputFeatures.paymentMethod}</span>
+                          </div>
+                          <div className="p-2.5 bg-zinc-950/60 border border-zinc-800/80 rounded-xl">
+                            <span className="text-zinc-500 block text-[10px]">Advance Lead Time</span>
+                            <span className="font-semibold text-zinc-200">{mlResult.inputFeatures.timeSincePurchaseHours}h prior</span>
+                          </div>
+                          <div className="p-2.5 bg-zinc-950/60 border border-zinc-800/80 rounded-xl">
+                            <span className="text-zinc-500 block text-[10px]">Tier Category</span>
+                            <span className="font-semibold text-zinc-200">{mlResult.inputFeatures.ticketTier}</span>
+                          </div>
+                          <div className="p-2.5 bg-zinc-950/60 border border-zinc-800/80 rounded-xl">
+                            <span className="text-zinc-500 block text-[10px]">Order Notes</span>
+                            <span className="font-semibold text-zinc-200">{mlResult.inputFeatures.hasNotes ? 'Attached' : 'None'}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Explanation */}
+                      <p className="text-[11px] text-zinc-400 leading-relaxed italic bg-zinc-950/40 p-2.5 rounded-xl border border-zinc-800/50">
+                        "{mlResult.explanation}"
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Action Buttons */}
               <div className="pt-2 flex gap-2.5">
                 <button
@@ -595,50 +884,80 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({ isOpen, onClose 
               {/* UPLOAD IMAGE SCANNER TAB */}
               {activeTab === 'upload' && (
                 <div className="space-y-4">
-                  <div
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      setIsDraggingFile(true);
-                    }}
-                    onDragLeave={(e) => {
-                      e.preventDefault();
-                      setIsDraggingFile(false);
-                    }}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      setIsDraggingFile(false);
-                      const file = e.dataTransfer.files?.[0];
-                      if (file) {
-                        processImageFile(file);
-                      }
-                    }}
-                    onClick={() => fileInputRef.current?.click()}
-                    className={`border-2 border-dashed rounded-3xl p-8 text-center space-y-3 cursor-pointer transition ${
-                      isDraggingFile
-                        ? 'border-white bg-zinc-800/80 scale-[1.01]'
-                        : 'border-zinc-800 hover:border-zinc-700 bg-zinc-900/40 hover:bg-zinc-900/60'
-                    }`}
-                  >
-                    <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-300 flex items-center justify-center mx-auto">
-                      <UploadCloud className="w-6 h-6" />
+                  {isDecodingPhoto ? (
+                    <div className="border border-zinc-800 bg-zinc-900/60 rounded-3xl p-8 text-center space-y-3 animate-pulse">
+                      <div className="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-400 border border-blue-400/30 flex items-center justify-center mx-auto">
+                        <RefreshCw className="w-6 h-6 animate-spin text-blue-400" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-sm text-white">Analyzing Ticket Photo...</h4>
+                        <p className="text-xs text-zinc-400 mt-1">
+                          Downscaling camera image & decoding QR admission pass...
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-sm text-white">Select Ticket Image or Screenshot</h4>
-                      <p className="text-xs text-zinc-400 mt-1">
-                        Upload a photo, screenshot, or digital pass file containing a QR code
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        fileInputRef.current?.click();
+                  ) : (
+                    <div
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        setIsDraggingFile(true);
                       }}
-                      className="inline-block px-4 py-2 bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-semibold rounded-xl shadow-xs transition cursor-pointer"
+                      onDragLeave={(e) => {
+                        e.preventDefault();
+                        setIsDraggingFile(false);
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setIsDraggingFile(false);
+                        const file = e.dataTransfer.files?.[0];
+                        if (file) {
+                          processImageFile(file);
+                        }
+                      }}
+                      onClick={() => fileInputRef.current?.click()}
+                      className={`border-2 border-dashed rounded-3xl p-8 text-center space-y-3 cursor-pointer transition ${
+                        isDraggingFile
+                          ? 'border-white bg-zinc-800/80 scale-[1.01]'
+                          : 'border-zinc-800 hover:border-zinc-700 bg-zinc-900/40 hover:bg-zinc-900/60'
+                      }`}
                     >
-                      Choose File (PNG, JPG)
-                    </button>
-                  </div>
+                      <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-300 flex items-center justify-center mx-auto">
+                        <UploadCloud className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-sm text-white">Select Ticket Image or Screenshot</h4>
+                        <p className="text-xs text-zinc-400 mt-1">
+                          Upload a photo, screenshot, or digital pass file containing a QR code
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          fileInputRef.current?.click();
+                        }}
+                        className="inline-block px-4 py-2 bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-semibold rounded-xl shadow-xs transition cursor-pointer"
+                      >
+                        Choose File or Snap Photo
+                      </button>
+
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        accept="image/*"
+                        capture="environment"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            processImageFile(file);
+                          }
+                          // Reset input so taking another photo triggers onChange
+                          e.target.value = '';
+                        }}
+                      />
+                    </div>
+                  )}
 
                   {uploadError && (
                     <div className="p-3 bg-rose-950/60 border border-rose-800/80 rounded-xl text-rose-300 text-xs flex items-center gap-2">
@@ -776,6 +1095,62 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({ isOpen, onClose 
                         Test Invalid
                       </span>
                     </button>
+
+                    {/* DEDICATED ML DECISION TREE SCENARIO BUTTONS */}
+                    <div className="pt-3 border-t border-zinc-800/80 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-sky-400">
+                          ⚡ 1-Click ML Decision Tree Scenarios
+                        </span>
+                        <span className="text-[9px] font-mono text-zinc-500">Binary Classifier</span>
+                      </div>
+
+                      {/* Demo 1: Digital Online Pass */}
+                      <button
+                        onClick={() => handleDetectedCode('TKT-2026-000928-SECURE-NEONVIP1')}
+                        className="w-full p-3 bg-sky-950/20 hover:bg-sky-950/40 border border-sky-800/40 rounded-xl text-left transition flex items-center justify-between cursor-pointer group"
+                      >
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-semibold text-sky-200 group-hover:text-white transition">
+                              Demo Digital Ticket (Chan Dara)
+                            </span>
+                            <span className="px-1.5 py-0.2 rounded text-[9px] bg-sky-500/20 text-sky-300 font-mono">
+                              VIP
+                            </span>
+                          </div>
+                          <span className="text-[11px] text-zinc-400 font-mono">
+                            Online ABA E-Wallet • 48h Advance Purchase
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-mono font-medium px-2 py-0.5 bg-sky-500/20 text-sky-300 rounded-md border border-sky-500/30 shrink-0">
+                          Classify DIGITAL
+                        </span>
+                      </button>
+
+                      {/* Demo 2: Physical Counter Pass */}
+                      <button
+                        onClick={() => handleDetectedCode('TKT-2026-000932-SECURE-WALKIN-CASH')}
+                        className="w-full p-3 bg-amber-950/20 hover:bg-amber-950/40 border border-amber-800/40 rounded-xl text-left transition flex items-center justify-between cursor-pointer group"
+                      >
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-semibold text-amber-200 group-hover:text-white transition">
+                              Demo Physical Ticket (Sokha Dara)
+                            </span>
+                            <span className="px-1.5 py-0.2 rounded text-[9px] bg-amber-500/20 text-amber-300 font-mono">
+                              Standard
+                            </span>
+                          </div>
+                          <span className="text-[11px] text-zinc-400 font-mono">
+                            Cash Box Office • Walk-in Counter Sale
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-mono font-medium px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded-md border border-amber-500/30 shrink-0">
+                          Classify PHYSICAL
+                        </span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
