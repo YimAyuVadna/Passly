@@ -49,3 +49,7 @@ test-results/
 
 # Root Temporary Screenshots
 /*.png
+
+# Agent & Orchestration State
+.omc/
+.kilo/

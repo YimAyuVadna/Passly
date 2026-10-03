@@ -68,7 +68,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
       onAuthSuccess(targetRole);
     } else {
       setSignInError(
-        'Account not found. Select a demo persona on the right or enter a registered email (e.g. chandara@gmail.com).'
+        'Account not found. Select a demo persona or enter a registered email (e.g. chandara@gmail.com).'
       );
     }
   };
@@ -83,7 +83,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
     }
 
     if (!signUpPassword) {
-      setSignUpError('Please create a password.');
+      setSignUpError('Please enter a password.');
       return;
     }
 
@@ -93,7 +93,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
     }
 
     if (signUpPassword !== signUpConfirmPassword) {
-      setSignUpError('Passwords do not match. Please ensure both passwords match.');
+      setSignUpError('Passwords do not match. Please verify.');
       return;
     }
 
@@ -112,7 +112,6 @@ export const AuthView: React.FC<AuthViewProps> = ({
       phone: signUpPhone.trim(),
       role: 'CUSTOMER',
       status: 'ACTIVE',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
     });
 
     onAuthSuccess(newUser.role);
@@ -131,26 +130,26 @@ export const AuthView: React.FC<AuthViewProps> = ({
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 px-4 py-4 sm:py-8">
+    <div className="max-w-5xl mx-auto space-y-8 px-4 py-6 sm:py-10">
       {/* Header */}
       <div className="space-y-1 text-center max-w-sm mx-auto">
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900">
+        <h1 className="font-serif text-3xl font-medium tracking-tight text-[#111111]">
           Account Access
         </h1>
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-[#787774]">
           Sign in to your wallet or select a demo account
         </p>
       </div>
 
       {/* Guest Booking Gate Notice */}
       {authNotice && (
-        <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-4 flex items-center justify-between text-xs text-zinc-800">
+        <div className="bg-white border border-[#EAEAEA] rounded-xl p-4 flex items-center justify-between text-xs text-[#111111] shadow-2xs">
           <div className="flex items-center gap-2">
             <Ticket className="w-4 h-4 text-zinc-600 shrink-0" />
             <span>{authNotice}</span>
           </div>
           {pendingEventName && (
-            <span className="font-medium text-zinc-900 font-mono text-[11px]">
+            <span className="font-mono text-[11px] font-medium text-[#111111] bg-[#F7F6F3] px-2 py-0.5 rounded-[4px] border border-[#EAEAEA]">
               {pendingEventName}
             </span>
           )}
@@ -158,118 +157,122 @@ export const AuthView: React.FC<AuthViewProps> = ({
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Auth Card (Tabs: Sign In / Create Account) */}
-        <div className="lg:col-span-6 bg-white rounded-xl border border-zinc-200/90 shadow-xs p-6 sm:p-8 space-y-6">
-          {/* Active Session Notice if already signed in */}
-          {isLoggedIn && (
-            <div className="p-4 bg-zinc-50 border border-zinc-200 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <img
-                  src={
-                    currentUser.avatar ||
-                    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'
-                  }
-                  alt={currentUser.name}
-                  className="w-10 h-10 rounded-full object-cover border border-zinc-200"
-                />
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] font-medium text-zinc-400">
-                      Signed In
-                    </span>
-                    <span className="px-1.5 py-0.5 bg-zinc-200 text-zinc-700 rounded text-[10px] font-mono font-medium">
-                      {currentUser.staffRole || currentUser.role}
-                    </span>
+        {/* Left Column: Double-Bezel Auth Card */}
+        <div className="lg:col-span-6 double-bezel-tray-lg shadow-sm">
+          <div className="double-bezel-core-lg p-6 sm:p-8 space-y-6">
+            {/* Active Session Notice if already signed in */}
+            {isLoggedIn && (
+              <div className="p-4 bg-[#FBFBFA] border border-[#111111]/[0.06] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  {currentUser.avatar ? (
+                    <img
+                      src={currentUser.avatar}
+                      alt={currentUser.name}
+                      className="w-10 h-10 rounded-full object-cover border border-[#111111]/[0.08]"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-[#111111] text-white flex items-center justify-center font-mono font-medium text-sm shrink-0">
+                      {currentUser.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] font-medium text-zinc-400 font-mono uppercase tracking-wider">
+                        Signed In
+                      </span>
+                      <span className="px-2 py-0.5 bg-[#111111]/[0.04] text-zinc-700 rounded-full text-[9px] font-mono font-medium border border-[#111111]/[0.06]">
+                        {currentUser.staffRole || currentUser.role}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-[#111111]">{currentUser.name}</p>
+                    <p className="text-xs text-[#787774] truncate max-w-[200px]">{currentUser.email}</p>
                   </div>
-                  <p className="text-sm font-semibold text-zinc-900">{currentUser.name}</p>
-                  <p className="text-xs text-zinc-500 truncate max-w-[200px]">{currentUser.email}</p>
+                </div>
+
+                <div className="flex items-center gap-2 self-end sm:self-auto">
+                  <button
+                    type="button"
+                    onClick={() => onAuthSuccess(currentUser.role)}
+                    className="px-4 py-1.5 bg-[#111111] hover:bg-[#222222] text-white rounded-full text-xs font-medium transition cursor-pointer active:scale-[0.98] shadow-xs"
+                  >
+                    Continue
+                  </button>
+                  <button
+                    type="button"
+                    onClick={logout}
+                    className="px-4 py-1.5 bg-white hover:bg-[#F7F6F3] text-zinc-700 border border-[#111111]/[0.08] rounded-full text-xs font-medium transition cursor-pointer"
+                  >
+                    Sign Out
+                  </button>
                 </div>
               </div>
+            )}
 
-              <div className="flex items-center gap-2 self-end sm:self-auto">
-                <button
-                  type="button"
-                  onClick={() => onAuthSuccess(currentUser.role)}
-                  className="px-3.5 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-md text-xs font-medium transition cursor-pointer"
-                >
-                  Continue
-                </button>
-                <button
-                  type="button"
-                  onClick={logout}
-                  className="px-3.5 py-1.5 bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 rounded-md text-xs font-medium transition cursor-pointer"
-                >
-                  Sign Out
-                </button>
-              </div>
+            {/* Segmented Mode Selector */}
+            <div className="relative flex bg-[#111111]/[0.03] p-1 rounded-full border border-[#111111]/[0.05] text-xs font-medium">
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('signin');
+                  setSignInError(null);
+                }}
+                className={`relative flex-1 py-1.5 px-4 rounded-full transition-colors cursor-pointer z-10 ${
+                  mode === 'signin'
+                    ? 'text-[#111111] font-semibold'
+                    : 'text-zinc-500 hover:text-zinc-900'
+                }`}
+              >
+                {mode === 'signin' && (
+                  <motion.div
+                    layoutId="auth-active-tab-pill"
+                    className="absolute inset-0 bg-white rounded-full border border-[#111111]/[0.06] shadow-xs -z-10"
+                    transition={{ type: 'spring', bounce: 0.12, duration: 0.28 }}
+                  />
+                )}
+                <span>Sign In</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMode('signup');
+                  setSignUpError(null);
+                }}
+                className={`relative flex-1 py-1.5 px-4 rounded-full transition-colors cursor-pointer z-10 ${
+                  mode === 'signup'
+                    ? 'text-[#111111] font-semibold'
+                    : 'text-zinc-500 hover:text-zinc-900'
+                }`}
+              >
+                {mode === 'signup' && (
+                  <motion.div
+                    layoutId="auth-active-tab-pill"
+                    className="absolute inset-0 bg-white rounded-full border border-[#111111]/[0.06] shadow-xs -z-10"
+                    transition={{ type: 'spring', bounce: 0.12, duration: 0.28 }}
+                  />
+                )}
+                <span>Create Account</span>
+              </button>
             </div>
-          )}
-
-          {/* Segmented Mode Selector */}
-          <div className="relative flex bg-zinc-100 p-1 rounded-lg border border-zinc-200/80 text-xs font-medium">
-            <button
-              type="button"
-              onClick={() => {
-                setMode('signin');
-                setSignInError(null);
-              }}
-              className={`relative flex-1 py-2 px-4 rounded-md transition-colors cursor-pointer z-10 ${
-                mode === 'signin'
-                  ? 'text-zinc-950 font-semibold'
-                  : 'text-zinc-500 hover:text-zinc-900'
-              }`}
-            >
-              {mode === 'signin' && (
-                <motion.div
-                  layoutId="auth-active-tab-pill"
-                  className="absolute inset-0 bg-white rounded-md shadow-xs border border-zinc-200/80 -z-10"
-                  transition={{ type: 'spring', bounce: 0.15, duration: 0.35 }}
-                />
-              )}
-              <span>Sign In</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode('signup');
-                setSignUpError(null);
-              }}
-              className={`relative flex-1 py-2 px-4 rounded-md transition-colors cursor-pointer z-10 ${
-                mode === 'signup'
-                  ? 'text-zinc-950 font-semibold'
-                  : 'text-zinc-500 hover:text-zinc-900'
-              }`}
-            >
-              {mode === 'signup' && (
-                <motion.div
-                  layoutId="auth-active-tab-pill"
-                  className="absolute inset-0 bg-white rounded-md shadow-xs border border-zinc-200/80 -z-10"
-                  transition={{ type: 'spring', bounce: 0.15, duration: 0.35 }}
-                />
-              )}
-              <span>Create Account</span>
-            </button>
-          </div>
 
           {/* Form Container with Smooth Slide & Fade Transition */}
           <motion.div
             layout
-            transition={{ layout: { duration: 0.26, ease: [0.16, 1, 0.3, 1] } }}
+            transition={{ layout: { duration: 0.2, ease: [0.16, 1, 0.3, 1] } }}
             className="relative overflow-hidden"
           >
             <AnimatePresence mode="popLayout" initial={false}>
               {mode === 'signin' ? (
                 <motion.form
                   key="signin-form"
-                  initial={{ opacity: 0, y: 8 }}
+                  initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.18, ease: 'easeOut' }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
                   onSubmit={handleSignInSubmit}
                   className="space-y-4 w-full"
                 >
                   {signInError && (
-                    <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-xs font-medium">
+                    <div className="p-3 bg-[#FDEBEC] border border-[#F8D7DA] text-[#9F2F2D] rounded-[6px] text-xs font-medium">
                       {signInError}
                     </div>
                   )}
@@ -286,7 +289,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                         value={signInIdentifier}
                         onChange={(e) => setSignInIdentifier(e.target.value)}
                         placeholder="e.g. chandara@gmail.com or 012 345 678"
-                        className="w-full pl-9 pr-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
+                        className="w-full pl-9 pr-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                       />
                     </div>
                   </div>
@@ -296,7 +299,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                       <label className="block text-xs font-medium text-zinc-700">
                         Password
                       </label>
-                      <span className="text-[10px] text-zinc-400">Any demo password</span>
+                      <span className="text-[10px] text-zinc-400 font-mono">Any demo password</span>
                     </div>
                     <div className="relative">
                       <Lock className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -305,7 +308,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                         value={signInPassword}
                         onChange={(e) => setSignInPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full pl-9 pr-9 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
+                        className="w-full pl-9 pr-9 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                       />
                       <button
                         type="button"
@@ -319,17 +322,19 @@ export const AuthView: React.FC<AuthViewProps> = ({
 
                   <button
                     type="submit"
-                    className="w-full py-2.5 px-4 bg-zinc-950 hover:bg-zinc-800 text-white font-medium rounded-md transition shadow-xs flex items-center justify-center gap-2 text-xs cursor-pointer mt-2"
+                    className="group w-full py-2.5 pl-6 pr-2 bg-[#111111] hover:bg-[#222222] text-white font-medium rounded-full transition-spring flex items-center justify-between text-xs cursor-pointer mt-2 active:scale-[0.98] shadow-xs"
                   >
-                    <span>Sign In</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <span>Sign In to Wallet</span>
+                    <span className="btn-nested-icon w-6 h-6 rounded-full bg-white/15 flex items-center justify-center group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+                      <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
+                    </span>
                   </button>
 
                   <div className="pt-1 text-center">
                     <button
                       type="button"
                       onClick={onBrowseAsGuest}
-                      className="text-xs text-zinc-400 hover:text-zinc-900 transition font-medium cursor-pointer"
+                      className="text-xs text-[#787774] hover:text-[#111111] transition font-medium cursor-pointer"
                     >
                       Continue browsing events as Guest &rarr;
                     </button>
@@ -338,15 +343,15 @@ export const AuthView: React.FC<AuthViewProps> = ({
               ) : (
                 <motion.form
                   key="signup-form"
-                  initial={{ opacity: 0, y: 8 }}
+                  initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.18, ease: 'easeOut' }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.15, ease: 'easeOut' }}
                   onSubmit={handleSignUpSubmit}
                   className="space-y-4 w-full"
                 >
                   {signUpError && (
-                    <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md text-xs font-medium">
+                    <div className="p-3 bg-[#FDEBEC] border border-[#F8D7DA] text-[#9F2F2D] rounded-[6px] text-xs font-medium">
                       {signUpError}
                     </div>
                   )}
@@ -363,7 +368,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                         value={signUpName}
                         onChange={(e) => setSignUpName(e.target.value)}
                         placeholder="e.g. Chan Dara"
-                        className="w-full pl-9 pr-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
+                        className="w-full pl-9 pr-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                       />
                     </div>
                   </div>
@@ -381,7 +386,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                           value={signUpEmail}
                           onChange={(e) => setSignUpEmail(e.target.value)}
                           placeholder="chandara@gmail.com"
-                          className="w-full pl-9 pr-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
+                          className="w-full pl-9 pr-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                         />
                       </div>
                     </div>
@@ -398,7 +403,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                           value={signUpPhone}
                           onChange={(e) => setSignUpPhone(e.target.value)}
                           placeholder="012 345 678"
-                          className="w-full pl-9 pr-3 py-2 bg-white border border-zinc-200 rounded-md text-xs font-mono text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
+                          className="w-full pl-9 pr-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs font-mono text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                         />
                       </div>
                     </div>
@@ -418,7 +423,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                           value={signUpPassword}
                           onChange={(e) => setSignUpPassword(e.target.value)}
                           placeholder="Min. 6 characters"
-                          className="w-full pl-9 pr-9 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
+                          className="w-full pl-9 pr-9 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                         />
                         <button
                           type="button"
@@ -442,7 +447,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                           value={signUpConfirmPassword}
                           onChange={(e) => setSignUpConfirmPassword(e.target.value)}
                           placeholder="Re-enter password"
-                          className="w-full pl-9 pr-9 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
+                          className="w-full pl-9 pr-9 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                         />
                         <button
                           type="button"
@@ -457,17 +462,19 @@ export const AuthView: React.FC<AuthViewProps> = ({
 
                   <button
                     type="submit"
-                    className="w-full py-2.5 px-4 bg-zinc-950 hover:bg-zinc-800 text-white font-medium rounded-md transition shadow-xs flex items-center justify-center gap-2 text-xs cursor-pointer mt-2"
+                    className="group w-full py-2.5 pl-6 pr-2 bg-[#111111] hover:bg-[#222222] text-white font-medium rounded-full transition-spring flex items-center justify-between text-xs cursor-pointer mt-2 active:scale-[0.98] shadow-xs"
                   >
-                    <UserCheck className="w-3.5 h-3.5" />
-                    <span>Create Account</span>
+                    <span>Create Verified Account</span>
+                    <span className="btn-nested-icon w-6 h-6 rounded-full bg-white/15 flex items-center justify-center group-hover:scale-105 transition-transform">
+                      <UserCheck className="w-3.5 h-3.5" />
+                    </span>
                   </button>
 
                   <div className="pt-1 text-center">
                     <button
                       type="button"
                       onClick={onBrowseAsGuest}
-                      className="text-xs text-zinc-400 hover:text-zinc-900 transition font-medium cursor-pointer"
+                      className="text-xs text-[#787774] hover:text-[#111111] transition font-medium cursor-pointer"
                     >
                       Continue browsing events as Guest &rarr;
                     </button>
@@ -476,16 +483,17 @@ export const AuthView: React.FC<AuthViewProps> = ({
               )}
             </AnimatePresence>
           </motion.div>
+          </div>
         </div>
 
         {/* Right Column: Demo Personas */}
         <div className="lg:col-span-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-sm text-zinc-900">
+            <h3 className="font-serif text-lg font-medium text-[#111111]">
               Demo Accounts
             </h3>
-            <span className="text-xs text-zinc-400">
-              Instant login
+            <span className="text-xs text-[#787774] font-mono">
+              One-click sign in
             </span>
           </div>
 
@@ -503,57 +511,72 @@ export const AuthView: React.FC<AuthViewProps> = ({
                     : 'Staff'
                   : 'Customer';
 
+              const badgeColor =
+                persona.role === 'ADMIN'
+                  ? 'bg-[#FBF3DB] text-[#956400] border-[#F6E7B9]'
+                  : persona.role === 'STAFF'
+                  ? 'bg-[#E1F3FE] text-[#1F6C9F] border-[#CDE9FD]'
+                  : 'bg-[#EDF3EC] text-[#346538] border-[#DBEADB]';
+
               return (
                 <div
                   key={persona.id}
-                  className={`bg-white rounded-xl border p-4 space-y-3 transition flex flex-col justify-between ${
+                  className={`double-bezel-tray transition-all duration-200 ${
                     isCurrent
-                      ? 'border-zinc-950 ring-1 ring-zinc-950'
-                      : 'border-zinc-200 hover:border-zinc-300'
+                      ? 'border-[#111111]/30 ring-1 ring-[#111111]/40'
+                      : 'hover:border-[#111111]/25 hover:shadow-xs'
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-2.5">
-                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                      <img
-                        src={persona.avatar}
-                        alt={persona.name}
-                        className="w-9 h-9 rounded-full object-cover border border-zinc-200 shrink-0"
-                        referrerPolicy="no-referrer"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-medium text-xs text-zinc-900 truncate">
-                          {persona.name}
-                        </h4>
-                        <span
-                          className="text-[11px] text-zinc-400 truncate block"
-                          title={persona.email}
-                        >
-                          {persona.email}
-                        </span>
+                  <div className="double-bezel-core p-4 space-y-3 flex flex-col justify-between h-full">
+                    <div className="flex items-start justify-between gap-2.5">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        {persona.avatar ? (
+                          <img
+                            src={persona.avatar}
+                            alt={persona.name}
+                            className="w-9 h-9 rounded-full object-cover border border-[#111111]/[0.08] shrink-0"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <div className="w-9 h-9 rounded-full bg-[#111111] text-white flex items-center justify-center font-mono font-medium text-xs shrink-0">
+                            {persona.name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-semibold text-xs text-[#111111] truncate">
+                            {persona.name}
+                          </h4>
+                          <span
+                            className="text-[11px] text-[#787774] truncate block font-mono"
+                            title={persona.email}
+                          >
+                            {persona.email}
+                          </span>
+                        </div>
                       </div>
+
+                      <span className={`shrink-0 px-2 py-0.5 rounded-full text-[9px] font-mono font-medium border ${badgeColor}`}>
+                        {roleTag}
+                      </span>
                     </div>
 
-                    <span className="shrink-0 px-2 py-0.5 rounded text-[10px] font-mono text-zinc-600 bg-zinc-100 border border-zinc-200">
-                      {roleTag}
-                    </span>
-                  </div>
+                    <div className="pt-2 border-t border-[#111111]/[0.06] flex items-center justify-between gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleAutofillPersona(persona)}
+                        className="text-[11px] text-[#787774] hover:text-[#111111] transition cursor-pointer font-mono"
+                      >
+                        Autofill
+                      </button>
 
-                  <div className="pt-2 border-t border-zinc-100 flex items-center justify-between gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handleAutofillPersona(persona)}
-                      className="text-[11px] text-zinc-400 hover:text-zinc-700 transition cursor-pointer"
-                    >
-                      Autofill
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleSelectDemoPersona(persona)}
-                      className="py-1.5 px-3 bg-zinc-950 hover:bg-zinc-800 text-white rounded-md text-xs font-medium transition cursor-pointer"
-                    >
-                      <span>Sign In</span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSelectDemoPersona(persona)}
+                        className="py-1 px-3 bg-[#111111] hover:bg-[#222222] text-white rounded-full text-xs font-medium transition cursor-pointer active:scale-[0.98] shadow-xs"
+                      >
+                        <span>Sign In</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               );

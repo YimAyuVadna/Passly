@@ -60,7 +60,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'my-tickets' as const, label: 'My Passes', icon: Ticket, show: true },
     {
       id: 'staff' as const,
-      label: 'Staff Portal',
+      label: 'Staff Gate',
       icon: Camera,
       show: isLoggedIn && (currentUser.role === 'STAFF' || currentUser.role === 'ADMIN'),
     },
@@ -73,27 +73,27 @@ export const Navbar: React.FC<NavbarProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-zinc-200/80 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14 gap-4">
+    <header className="sticky top-3 sm:top-4 z-40 px-3 sm:px-6 lg:px-8 pointer-events-none transition-all">
+      <div className="max-w-6xl mx-auto rounded-full bg-[#FFFFFF]/90 backdrop-blur-xl border border-[#111111]/[0.08] shadow-[0_8px_30px_rgb(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] p-1.5 px-3 sm:px-4 pointer-events-auto">
+        <div className="flex items-center justify-between h-11 sm:h-12 gap-3 sm:gap-4">
           {/* Logo & Navigation */}
-          <div className="flex items-center gap-7">
+          <div className="flex items-center gap-4 sm:gap-6">
             <motion.button
-              whileHover={{ opacity: 0.8 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => onChangeView('events')}
               className="flex items-center gap-2 text-left group focus:outline-none cursor-pointer select-none"
             >
-              <div className="w-7 h-7 rounded-md bg-zinc-950 text-white flex items-center justify-center">
+              <div className="w-6 h-6 rounded-full bg-[#111111] text-white flex items-center justify-center shadow-xs">
                 <Ticket className="w-3.5 h-3.5 stroke-[2]" />
               </div>
-              <span className="font-semibold text-sm tracking-tight text-zinc-950">
+              <span className="font-semibold text-xs sm:text-sm tracking-tight text-[#111111] flex items-center gap-1.5">
                 TicketPass
+                <span className="text-[9px] font-mono uppercase tracking-[0.18em] text-zinc-400 font-medium px-1.5 py-0.5 rounded-full bg-[#111111]/[0.04]">Direct</span>
               </span>
             </motion.button>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-0.5 bg-zinc-100/70 p-1 rounded-lg border border-zinc-200/60 relative">
+            {/* Desktop Segmented Navigation */}
+            <nav className="hidden md:flex items-center gap-1 bg-[#111111]/[0.03] p-1 rounded-full border border-[#111111]/[0.05] relative">
               {navTabs
                 .filter((tab) => tab.show)
                 .map((tab) => {
@@ -102,34 +102,24 @@ export const Navbar: React.FC<NavbarProps> = ({
                   return (
                     <motion.button
                       key={tab.id}
-                      whileTap={{ scale: 0.97 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => onChangeView(tab.id)}
-                      className={`relative px-3 py-1 rounded-md text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer z-10 select-none ${
+                      className={`relative px-3 py-1 rounded-full text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer z-10 select-none ${
                         isActive
-                          ? tab.id === 'admin'
-                            ? 'text-white'
-                            : 'text-zinc-950 font-semibold'
+                          ? 'text-[#111111] font-semibold'
                           : 'text-zinc-500 hover:text-zinc-900'
                       }`}
                     >
                       {isActive && (
                         <motion.div
                           layoutId="navbar-active-pill"
-                          className={`absolute inset-0 rounded-md shadow-xs -z-10 ${
-                            tab.id === 'admin'
-                              ? 'bg-zinc-900'
-                              : 'bg-white border border-zinc-200/70'
-                          }`}
-                          transition={{ type: 'spring', bounce: 0.1, duration: 0.3 }}
+                          className="absolute inset-0 rounded-full bg-white border border-[#111111]/[0.06] -z-10 shadow-[0_1px_3px_rgba(0,0,0,0.05)]"
+                          transition={{ type: 'spring', bounce: 0.12, duration: 0.3 }}
                         />
                       )}
                       <Icon
                         className={`w-3.5 h-3.5 ${
-                          isActive && tab.id === 'admin'
-                            ? 'text-zinc-300'
-                            : isActive
-                            ? 'text-zinc-900'
-                            : 'text-zinc-400'
+                          isActive ? 'text-[#111111]' : 'text-zinc-400'
                         }`}
                       />
                       <span>{tab.label}</span>
@@ -144,12 +134,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Buy Pass Online Simulation Button */}
             {onOpenOnlineBooking && (
               <motion.button
-                whileTap={{ scale: 0.97 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={onOpenOnlineBooking}
                 title="Simulate Online Client Pass Purchase & QR Generation"
-                className="px-3 py-1.5 bg-white hover:bg-zinc-50 text-zinc-900 border border-zinc-200 rounded-md text-xs font-medium transition cursor-pointer select-none flex items-center gap-1.5 shadow-2xs"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-[#F7F6F3] text-[#111111] border border-[#111111]/[0.08] rounded-full text-xs font-medium transition-spring cursor-pointer select-none shadow-xs"
               >
-                <Ticket className="w-3.5 h-3.5 text-zinc-600" />
+                <Ticket className="w-3.5 h-3.5 text-zinc-500" />
                 <span>Simulate Pass</span>
               </motion.button>
             )}
@@ -159,26 +149,28 @@ export const Navbar: React.FC<NavbarProps> = ({
               <>
                 <div className="hidden sm:flex items-center gap-1.5">
                   <motion.button
-                    whileTap={{ scale: 0.97 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={onOpenScanner}
                     title="Scan QR Code"
-                    className="px-3 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-md text-xs font-medium transition flex items-center gap-1.5 cursor-pointer select-none shadow-xs"
+                    className="group inline-flex items-center justify-between gap-2 pl-3 pr-1.5 py-1 bg-[#111111] hover:bg-[#222222] text-white rounded-full text-xs font-medium transition-spring cursor-pointer select-none shadow-xs"
                   >
-                    <Camera className="w-3.5 h-3.5 text-zinc-300" />
                     <span>Scan QR</span>
+                    <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+                      <Camera className="w-3 h-3 text-white" />
+                    </span>
                   </motion.button>
 
                   <motion.button
-                    whileTap={{ scale: 0.97 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={onOpenAssistedPurchase}
                     title="Staff Assisted Purchase"
-                    className="px-3 py-1.5 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-200 rounded-md text-xs font-medium transition flex items-center gap-1.5 cursor-pointer select-none"
+                    className="px-3 py-1 bg-white hover:bg-[#F7F6F3] text-zinc-800 border border-[#111111]/[0.08] rounded-full text-xs font-medium transition-spring flex items-center gap-1.5 cursor-pointer select-none shadow-xs"
                   >
                     <ShoppingBag className="w-3.5 h-3.5 text-zinc-500" />
-                    <span>Assisted Sale</span>
+                    <span>Box Office</span>
                   </motion.button>
                 </div>
-                <div className="h-4 w-px bg-zinc-200 hidden sm:block mx-0.5" />
+                <div className="h-4 w-px bg-[#111111]/[0.08] hidden sm:block mx-0.5" />
               </>
             )}
 
@@ -186,96 +178,101 @@ export const Navbar: React.FC<NavbarProps> = ({
             {isLoggedIn ? (
               <div className="relative" ref={userMenuRef}>
                 <motion.button
-                  whileTap={{ scale: 0.97 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center gap-2 px-2 py-1 rounded-md bg-white hover:bg-zinc-50 border border-zinc-200 transition-colors focus:outline-none cursor-pointer select-none"
+                  className="flex items-center gap-2 pl-1 pr-2.5 py-0.5 rounded-full bg-white hover:bg-[#F7F6F3] border border-[#111111]/[0.08] transition-colors focus:outline-none cursor-pointer select-none shadow-xs"
                   title="User Profile & Settings"
                 >
-                  <img
-                    src={
-                      currentUser.avatar ||
-                      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'
-                    }
-                    alt={currentUser.name}
-                    className="w-5 h-5 rounded-full object-cover ring-1 ring-zinc-200"
-                    referrerPolicy="no-referrer"
-                  />
+                  {currentUser.avatar ? (
+                    <img
+                      src={currentUser.avatar}
+                      alt={currentUser.name}
+                      className="w-5 h-5 rounded-full object-cover border border-[#111111]/[0.08]"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="w-5 h-5 rounded-full bg-[#111111] text-white flex items-center justify-center text-[10px] font-mono font-medium">
+                      {currentUser.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                   <div className="text-left hidden lg:block">
-                    <span className="font-medium text-xs text-zinc-900 leading-tight block">
+                    <span className="font-medium text-xs text-[#111111] leading-tight block">
                       {currentUser.name}
                     </span>
                   </div>
                   <ChevronDown className="w-3 h-3 text-zinc-400" />
                 </motion.button>
 
-                {/* User Profile Dropdown with AnimatePresence */}
+                {/* User Profile Dropdown with Double-Bezel Framing */}
                 <AnimatePresence>
                   {isUserMenuOpen && (
                     <motion.div
                       initial={{ opacity: 0, y: 4, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 4, scale: 0.98 }}
-                      transition={{ duration: 0.12, ease: 'easeOut' }}
-                      className="absolute right-0 mt-1.5 w-56 bg-white rounded-xl shadow-lg border border-zinc-200 py-1.5 z-50 text-xs origin-top-right"
+                      transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
+                      className="absolute right-0 mt-2 w-60 double-bezel-tray shadow-[0_16px_40px_rgba(0,0,0,0.08)] z-50 text-xs origin-top-right"
                     >
-                      <div className="px-4 py-2.5 border-b border-zinc-100">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider block">
-                            Account
+                      <div className="double-bezel-core p-1">
+                        <div className="px-3 py-2 border-b border-[#111111]/[0.06]">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[9px] font-mono font-medium text-zinc-400 uppercase tracking-[0.16em] block">
+                              Account
+                            </span>
+                            <span className="px-1.5 py-0.5 bg-[#111111]/[0.04] rounded-full text-[9px] font-mono font-medium text-zinc-700 border border-[#111111]/[0.06]">
+                              {currentUser.staffRole || currentUser.role}
+                            </span>
+                          </div>
+                          <span className="font-semibold text-[#111111] text-xs block">
+                            {currentUser.name}
                           </span>
-                          <span className="px-1.5 py-0.5 bg-zinc-100 rounded text-[10px] font-mono font-medium text-zinc-700">
-                            {currentUser.staffRole || currentUser.role}
-                          </span>
+                          <span className="text-zinc-500 text-[11px] truncate block">{currentUser.email}</span>
                         </div>
-                        <span className="font-bold text-zinc-900 text-sm block">
-                          {currentUser.name}
-                        </span>
-                        <span className="text-zinc-500 text-[11px] truncate block">{currentUser.email}</span>
-                      </div>
 
-                      <div className="p-1.5 space-y-0.5">
-                        <button
-                          onClick={() => {
-                            onChangeView('my-tickets');
-                            setIsUserMenuOpen(false);
-                          }}
-                          className="w-full px-3 py-2 text-left text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 rounded-xl transition-colors flex items-center gap-2.5 font-medium cursor-pointer"
-                        >
-                          <Ticket className="w-4 h-4 text-zinc-500" />
-                          <span>My Passes</span>
-                        </button>
+                        <div className="p-1 space-y-0.5">
+                          <button
+                            onClick={() => {
+                              onChangeView('my-tickets');
+                              setIsUserMenuOpen(false);
+                            }}
+                            className="w-full px-2.5 py-1.5 text-left text-zinc-700 hover:text-[#111111] hover:bg-[#F7F6F3] rounded-[8px] transition-colors flex items-center gap-2 font-medium cursor-pointer"
+                          >
+                            <Ticket className="w-3.5 h-3.5 text-zinc-500" />
+                            <span>My Digital Passes</span>
+                          </button>
 
-                        <button
-                          onClick={() => {
-                            onOpenSettings?.();
-                            setIsUserMenuOpen(false);
-                          }}
-                          className="w-full px-3 py-2 text-left text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 rounded-xl transition-colors flex items-center gap-2.5 font-medium cursor-pointer"
-                        >
-                          <Settings className="w-4 h-4 text-zinc-500" />
-                          <span>Account Settings</span>
-                        </button>
+                          <button
+                            onClick={() => {
+                              onOpenSettings?.();
+                              setIsUserMenuOpen(false);
+                            }}
+                            className="w-full px-2.5 py-1.5 text-left text-zinc-700 hover:text-[#111111] hover:bg-[#F7F6F3] rounded-[8px] transition-colors flex items-center gap-2 font-medium cursor-pointer"
+                          >
+                            <Settings className="w-3.5 h-3.5 text-zinc-500" />
+                            <span>Account Settings</span>
+                          </button>
 
-                        <button
-                          onClick={handleSignOut}
-                          className="w-full px-3 py-2 text-left text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 rounded-xl transition-colors flex items-center gap-2.5 font-medium cursor-pointer"
-                        >
-                          <LogOut className="w-4 h-4 text-zinc-500" />
-                          <span>Sign Out</span>
-                        </button>
-                      </div>
+                          <button
+                            onClick={handleSignOut}
+                            className="w-full px-2.5 py-1.5 text-left text-zinc-700 hover:text-[#111111] hover:bg-[#F7F6F3] rounded-[8px] transition-colors flex items-center gap-2 font-medium cursor-pointer"
+                          >
+                            <LogOut className="w-3.5 h-3.5 text-zinc-500" />
+                            <span>Sign Out</span>
+                          </button>
+                        </div>
 
-                      <div className="p-1.5 border-t border-zinc-100">
-                        <button
-                          onClick={() => {
-                            resetAllData();
-                            setIsUserMenuOpen(false);
-                          }}
-                          className="w-full px-3 py-1.5 text-left text-zinc-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors flex items-center gap-2 font-medium cursor-pointer"
-                        >
-                          <RotateCcw className="w-3.5 h-3.5" />
-                          <span>Reset All Demo Data</span>
-                        </button>
+                        <div className="p-1 border-t border-[#111111]/[0.06]">
+                          <button
+                            onClick={() => {
+                              resetAllData();
+                              setIsUserMenuOpen(false);
+                            }}
+                            className="w-full px-2.5 py-1.5 text-left text-zinc-500 hover:text-[#9F2F2D] hover:bg-[#FDEBEC] rounded-[8px] transition-colors flex items-center gap-2 font-medium cursor-pointer"
+                          >
+                            <RotateCcw className="w-3 h-3" />
+                            <span>Reset Demo Data</span>
+                          </button>
+                        </div>
                       </div>
                     </motion.div>
                   )}
@@ -283,173 +280,175 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             ) : currentView === 'auth' ? (
               <motion.button
-                whileTap={{ scale: 0.97 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => onChangeView('events')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-zinc-700 hover:text-zinc-950 bg-zinc-100/80 hover:bg-zinc-200/70 border border-zinc-200/60 transition-colors cursor-pointer select-none"
+                className="flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-medium text-zinc-700 hover:text-[#111111] bg-white hover:bg-[#F7F6F3] border border-[#111111]/[0.08] transition-spring cursor-pointer select-none shadow-xs"
               >
                 <Compass className="w-3.5 h-3.5" />
                 <span>Browse Events</span>
               </motion.button>
             ) : (
               <motion.button
-                whileTap={{ scale: 0.97 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => onChangeView('auth')}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-md text-xs font-medium transition-colors shadow-xs cursor-pointer select-none"
+                className="group inline-flex items-center justify-between gap-2 pl-3.5 pr-1.5 py-1 bg-[#111111] hover:bg-[#222222] text-white rounded-full text-xs font-medium transition-spring cursor-pointer select-none shadow-xs"
               >
-                <LogIn className="w-3.5 h-3.5" />
                 <span>Sign In</span>
+                <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                  <LogIn className="w-3 h-3 text-white" />
+                </span>
               </motion.button>
             )}
 
             {/* Mobile Hamburger Button */}
             <motion.button
-              whileTap={{ scale: 0.92 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-1.5 text-zinc-600 hover:text-zinc-900 rounded-md hover:bg-zinc-100 transition-colors cursor-pointer"
+              className="md:hidden p-1.5 text-zinc-600 hover:text-zinc-900 rounded-full hover:bg-[#111111]/[0.05] transition-colors cursor-pointer"
               aria-label="Toggle navigation menu"
             >
               {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </motion.button>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Drawer Menu with AnimatePresence */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="md:hidden border-b border-zinc-200/80 bg-white/95 backdrop-blur-xl px-4 pt-2 pb-4 space-y-1 overflow-hidden"
-          >
-            <button
-              onClick={() => {
-                onChangeView('events');
-                setIsMobileMenuOpen(false);
-              }}
-              className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
-                currentView === 'events'
-                  ? 'bg-zinc-900 text-white'
-                  : 'text-zinc-700 hover:bg-zinc-100'
-              }`}
+        {/* Mobile Drawer Menu with Double-Bezel Architecture */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0, marginTop: 0 }}
+              animate={{ opacity: 1, height: 'auto', marginTop: 8 }}
+              exit={{ opacity: 0, height: 0, marginTop: 0 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="md:hidden border-t border-[#111111]/[0.06] pt-2 pb-1 space-y-1 overflow-hidden"
             >
-              <Compass className="w-4 h-4" />
-              <span>Explore Events</span>
-            </button>
-
-            <button
-              onClick={() => {
-                onChangeView('my-tickets');
-                setIsMobileMenuOpen(false);
-              }}
-              className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
-                currentView === 'my-tickets'
-                  ? 'bg-zinc-900 text-white'
-                  : 'text-zinc-700 hover:bg-zinc-100'
-              }`}
-            >
-              <Ticket className="w-4 h-4" />
-              <span>My Digital Passes</span>
-            </button>
-
-            {onOpenOnlineBooking && (
               <button
                 onClick={() => {
-                  onOpenOnlineBooking();
+                  onChangeView('events');
                   setIsMobileMenuOpen(false);
                 }}
-                className="w-full p-2.5 rounded-xl text-left text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer bg-zinc-100 hover:bg-zinc-200/80 text-zinc-900 border border-zinc-200/60"
-              >
-                <Ticket className="w-4 h-4 text-zinc-700" />
-                <span>Simulate Pass</span>
-              </button>
-            )}
-
-            {isLoggedIn && (currentUser.role === 'STAFF' || currentUser.role === 'ADMIN') && (
-              <button
-                onClick={() => {
-                  onChangeView('staff');
-                  setIsMobileMenuOpen(false);
-                }}
-                className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
-                  currentView === 'staff'
-                    ? 'bg-zinc-900 text-white'
-                    : 'text-zinc-700 hover:bg-zinc-100'
+                className={`w-full p-2.5 rounded-full text-left text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
+                  currentView === 'events'
+                    ? 'bg-[#111111] text-white font-semibold'
+                    : 'text-zinc-700 hover:bg-[#111111]/[0.04]'
                 }`}
               >
-                <Camera className="w-4 h-4 text-zinc-500" />
-                <span>Staff Portal</span>
+                <Compass className="w-4 h-4" />
+                <span>Explore Events</span>
               </button>
-            )}
 
-            {isLoggedIn && currentUser.role === 'ADMIN' && (
               <button
                 onClick={() => {
-                  onChangeView('admin');
+                  onChangeView('my-tickets');
                   setIsMobileMenuOpen(false);
                 }}
-                className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
-                  currentView === 'admin'
-                    ? 'bg-zinc-900 text-white'
-                    : 'text-zinc-700 hover:bg-zinc-100'
+                className={`w-full p-2.5 rounded-full text-left text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
+                  currentView === 'my-tickets'
+                    ? 'bg-[#111111] text-white font-semibold'
+                    : 'text-zinc-700 hover:bg-[#111111]/[0.04]'
                 }`}
               >
-                <Shield className="w-4 h-4" />
-                <span>Admin Console</span>
+                <Ticket className="w-4 h-4" />
+                <span>My Digital Passes</span>
               </button>
-            )}
 
-            <div className="pt-2 border-t border-zinc-200/60 my-1 space-y-1">
-              {isLoggedIn ? (
-                <>
-                  <div className="px-3 py-2 text-xs border-b border-zinc-100 mb-1">
-                    <span className="text-[10px] text-zinc-400 font-semibold uppercase">Signed In As</span>
-                    <p className="font-bold text-zinc-900">{currentUser.name}</p>
-                    <p className="text-[11px] text-zinc-500">{currentUser.email}</p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      onOpenSettings?.();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full p-2.5 rounded-xl text-left text-xs font-medium text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 flex items-center gap-2.5 transition-colors cursor-pointer"
-                  >
-                    <Settings className="w-4 h-4 text-zinc-500" />
-                    <span>Account Settings</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleSignOut();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full p-2.5 rounded-xl text-left text-xs font-medium text-zinc-700 hover:text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 transition-colors cursor-pointer"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>Sign Out</span>
-                  </button>
-                </>
-              ) : (
+              {onOpenOnlineBooking && (
                 <button
                   onClick={() => {
-                    onChangeView('auth');
+                    onOpenOnlineBooking();
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`w-full p-2.5 rounded-xl text-left text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
-                    currentView === 'auth'
-                      ? 'bg-zinc-900 text-white'
-                      : 'text-zinc-700 hover:bg-zinc-100'
-                  }`}
+                  className="w-full p-2.5 rounded-full text-left text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer bg-white hover:bg-[#F7F6F3] text-[#111111] border border-[#111111]/[0.08]"
                 >
-                  <LogIn className="w-4 h-4" />
-                  <span>Sign In</span>
+                  <Ticket className="w-4 h-4 text-zinc-700" />
+                  <span>Simulate Pass</span>
                 </button>
               )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+              {isLoggedIn && (currentUser.role === 'STAFF' || currentUser.role === 'ADMIN') && (
+                <button
+                  onClick={() => {
+                    onChangeView('staff');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`w-full p-2.5 rounded-full text-left text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
+                    currentView === 'staff'
+                      ? 'bg-[#111111] text-white font-semibold'
+                      : 'text-zinc-700 hover:bg-[#111111]/[0.04]'
+                  }`}
+                >
+                  <Camera className="w-4 h-4 text-zinc-500" />
+                  <span>Staff Gate Checkpoint</span>
+                </button>
+              )}
+
+              {isLoggedIn && currentUser.role === 'ADMIN' && (
+                <button
+                  onClick={() => {
+                    onChangeView('admin');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`w-full p-2.5 rounded-full text-left text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
+                    currentView === 'admin'
+                      ? 'bg-[#111111] text-white font-semibold'
+                      : 'text-zinc-700 hover:bg-[#111111]/[0.04]'
+                  }`}
+                >
+                  <Shield className="w-4 h-4" />
+                  <span>Admin Console</span>
+                </button>
+              )}
+
+              <div className="pt-2 border-t border-[#111111]/[0.06] my-1 space-y-1">
+                {isLoggedIn ? (
+                  <>
+                    <div className="px-3 py-2 text-xs bg-[#111111]/[0.02] rounded-xl border border-[#111111]/[0.06] mb-1">
+                      <span className="text-[9px] text-zinc-400 font-mono uppercase tracking-[0.16em] block">Signed In</span>
+                      <p className="font-semibold text-[#111111]">{currentUser.name}</p>
+                      <p className="text-[11px] text-zinc-500 truncate">{currentUser.email}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        onOpenSettings?.();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full p-2 rounded-lg text-left text-xs font-medium text-zinc-700 hover:text-[#111111] hover:bg-[#111111]/[0.04] flex items-center gap-2 transition-colors cursor-pointer"
+                    >
+                      <Settings className="w-4 h-4 text-zinc-500" />
+                      <span>Account Settings</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleSignOut();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full p-2 rounded-lg text-left text-xs font-medium text-zinc-700 hover:text-[#9F2F2D] hover:bg-[#FDEBEC] flex items-center gap-2 transition-colors cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => {
+                      onChangeView('auth');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`w-full p-2.5 rounded-full text-left text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer ${
+                      currentView === 'auth'
+                        ? 'bg-[#111111] text-white'
+                        : 'text-zinc-700 hover:bg-[#111111]/[0.04]'
+                    }`}
+                  >
+                    <LogIn className="w-4 h-4" />
+                    <span>Sign In</span>
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </header>
   );
 };

@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans: "Geist", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Newsreader", "Playfair Display", Georgia, serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
 }
 
 /* Prevent horizontal layout shifts from scrollbar appearance/disappearance across views */
@@ -10,31 +11,129 @@ html {
   overflow-y: scroll;
   scrollbar-gutter: stable;
   scroll-behavior: smooth;
+  background-color: #FBFBFA;
 }
 
-/* Base style refinements */
+/* Background scroll lock when modals or drawers are open */
+html.modal-open,
+body.modal-open {
+  overflow: hidden !important;
+}
+
+/* High-End Visual Design: Editorial Luxury Base Style */
 body {
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   -webkit-tap-highlight-color: transparent;
   overflow-x: hidden;
-  background-color: #fafafa;
-  color: #18181b;
+  background-color: #FBFBFA;
+  color: #111111;
+  line-height: 1.6;
+}
+
+/* Custom Cubic-Bezier Transitions for Real-World Mass & Kinetic Tension */
+:root {
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.transition-spring {
+  transition: all 0.35s var(--ease-spring);
+}
+
+/* Double-Bezel (Doppelrand / Nested Enclosure Architecture) */
+.double-bezel-tray {
+  background-color: rgba(17, 17, 17, 0.025);
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  padding: 0.375rem;
+  border-radius: 1.25rem;
+}
+
+.double-bezel-tray-lg {
+  background-color: rgba(17, 17, 17, 0.025);
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  padding: 0.5rem;
+  border-radius: 1.5rem;
+}
+
+.double-bezel-core {
+  background-color: #FFFFFF;
+  border-radius: calc(1.25rem - 0.375rem);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 1px 2px rgba(0, 0, 0, 0.025);
+}
+
+.double-bezel-core-lg {
+  background-color: #FFFFFF;
+  border-radius: calc(1.5rem - 0.5rem);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+/* Micro Eyebrow Badge (Section 4.C) */
+.eyebrow-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
+/* Button-in-Button Trailing Icon Helper */
+.btn-nested-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  transition: transform 0.3s var(--ease-spring);
+}
+
+/* Desaturated Muted Pastel Utility Classes */
+.pastel-green {
+  background-color: #EDF3EC;
+  color: #346538;
+}
+
+.pastel-red {
+  background-color: #FDEBEC;
+  color: #9F2F2D;
+}
+
+.pastel-blue {
+  background-color: #E1F3FE;
+  color: #1F6C9F;
+}
+
+.pastel-yellow {
+  background-color: #FBF3DB;
+  color: #956400;
+}
+
+/* Physical kbd micro-UI */
+kbd {
+  font-family: var(--font-mono);
+  border: 1px solid #EAEAEA;
+  border-radius: 4px;
+  background: #F7F6F3;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.75rem;
 }
 
 /* Sleek minimalist scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #e4e4e7;
-  border-radius: 9999px;
+  background: #EAEAEA;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #a1a1aa;
+  background: #D4D4D4;
 }
 
 /* Print utilities for ticket passes */
@@ -66,4 +165,3 @@ body {
 .animate-laser {
   animation: laser-sweep 2.4s ease-in-out infinite;
 }
-

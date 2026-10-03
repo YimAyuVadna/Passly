@@ -8,7 +8,6 @@ export const INITIAL_USERS: User[] = [
     phone: '012 345 678',
     role: 'CUSTOMER',
     status: 'ACTIVE',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
     createdAt: '2026-08-15T09:00:00Z',
   },
   {
@@ -19,7 +18,6 @@ export const INITIAL_USERS: User[] = [
     role: 'STAFF',
     staffRole: 'STAFF',
     status: 'ACTIVE',
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
     createdAt: '2026-06-10T08:30:00Z',
   },
   {
@@ -30,7 +28,6 @@ export const INITIAL_USERS: User[] = [
     role: 'STAFF',
     staffRole: 'SENIOR_STAFF',
     status: 'ACTIVE',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
     createdAt: '2026-05-20T10:00:00Z',
   },
   {
@@ -41,7 +38,6 @@ export const INITIAL_USERS: User[] = [
     role: 'ADMIN',
     staffRole: 'SUPER_ADMIN',
     status: 'ACTIVE',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
     createdAt: '2026-01-01T00:00:00Z',
   },
 ];

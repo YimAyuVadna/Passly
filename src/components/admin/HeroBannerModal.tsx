@@ -13,6 +13,7 @@ import {
   Image as ImageIcon,
 } from 'lucide-react';
 import { useTicketContext } from '../../context/TicketContext';
+import { useBodyScrollLock } from '../../utils/scrollLock';
 
 interface HeroBannerModalProps {
   isOpen: boolean;
@@ -21,6 +22,9 @@ interface HeroBannerModalProps {
 
 export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClose }) => {
   const { heroBanner, updateHeroBanner, resetHeroBanner, events } = useTicketContext();
+
+  // Lock background scrolling when hero banner modal is open
+  useBodyScrollLock(isOpen);
 
   const [enabled, setEnabled] = useState(heroBanner.enabled);
   const [tag, setTag] = useState(heroBanner.tag);
@@ -163,23 +167,23 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 backdrop-blur-xs p-4 overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-xl overflow-hidden text-zinc-900 border border-zinc-200/90 my-8 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111111]/40 backdrop-blur-xs p-4 overflow-y-auto overscroll-contain">
+      <div className="relative w-full max-w-2xl bg-[#FFFFFF] rounded-[8px] overflow-hidden text-[#111111] border border-[#EAEAEA] my-8 flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 bg-white">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#EAEAEA] bg-[#FFFFFF]">
           <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-md bg-zinc-950 text-white flex items-center justify-center">
+            <div className="w-7 h-7 rounded-[4px] bg-[#111111] text-[#FFFFFF] flex items-center justify-center">
               <Sliders className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm text-zinc-950">Hero Banner Editor</h3>
-              <p className="text-xs text-zinc-400">Manage headline, featured event, and backdrop media</p>
+              <h3 className="font-serif text-lg font-medium text-[#111111]">Hero Banner Editor</h3>
+              <p className="text-xs text-[#787774]">Manage headline, featured event, and backdrop media</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-md transition cursor-pointer"
+            className="p-1.5 text-[#787774] hover:text-[#111111] hover:bg-[#F4F4F2] rounded-[4px] transition cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -187,23 +191,23 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
 
         <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Visibility Switch */}
-          <div className="p-3.5 bg-zinc-50 border border-zinc-200/80 rounded-lg flex items-center justify-between">
+          <div className="p-3.5 bg-[#FBFBFA] border border-[#EAEAEA] rounded-[6px] flex items-center justify-between">
             <div className="space-y-0.5">
-              <h4 className="font-medium text-xs text-zinc-900">Display Hero Banner</h4>
-              <p className="text-[11px] text-zinc-500">
+              <h4 className="font-medium text-xs text-[#111111]">Display Hero Banner</h4>
+              <p className="text-[11px] text-[#787774]">
                 When enabled, this editorial spotlight appears at the top of the event catalog
               </p>
             </div>
             <button
               type="button"
               onClick={() => setEnabled(!enabled)}
-              className={`w-10 h-5.5 rounded-full transition-colors relative cursor-pointer ${
-                enabled ? 'bg-zinc-950' : 'bg-zinc-200'
+              className={`w-10 h-5.5 rounded-full transition-colors relative cursor-pointer border ${
+                enabled ? 'bg-[#111111] border-[#111111]' : 'bg-[#EAEAEA] border-[#EAEAEA]'
               }`}
             >
               <span
-                className={`block w-4 h-4 rounded-full bg-white transition-transform transform ${
-                  enabled ? 'translate-x-5' : 'translate-x-1'
+                className={`block w-4 h-4 rounded-full bg-[#FFFFFF] transition-transform transform ${
+                  enabled ? 'translate-x-5' : 'translate-x-0.5'
                 }`}
               />
             </button>
@@ -211,13 +215,13 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
 
           {/* Quick Autofill from Existing Event */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium text-zinc-700">
+            <label className="block text-xs font-medium text-[#111111]">
               Link to Existing Event (Autofills details)
             </label>
             <select
               value={selectedEventId}
               onChange={(e) => handleEventSelect(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950 cursor-pointer"
+              className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] cursor-pointer"
             >
               <option value="">-- Custom Standalone Banner (No Event Link) --</option>
               {events.map((ev) => (
@@ -231,51 +235,51 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
           {/* Live Mini Preview - Editorial Style */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-zinc-700 flex items-center gap-1.5">
-                <Eye className="w-3.5 h-3.5 text-zinc-400" />
+              <span className="text-xs font-medium text-[#111111] flex items-center gap-1.5">
+                <Eye className="w-3.5 h-3.5 text-[#787774]" />
                 Live Preview
               </span>
-              <span className="text-[10px] font-mono text-zinc-400 uppercase">Editorial Layout</span>
+              <span className="text-[10px] font-mono text-[#787774] uppercase">Editorial Layout</span>
             </div>
 
-            <div className="rounded-lg bg-zinc-50/50 border border-zinc-200/90 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="rounded-[6px] bg-[#FBFBFA] border border-[#EAEAEA] p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex-1 space-y-2 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#787774]">
                     {tag || 'Featured'}
                   </span>
-                  <span className="text-[11px] text-zinc-400">•</span>
-                  <span className="text-[11px] text-zinc-600 font-medium">{category}</span>
+                  <span className="text-[11px] text-[#A1A19E]">•</span>
+                  <span className="text-[11px] text-[#111111] font-medium">{category}</span>
                 </div>
-                <h4 className="text-sm font-semibold tracking-tight text-zinc-950 truncate">
+                <h4 className="font-serif text-base font-medium tracking-tight text-[#111111] truncate">
                   {title || 'Headline Event Title'}
                 </h4>
-                <p className="text-[11px] text-zinc-500 line-clamp-1 leading-relaxed">
+                <p className="text-[11px] text-[#555452] line-clamp-1 leading-relaxed">
                   {description || 'Event description and highlights preview will appear here.'}
                 </p>
-                <div className="flex items-center gap-2.5 text-[10px] text-zinc-400 font-medium">
+                <div className="flex items-center gap-2.5 text-[10px] text-[#787774] font-medium">
                   {date && (
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3 text-zinc-400" />
+                    <span className="flex items-center gap-1 font-mono">
+                      <Calendar className="w-3 h-3 text-[#787774]" />
                       {date}
                     </span>
                   )}
                   {startTime && (
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-zinc-400" />
+                    <span className="flex items-center gap-1 font-mono">
+                      <Clock className="w-3 h-3 text-[#787774]" />
                       {startTime}
                     </span>
                   )}
                   {location && (
                     <span className="flex items-center gap-1 truncate">
-                      <MapPin className="w-3 h-3 text-zinc-400" />
+                      <MapPin className="w-3 h-3 text-[#787774]" />
                       {location}
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="w-28 sm:w-36 aspect-[16/10] rounded-md overflow-hidden bg-zinc-100 border border-zinc-200 shrink-0">
+              <div className="w-28 sm:w-36 aspect-[16/10] rounded-[6px] overflow-hidden bg-[#F4F4F2] border border-[#EAEAEA] shrink-0">
                 {image ? (
                   <img
                     src={image}
@@ -284,7 +288,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-zinc-400">
+                  <div className="w-full h-full flex items-center justify-center text-[#A1A19E]">
                     <ImageIcon className="w-5 h-5 opacity-40" />
                   </div>
                 )}
@@ -295,8 +299,8 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
           {/* Form Fields */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-zinc-700">
-                Badge / Tag Text <span className="text-rose-500">*</span>
+              <label className="block text-xs font-medium text-[#111111]">
+                Badge / Tag Text <span className="text-[#9F2F2D]">*</span>
               </label>
               <input
                 type="text"
@@ -304,13 +308,13 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 value={tag}
                 onChange={(e) => setTag(e.target.value)}
                 placeholder="e.g. Featured Experience"
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
+                className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-zinc-700">
-                Category Label <span className="text-rose-500">*</span>
+              <label className="block text-xs font-medium text-[#111111]">
+                Category Label <span className="text-[#9F2F2D]">*</span>
               </label>
               <input
                 type="text"
@@ -318,13 +322,13 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 placeholder="e.g. Concert, Conference"
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
+                className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
               />
             </div>
 
             <div className="sm:col-span-2 space-y-1">
-              <label className="block text-xs font-medium text-zinc-700">
-                Headline Title <span className="text-rose-500">*</span>
+              <label className="block text-xs font-medium text-[#111111]">
+                Headline Title <span className="text-[#9F2F2D]">*</span>
               </label>
               <input
                 type="text"
@@ -332,13 +336,13 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Neon Pulse EDM Night 2026"
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs font-semibold text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
+                className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs font-medium text-[#111111] focus:outline-none focus:border-[#111111]"
               />
             </div>
 
             <div className="sm:col-span-2 space-y-1">
-              <label className="block text-xs font-medium text-zinc-700">
-                Description & Highlights <span className="text-rose-500">*</span>
+              <label className="block text-xs font-medium text-[#111111]">
+                Description & Highlights <span className="text-[#9F2F2D]">*</span>
               </label>
               <textarea
                 rows={2}
@@ -346,57 +350,57 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="A compelling description for the hero card..."
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
+                className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-zinc-700">Event Date</label>
+              <label className="block text-xs font-medium text-[#111111]">Event Date</label>
               <input
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
+                className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-zinc-700">Start Time</label>
+              <label className="block text-xs font-medium text-[#111111]">Start Time</label>
               <input
                 type="time"
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
+                className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-zinc-700">Location / Venue</label>
+              <label className="block text-xs font-medium text-[#111111]">Location / Venue</label>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="e.g. Diamond Island Exhibition Center"
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
+                className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="block text-xs font-medium text-zinc-700">Action Button Text</label>
+              <label className="block text-xs font-medium text-[#111111]">Action Button Text</label>
               <input
                 type="text"
                 value={buttonText}
                 onChange={(e) => setButtonText(e.target.value)}
                 placeholder="e.g. Reserve Tickets"
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
+                className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
               />
             </div>
           </div>
 
           {/* Image Upload & URL input */}
           <div className="space-y-2 pt-1">
-            <label className="block text-xs font-medium text-zinc-700">
-              Hero Banner Image (URL or Upload) <span className="text-rose-500">*</span>
+            <label className="block text-xs font-medium text-[#111111]">
+              Hero Banner Image (URL or Upload) <span className="text-[#9F2F2D]">*</span>
             </label>
 
             <div className="space-y-2">
@@ -406,7 +410,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 value={image}
                 onChange={(e) => setImage(e.target.value)}
                 placeholder="https://images.unsplash.com/..."
-                className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 font-mono focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
+                className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] font-mono focus:outline-none focus:border-[#111111]"
               />
 
               <div
@@ -414,10 +418,10 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`p-4 rounded-lg border border-dashed text-center transition cursor-pointer ${
+                className={`p-4 rounded-[6px] border border-dashed text-center transition cursor-pointer ${
                   isDragging
-                    ? 'border-zinc-950 bg-zinc-50'
-                    : 'border-zinc-300 hover:border-zinc-400 bg-zinc-50/50'
+                    ? 'border-[#111111] bg-[#FBFBFA]'
+                    : 'border-[#EAEAEA] hover:border-[#A1A19E] bg-[#FBFBFA]'
                 }`}
               >
                 <input
@@ -427,17 +431,17 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <div className="flex items-center justify-center gap-2 text-xs font-medium text-zinc-700">
-                  <Upload className="w-3.5 h-3.5 text-zinc-500" />
+                <div className="flex items-center justify-center gap-2 text-xs font-medium text-[#111111]">
+                  <Upload className="w-3.5 h-3.5 text-[#787774]" />
                   <span>Upload local image file</span>
                 </div>
-                <p className="text-[10px] text-zinc-400 mt-0.5">
+                <p className="text-[10px] text-[#787774] mt-0.5">
                   Drag & drop or click to browse (PNG, JPG, WebP max 3MB)
                 </p>
               </div>
 
               {uploadError && (
-                <div className="flex items-center gap-1.5 p-2.5 bg-rose-50 text-rose-700 rounded-md text-xs border border-rose-200/80">
+                <div className="flex items-center gap-1.5 p-2.5 bg-[#FDEBEC] text-[#9F2F2D] rounded-[6px] text-xs border border-[#F9D4D6]">
                   <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                   <span>{uploadError}</span>
                 </div>
@@ -447,11 +451,11 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
         </form>
 
         {/* Footer */}
-        <div className="p-4 px-6 bg-zinc-50 border-t border-zinc-100 flex items-center justify-between gap-3">
+        <div className="p-4 px-6 bg-[#FBFBFA] border-t border-[#EAEAEA] flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={handleReset}
-            className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-900 transition cursor-pointer font-medium"
+            className="flex items-center gap-1.5 text-xs text-[#787774] hover:text-[#111111] transition cursor-pointer font-medium"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset Default</span>
@@ -461,7 +465,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
             <button
               type="button"
               onClick={onClose}
-              className="px-3.5 py-1.5 bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-200 rounded-md text-xs font-medium transition cursor-pointer"
+              className="px-3.5 py-1.5 bg-[#FFFFFF] hover:bg-[#F4F4F2] text-[#111111] border border-[#EAEAEA] rounded-[6px] text-xs font-medium transition cursor-pointer"
             >
               Cancel
             </button>
@@ -469,7 +473,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
               type="button"
               onClick={handleSave}
               disabled={isSaved}
-              className="px-4 py-1.5 bg-zinc-950 hover:bg-zinc-800 disabled:bg-emerald-600 text-white font-medium rounded-md text-xs shadow-xs transition flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-1.5 bg-[#111111] hover:bg-[#222222] disabled:bg-[#346538] text-[#FFFFFF] font-medium rounded-[6px] text-xs transition flex items-center gap-1.5 cursor-pointer"
             >
               {isSaved ? (
                 <>

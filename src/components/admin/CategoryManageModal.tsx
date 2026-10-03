@@ -7,6 +7,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { useTicketContext } from '../../context/TicketContext';
+import { useBodyScrollLock } from '../../utils/scrollLock';
 
 interface CategoryManageModalProps {
   isOpen: boolean;
@@ -32,6 +33,9 @@ export const CategoryManageModal: React.FC<CategoryManageModalProps> = ({
 
   const [newCategoryInput, setNewCategoryInput] = useState('');
   const [error, setError] = useState<string | null>(null);
+
+  // Lock background scrolling when category manage modal is open
+  useBodyScrollLock(isOpen);
 
   if (!isOpen) return null;
 
@@ -64,18 +68,18 @@ export const CategoryManageModal: React.FC<CategoryManageModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-white rounded-xl shadow-xl overflow-hidden text-zinc-900 border border-zinc-200 my-8 flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111111]/40 backdrop-blur-xs p-4 overflow-y-auto overscroll-contain">
+      <div className="relative w-full max-w-lg bg-[#FFFFFF] rounded-[8px] overflow-hidden text-[#111111] border border-[#EAEAEA] my-8 flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#EAEAEA] bg-[#FFFFFF]">
           <div>
-            <h3 className="font-semibold text-base text-zinc-900">Manage Event Categories</h3>
-            <p className="text-xs text-zinc-400">Storefront filter categories and tags</p>
+            <h3 className="font-serif text-lg font-medium text-[#111111]">Manage Event Categories</h3>
+            <p className="text-xs text-[#787774]">Storefront filter categories and tags</p>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-md transition cursor-pointer"
+            className="p-1.5 text-[#787774] hover:text-[#111111] hover:bg-[#F4F4F2] rounded-[4px] transition cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -84,12 +88,12 @@ export const CategoryManageModal: React.FC<CategoryManageModalProps> = ({
         <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
           {/* Add Category Form */}
           <form onSubmit={handleAdd} className="space-y-1.5">
-            <label className="block text-xs font-medium text-zinc-700">
+            <label className="block text-xs font-medium text-[#111111]">
               Create New Category
             </label>
             <div className="flex items-center gap-2">
               <div className="relative flex-1">
-                <Tag className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Tag className="w-3.5 h-3.5 text-[#787774] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={newCategoryInput}
@@ -98,24 +102,24 @@ export const CategoryManageModal: React.FC<CategoryManageModalProps> = ({
                     setError(null);
                   }}
                   placeholder="e.g. Comedy, Art Festival..."
-                  className="w-full pl-8 pr-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
+                  className="w-full pl-8 pr-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-[#A1A19E] focus:outline-none focus:border-[#111111] transition"
                 />
               </div>
               <button
                 type="submit"
                 disabled={!newCategoryInput.trim()}
-                className="px-3.5 py-2 bg-zinc-950 hover:bg-zinc-800 disabled:opacity-50 text-white text-xs font-medium rounded-md shadow-xs transition flex items-center gap-1.5 cursor-pointer shrink-0"
+                className="px-3.5 py-2 bg-[#111111] hover:bg-[#222222] disabled:opacity-40 text-[#FFFFFF] text-xs font-medium rounded-[6px] transition flex items-center gap-1.5 cursor-pointer shrink-0"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Add</span>
               </button>
             </div>
-            {error && <p className="text-[11px] text-red-600 font-medium">{error}</p>}
+            {error && <p className="text-[11px] text-[#9F2F2D] font-medium">{error}</p>}
           </form>
 
           {/* Quick Suggestions */}
           <div className="space-y-2">
-            <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block">
+            <span className="text-[10px] font-mono text-[#787774] uppercase tracking-wider block">
               Suggestions
             </span>
             <div className="flex flex-wrap gap-1.5">
@@ -129,10 +133,10 @@ export const CategoryManageModal: React.FC<CategoryManageModalProps> = ({
                     type="button"
                     disabled={alreadyExists}
                     onClick={() => handleAddPreset(sug)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition cursor-pointer flex items-center gap-1 ${
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium transition cursor-pointer flex items-center gap-1 ${
                       alreadyExists
-                        ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed border border-transparent'
-                        : 'bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 hover:border-zinc-300'
+                        ? 'bg-[#F4F4F2] text-[#A1A19E] cursor-not-allowed border border-transparent'
+                        : 'bg-[#FBFBFA] hover:bg-[#F4F4F2] text-[#111111] border border-[#EAEAEA]'
                     }`}
                   >
                     <Plus className="w-3 h-3" />
@@ -146,10 +150,10 @@ export const CategoryManageModal: React.FC<CategoryManageModalProps> = ({
           {/* Active Categories List */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
+              <span className="text-[10px] font-mono text-[#787774] uppercase tracking-wider">
                 Current Categories ({categories.length})
               </span>
-              <span className="text-[11px] text-zinc-400">Pills shown on storefront</span>
+              <span className="text-[11px] text-[#787774]">Pills shown on storefront</span>
             </div>
 
             <div className="space-y-1.5">
@@ -158,12 +162,12 @@ export const CategoryManageModal: React.FC<CategoryManageModalProps> = ({
                 return (
                   <div
                     key={cat}
-                    className="p-2.5 bg-white border border-zinc-200 rounded-lg flex items-center justify-between hover:border-zinc-300 transition"
+                    className="p-2.5 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] flex items-center justify-between hover:bg-[#FBFBFA] transition"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-zinc-900">{cat}</span>
+                      <span className="text-xs font-medium text-[#111111]">{cat}</span>
                       {isAll && (
-                        <span className="px-1.5 py-0.5 bg-zinc-100 text-zinc-500 rounded text-[10px] font-mono">
+                        <span className="px-1.5 py-0.5 bg-[#F4F4F2] text-[#787774] rounded-full text-[10px] font-mono border border-[#EAEAEA]">
                           Default
                         </span>
                       )}
@@ -173,7 +177,7 @@ export const CategoryManageModal: React.FC<CategoryManageModalProps> = ({
                       <button
                         type="button"
                         onClick={() => removeCategory(cat)}
-                        className="p-1 text-zinc-400 hover:text-red-600 transition cursor-pointer"
+                        className="p-1 text-[#787774] hover:text-[#9F2F2D] hover:bg-[#FDEBEC] rounded-[4px] transition cursor-pointer"
                         title={`Remove "${cat}" category`}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -187,11 +191,11 @@ export const CategoryManageModal: React.FC<CategoryManageModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 px-6 bg-zinc-50 border-t border-zinc-100 flex items-center justify-between gap-3">
+        <div className="p-4 px-6 bg-[#FBFBFA] border-t border-[#EAEAEA] flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={handleReset}
-            className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-900 transition cursor-pointer font-medium"
+            className="flex items-center gap-1.5 text-xs text-[#787774] hover:text-[#111111] transition cursor-pointer font-medium"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Reset Defaults</span>
@@ -200,7 +204,7 @@ export const CategoryManageModal: React.FC<CategoryManageModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white font-medium rounded-md text-xs shadow-xs transition cursor-pointer"
+            className="px-4 py-1.5 bg-[#111111] hover:bg-[#222222] text-[#FFFFFF] font-medium rounded-[6px] text-xs transition cursor-pointer"
           >
             Done
           </button>

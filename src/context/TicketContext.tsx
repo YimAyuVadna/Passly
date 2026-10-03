@@ -200,7 +200,16 @@ function saveStorage<T>(key: string, value: T): void {
 }
 
 export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [users, setUsers] = useState<User[]>(() => loadStorage(STORAGE_KEYS.USERS, INITIAL_USERS));
+  const [users, setUsers] = useState<User[]>(() => {
+    const loaded = loadStorage(STORAGE_KEYS.USERS, INITIAL_USERS);
+    return loaded.map((u) => {
+      if (['usr-customer-1', 'usr-staff-1', 'usr-staff-2', 'usr-admin-1'].includes(u.id)) {
+        const { avatar: _, ...rest } = u;
+        return rest;
+      }
+      return u;
+    });
+  });
   const [currentUserId, setCurrentUserId] = useState<string>(() =>
     loadStorage(STORAGE_KEYS.CURRENT_USER_ID, 'usr-customer-1')
   );

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   X,
-  Calendar,
   CreditCard,
   Banknote,
   QrCode,
@@ -13,6 +12,7 @@ import {
 } from 'lucide-react';
 import { TicketType, PaymentMethod, Ticket, OrderItem } from '../../types';
 import { useTicketContext } from '../../context/TicketContext';
+import { useBodyScrollLock } from '../../utils/scrollLock';
 
 interface StaffAssistedPurchaseModalProps {
   isOpen: boolean;
@@ -26,6 +26,9 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
   onViewGeneratedTicket,
 }) => {
   const { events, purchaseTickets, currentUser } = useTicketContext();
+
+  // Lock background scrolling when assisted purchase modal is open
+  useBodyScrollLock(isOpen);
 
   const [step, setStep] = useState<'form' | 'confirm' | 'success'>('form');
   const [selectedEventId, setSelectedEventId] = useState<string>(events[0]?.id || '');
@@ -106,27 +109,27 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-xl bg-white rounded-xl shadow-xl overflow-hidden text-zinc-900 border border-zinc-200 my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 backdrop-blur-[2px] p-4 overflow-y-auto overscroll-contain">
+      <div className="relative w-full max-w-xl bg-white rounded-xl border border-[#EAEAEA] overflow-hidden text-[#111111] my-8 shadow-2xs">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100 bg-white">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#EAEAEA] bg-white">
           <div className="flex items-center gap-3">
-            <span className="px-2 py-0.5 bg-zinc-950 text-white rounded text-[10px] font-mono font-medium uppercase tracking-wider">
+            <span className="px-2 py-0.5 bg-[#111111] text-white rounded-[4px] text-[10px] font-mono font-medium uppercase tracking-wider">
               Box Office
             </span>
             <div>
-              <h3 className="font-semibold text-base text-zinc-900">
-                Staff-Assisted Booking
+              <h3 className="font-semibold text-base text-[#111111]">
+                Counter Pass Issuance
               </h3>
-              <p className="text-xs text-zinc-400">
-                Walk-in counter issuance & direct ticketing
+              <p className="text-xs text-[#787774]">
+                Staff-assisted point-of-sale checkout
               </p>
             </div>
           </div>
 
           <button
             onClick={handleResetAndClose}
-            className="p-1.5 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-md transition cursor-pointer"
+            className="p-1.5 text-zinc-400 hover:text-[#111111] hover:bg-[#F4F4F2] rounded-[6px] transition cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -137,8 +140,8 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
           <form onSubmit={handleNextToConfirm} className="p-6 space-y-4">
             {/* Event & Ticket Selection */}
             <div className="space-y-3">
-              <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 block">
-                Event & Ticket Tier
+              <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 block font-medium">
+                Event & Admission Tier
               </span>
 
               <div className="space-y-1.5">
@@ -154,7 +157,7 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                       setSelectedTypeId(ev.ticketTypes[0].id);
                     }
                   }}
-                  className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 transition"
+                  className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] transition cursor-pointer"
                 >
                   {events.map((ev) => (
                     <option key={ev.id} value={ev.id}>
@@ -172,11 +175,11 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                   <select
                     value={selectedTypeId || currentTicketType?.id}
                     onChange={(e) => setSelectedTypeId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 transition"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] transition cursor-pointer"
                   >
                     {activeTicketTypes.map((tt) => (
                       <option key={tt.id} value={tt.id}>
-                        {tt.name} (${tt.price.toFixed(2)}) — {tt.quantity - tt.sold} left
+                        {tt.name} (${tt.price.toFixed(2)}) · {tt.quantity - tt.sold} left
                       </option>
                     ))}
                   </select>
@@ -192,22 +195,22 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                     max={Math.min(remaining, 20)}
                     value={quantity}
                     onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs font-mono text-zinc-900 focus:outline-none focus:border-zinc-900 transition"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs font-mono text-[#111111] focus:outline-none focus:border-[#111111] transition"
                   />
                 </div>
               </div>
             </div>
 
             {/* Customer Details Form */}
-            <div className="space-y-3 pt-2 border-t border-zinc-100">
-              <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 block">
+            <div className="space-y-3 pt-2 border-t border-[#EAEAEA]">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 block font-medium">
                 Attendee Information
               </span>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-medium text-zinc-700 mb-1">
-                    Attendee Full Name <span className="text-red-500">*</span>
+                    Attendee Full Name <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -215,13 +218,13 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     placeholder="e.g. Chan Dara / Walk-in Guest"
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-medium text-zinc-700 mb-1">
-                    Phone Number <span className="text-red-500">*</span>
+                    Phone Number <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="tel"
@@ -229,7 +232,7 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     placeholder="e.g. 012 345 678"
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs font-mono text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs font-mono text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                   />
                 </div>
 
@@ -242,7 +245,7 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                     value={customerEmail}
                     onChange={(e) => setCustomerEmail(e.target.value)}
                     placeholder="e.g. customer@gmail.com"
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                   />
                 </div>
 
@@ -255,15 +258,15 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="e.g. Paid cash at counter gate 1"
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-zinc-900 transition"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                   />
                 </div>
               </div>
             </div>
 
             {/* Payment Method Record */}
-            <div className="space-y-2 pt-2 border-t border-zinc-100">
-              <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 block">
+            <div className="space-y-2 pt-2 border-t border-[#EAEAEA]">
+              <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 block font-medium">
                 Payment Method Received
               </span>
 
@@ -281,13 +284,13 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                       key={m.id}
                       type="button"
                       onClick={() => setPaymentMethod(m.id as PaymentMethod)}
-                      className={`p-2 rounded-md border text-center transition flex flex-col items-center gap-1 cursor-pointer ${
+                      className={`p-2 rounded-[6px] border text-center transition flex flex-col items-center gap-1 cursor-pointer ${
                         isSelected
-                          ? 'border-zinc-950 bg-zinc-950 text-white font-medium'
-                          : 'border-zinc-200 text-zinc-600 hover:border-zinc-300 bg-white'
+                          ? 'border-[#111111] bg-[#F7F6F3] text-[#111111] font-semibold'
+                          : 'border-[#EAEAEA] text-[#787774] hover:border-zinc-400 bg-white'
                       }`}
                     >
-                      <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-zinc-600'}`} />
+                      <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-[#111111]' : 'text-zinc-500'}`} />
                       <span className="text-xs">{m.label}</span>
                     </button>
                   );
@@ -296,10 +299,10 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
             </div>
 
             {/* Subtotal & Next Button */}
-            <div className="pt-3 border-t border-zinc-100 flex items-center justify-between">
+            <div className="pt-3 border-t border-[#EAEAEA] flex items-center justify-between">
               <div>
                 <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-mono">Total Due</span>
-                <span className="text-lg font-bold font-mono text-zinc-900">
+                <span className="text-lg font-bold font-mono text-[#111111]">
                   ${totalAmount.toFixed(2)}
                 </span>
               </div>
@@ -307,7 +310,7 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
               <button
                 type="submit"
                 disabled={!customerName || !customerPhone || remaining < quantity}
-                className="py-2 px-4 bg-zinc-950 hover:bg-zinc-800 disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-medium rounded-md transition shadow-xs flex items-center gap-2 text-xs cursor-pointer"
+                className="py-2 px-4 bg-[#111111] hover:bg-[#222222] disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-medium rounded-[6px] transition flex items-center gap-2 text-xs cursor-pointer active:scale-[0.98]"
               >
                 <span>Review & Confirm</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -319,45 +322,45 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
         {/* STEP 2: CONFIRMATION VIEW */}
         {step === 'confirm' && (
           <div className="p-6 space-y-4">
-            <div className="p-4 bg-zinc-50 rounded-lg border border-zinc-200 text-center space-y-1">
+            <div className="p-4 bg-[#FBFBFA] rounded-lg border border-[#EAEAEA] text-center space-y-1">
               <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
                 Order Verification
               </span>
-              <h4 className="text-base font-semibold text-zinc-900">Verify Payment Collection</h4>
-              <p className="text-xs text-zinc-500">
+              <h4 className="font-serif text-lg font-medium text-[#111111]">Verify Payment Collection</h4>
+              <p className="text-xs text-[#787774]">
                 Confirm receipt of{' '}
-                <strong className="text-zinc-900 font-mono">${totalAmount.toFixed(2)}</strong> via {paymentMethod}
+                <strong className="text-[#111111] font-mono">${totalAmount.toFixed(2)}</strong> via {paymentMethod}
               </p>
             </div>
 
-            <div className="bg-zinc-50/70 rounded-lg p-4 border border-zinc-200 space-y-2 text-xs">
-              <div className="flex justify-between border-b border-zinc-200 pb-2">
-                <span className="text-zinc-500">Customer</span>
-                <span className="font-medium text-zinc-900">{customerName}</span>
+            <div className="bg-[#FBFBFA] rounded-lg p-4 border border-[#EAEAEA] space-y-2 text-xs">
+              <div className="flex justify-between border-b border-[#EAEAEA] pb-2">
+                <span className="text-[#787774]">Customer</span>
+                <span className="font-medium text-[#111111]">{customerName}</span>
               </div>
-              <div className="flex justify-between border-b border-zinc-200 pb-2">
-                <span className="text-zinc-500">Phone</span>
-                <span className="font-mono text-zinc-900">{customerPhone}</span>
+              <div className="flex justify-between border-b border-[#EAEAEA] pb-2">
+                <span className="text-[#787774]">Phone</span>
+                <span className="font-mono text-[#111111]">{customerPhone}</span>
               </div>
-              <div className="flex justify-between border-b border-zinc-200 pb-2">
-                <span className="text-zinc-500">Event</span>
-                <span className="font-medium text-zinc-900">{currentEvent?.name}</span>
+              <div className="flex justify-between border-b border-[#EAEAEA] pb-2">
+                <span className="text-[#787774]">Event</span>
+                <span className="font-medium text-[#111111]">{currentEvent?.name}</span>
               </div>
-              <div className="flex justify-between border-b border-zinc-200 pb-2">
-                <span className="text-zinc-500">Tier</span>
-                <span className="font-medium text-zinc-900">
+              <div className="flex justify-between border-b border-[#EAEAEA] pb-2">
+                <span className="text-[#787774]">Admission Tier</span>
+                <span className="font-medium text-[#111111]">
                   {quantity}x {currentTicketType?.name}
                 </span>
               </div>
-              <div className="flex justify-between border-b border-zinc-200 pb-2">
-                <span className="text-zinc-500">Method</span>
-                <span className="px-1.5 py-0.5 bg-zinc-200 text-zinc-800 rounded text-[10px] font-mono">
+              <div className="flex justify-between border-b border-[#EAEAEA] pb-2">
+                <span className="text-[#787774]">Payment Method</span>
+                <span className="px-1.5 py-0.5 bg-[#F4F4F2] text-[#111111] rounded text-[10px] font-mono border border-[#EAEAEA]">
                   {paymentMethod}
                 </span>
               </div>
               <div className="flex justify-between items-center pt-1">
                 <span className="font-medium text-zinc-700">Total Collected</span>
-                <span className="text-lg font-bold text-zinc-900 font-mono">
+                <span className="text-lg font-bold text-[#111111] font-mono">
                   ${totalAmount.toFixed(2)}
                 </span>
               </div>
@@ -367,7 +370,7 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
               <button
                 type="button"
                 onClick={() => setStep('form')}
-                className="flex-1 py-2 px-3 bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 rounded-md text-xs font-medium transition cursor-pointer"
+                className="flex-1 py-2 px-3 bg-white hover:bg-[#F7F6F3] text-zinc-700 border border-[#EAEAEA] rounded-[6px] text-xs font-medium transition cursor-pointer"
               >
                 Back
               </button>
@@ -375,10 +378,10 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                 type="button"
                 onClick={handleExecutePurchase}
                 disabled={isSubmitting}
-                className="flex-2 py-2 px-4 bg-zinc-950 hover:bg-zinc-800 disabled:opacity-50 text-white rounded-md text-xs font-medium transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                className="flex-2 py-2 px-4 bg-[#111111] hover:bg-[#222222] disabled:opacity-50 text-white rounded-[6px] text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98]"
               >
                 {isSubmitting ? (
-                  <span>Issuing...</span>
+                  <span>Issuing Passes...</span>
                 ) : (
                   <>
                     <CheckCircle2 className="w-3.5 h-3.5" />
@@ -393,41 +396,41 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
         {/* STEP 3: SUCCESS & TICKET HANDOVER */}
         {step === 'success' && completedResult && (
           <div className="p-6 text-center space-y-4">
-            <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-200">
+            <div className="w-10 h-10 bg-[#EDF3EC] text-[#346538] rounded-full flex items-center justify-center mx-auto border border-[#DBEADB]">
               <CheckCircle2 className="w-5 h-5" />
             </div>
 
             <div>
-              <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-mono font-medium rounded border border-emerald-200 uppercase">
+              <span className="px-2.5 py-0.5 bg-[#EDF3EC] text-[#346538] text-[10px] font-mono font-medium rounded-full border border-[#DBEADB] uppercase">
                 Confirmed
               </span>
-              <h4 className="text-lg font-semibold text-zinc-900 mt-1.5">
-                Passes Issued
+              <h4 className="font-serif text-xl font-medium text-[#111111] mt-1.5">
+                Passes Issued Successfully
               </h4>
-              <p className="text-xs text-zinc-400 mt-0.5">
-                Order <strong className="text-zinc-900 font-mono">{completedResult.order.orderNumber}</strong> • Box Office
+              <p className="text-xs text-[#787774] mt-0.5 font-mono">
+                Order <kbd>{completedResult.order.orderNumber}</kbd> • Box Office Counter
               </p>
             </div>
 
             {/* Issued Passes */}
-            <div className="p-3 bg-zinc-50 rounded-lg border border-zinc-200 text-left space-y-2 max-h-48 overflow-y-auto">
+            <div className="p-3 bg-[#FBFBFA] rounded-lg border border-[#EAEAEA] text-left space-y-2 max-h-48 overflow-y-auto">
               {completedResult.tickets.map((t) => (
                 <div
                   key={t.id}
-                  className="p-2.5 bg-white rounded-md border border-zinc-200 flex items-center justify-between text-xs"
+                  className="p-2.5 bg-white rounded-[6px] border border-[#EAEAEA] flex items-center justify-between text-xs"
                 >
                   <div className="flex items-center gap-2">
                     <TicketIcon className="w-3.5 h-3.5 text-zinc-500" />
                     <div>
-                      <span className="font-mono font-medium text-zinc-900">{t.ticketNumber}</span>
-                      <span className="text-zinc-400 block text-[10px]">{t.customerName}</span>
+                      <span className="font-mono font-medium text-[#111111]">{t.ticketNumber}</span>
+                      <span className="text-[#787774] block text-[10px] font-sans">{t.customerName}</span>
                     </div>
                   </div>
                   <button
                     onClick={() => {
                       onViewGeneratedTicket(t);
                     }}
-                    className="px-2.5 py-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded text-xs font-medium transition cursor-pointer"
+                    className="px-2.5 py-1 bg-white hover:bg-[#F7F6F3] text-[#111111] border border-[#EAEAEA] rounded-[4px] text-xs font-medium transition cursor-pointer"
                   >
                     View Pass
                   </button>
@@ -442,14 +445,14 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                     onViewGeneratedTicket(completedResult.tickets[0]);
                   }
                 }}
-                className="flex-1 py-2 px-4 bg-zinc-950 hover:bg-zinc-800 text-white rounded-md text-xs font-medium transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                className="flex-1 py-2 px-4 bg-[#111111] hover:bg-[#222222] text-white rounded-[6px] text-xs font-medium transition flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
               >
                 <Printer className="w-3.5 h-3.5" />
                 <span>Open Digital Pass</span>
               </button>
               <button
                 onClick={handleResetAndClose}
-                className="py-2 px-4 bg-white hover:bg-zinc-50 text-zinc-700 border border-zinc-200 rounded-md text-xs font-medium transition cursor-pointer"
+                className="py-2 px-4 bg-white hover:bg-[#F7F6F3] text-zinc-700 border border-[#EAEAEA] rounded-[6px] text-xs font-medium transition cursor-pointer"
               >
                 Done
               </button>

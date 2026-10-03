@@ -11,6 +11,7 @@ import {
 import QRCode from 'qrcode';
 import { useTicketContext } from '../../context/TicketContext';
 import { EventItem, TicketType, Ticket, PaymentMethod } from '../../types';
+import { useBodyScrollLock } from '../../utils/scrollLock';
 
 interface OnlineBookingModalProps {
   isOpen: boolean;
@@ -24,6 +25,9 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
   onTestScanTicket,
 }) => {
   const { events, purchaseTickets } = useTicketContext();
+
+  // Lock background scrolling when online booking simulation is open
+  useBodyScrollLock(isOpen);
 
   // Active events list
   const activeEvents = events.filter((e) => e.status !== 'CANCELLED');
@@ -82,7 +86,6 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
   // Generate QR data URL when ticket is issued
   useEffect(() => {
     if (flowStep === 'success' && issuedTicket) {
-
       // Ultra-clean compact token: produces large, chunky QR squares that phone cameras scan effortlessly off laptop screens
       const compactToken = `TP1:${issuedTicket.ticketNumber}|${issuedTicket.customerName}|${paymentMethod}|${leadTimeHours}|${issuedTicket.ticketTypeName}|${issuedTicket.price}|${issuedTicket.eventName}`;
 
@@ -193,20 +196,20 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
   const subtotal = currentTier ? currentTier.price * quantity : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/35 backdrop-blur-[2px] overflow-y-auto overscroll-contain">
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.98 }}
-        className="bg-white border border-zinc-200 rounded-xl shadow-xl max-w-xl w-full overflow-hidden my-auto relative text-zinc-900"
+        className="bg-white border border-[#EAEAEA] rounded-xl max-w-xl w-full overflow-hidden my-auto relative text-[#111111] shadow-2xs"
       >
         {/* Header Bar */}
-        <div className="px-6 py-4 flex items-center justify-between border-b border-zinc-100">
+        <div className="px-6 py-4 flex items-center justify-between border-b border-[#EAEAEA]">
           <div>
-            <h3 className="font-semibold text-base text-zinc-900">
+            <h3 className="font-semibold text-base text-[#111111]">
               {flowStep === 'form' ? 'Simulate Ticket Booking' : 'Digital Admission Pass'}
             </h3>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-[#787774]">
               {flowStep === 'form'
                 ? 'Generate a verified entrance pass with live QR validation'
                 : 'Pass ready for gate checkpoint presentation'}
@@ -215,7 +218,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
           <button
             type="button"
             onClick={handleClose}
-            className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition cursor-pointer"
+            className="p-1.5 rounded-[6px] text-zinc-400 hover:text-[#111111] hover:bg-[#F4F4F2] transition cursor-pointer"
             title="Close"
           >
             <X className="w-4 h-4" />
@@ -226,8 +229,8 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
         {flowStep === 'form' && (
           <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
             {formError && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-xs text-red-700">
-                <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
+              <div className="p-3 bg-[#FDEBEC] border border-[#F8D7DA] rounded-[6px] flex items-center gap-2 text-xs text-[#9F2F2D]">
+                <AlertTriangle className="w-4 h-4 shrink-0 text-[#9F2F2D]" />
                 <span>{formError}</span>
               </div>
             )}
@@ -242,7 +245,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                   <select
                     value={selectedEventId}
                     onChange={(e) => setSelectedEventId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 cursor-pointer"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] cursor-pointer"
                   >
                     {activeEvents.map((ev) => (
                       <option key={ev.id} value={ev.id}>
@@ -259,11 +262,11 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                   <select
                     value={selectedTierId}
                     onChange={(e) => setSelectedTierId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 cursor-pointer"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] cursor-pointer"
                   >
                     {availableTiers.map((tier) => (
                       <option key={tier.id} value={tier.id}>
-                        {tier.name} — ${tier.price.toFixed(2)} ({tier.quantity - tier.sold} remaining)
+                        {tier.name} · ${tier.price.toFixed(2)} ({tier.quantity - tier.sold} remaining)
                       </option>
                     ))}
                   </select>
@@ -271,7 +274,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
               </div>
 
               {currentEvent && (
-                <div className="flex items-center gap-2 text-xs text-zinc-400">
+                <div className="flex items-center gap-2 text-xs text-[#787774] font-mono">
                   <span>{currentEvent.date}</span>
                   <span>•</span>
                   <span>{currentEvent.startTime}</span>
@@ -282,7 +285,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
             </div>
 
             {/* Customer Information */}
-            <div className="space-y-3 pt-3 border-t border-zinc-100">
+            <div className="space-y-3 pt-3 border-t border-[#EAEAEA]">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-zinc-700 mb-1">
@@ -294,7 +297,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="e.g. Rathana Kem"
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-xs text-zinc-900 focus:outline-none focus:border-zinc-900"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
                   />
                 </div>
 
@@ -308,7 +311,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="attendee@example.com"
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-xs text-zinc-900 focus:outline-none focus:border-zinc-900"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
                   />
                 </div>
 
@@ -322,7 +325,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="012 xxx xxx"
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-xs text-zinc-900 focus:outline-none focus:border-zinc-900"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] font-mono focus:outline-none focus:border-[#111111]"
                   />
                 </div>
               </div>
@@ -336,13 +339,13 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Seating or accessibility requests..."
-                  className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-xs text-zinc-900 focus:outline-none focus:border-zinc-900"
+                  className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
                 />
               </div>
             </div>
 
             {/* Payment & Lead-Time */}
-            <div className="space-y-3 pt-3 border-t border-zinc-100">
+            <div className="space-y-3 pt-3 border-t border-[#EAEAEA]">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-zinc-700 mb-1">
@@ -351,7 +354,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                   <select
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 cursor-pointer"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] cursor-pointer"
                   >
                     <option value="ONLINE">ABA KHQR / E-Wallet</option>
                     <option value="CARD">Credit / Debit Card</option>
@@ -366,7 +369,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                   <select
                     value={leadTimeHours}
                     onChange={(e) => setLeadTimeHours(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-lg text-xs text-zinc-900 focus:outline-none focus:border-zinc-900 cursor-pointer"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] cursor-pointer"
                   >
                     <option value={48}>48 Hours in Advance (Standard)</option>
                     <option value={168}>7 Days in Advance (Early)</option>
@@ -378,10 +381,10 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
             </div>
 
             {/* Total and Submit CTA */}
-            <div className="flex items-center justify-between pt-4 border-t border-zinc-100">
+            <div className="flex items-center justify-between pt-4 border-t border-[#EAEAEA]">
               <div>
-                <span className="text-[11px] text-zinc-400 block uppercase">Total Due</span>
-                <span className="text-xl font-bold text-zinc-900 font-mono">
+                <span className="text-[10px] text-zinc-400 font-mono block uppercase">Total Amount</span>
+                <span className="text-xl font-bold text-[#111111] font-mono">
                   ${subtotal.toFixed(2)} <span className="text-xs font-normal text-zinc-400 font-sans">USD</span>
                 </span>
               </div>
@@ -390,13 +393,13 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-zinc-600 hover:text-zinc-900 text-xs font-medium transition cursor-pointer"
+                  className="px-4 py-2 text-[#787774] hover:text-[#111111] text-xs font-medium transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-lg bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-medium transition cursor-pointer shadow-xs"
+                  className="px-5 py-2.5 rounded-[6px] bg-[#111111] hover:bg-[#222222] text-white text-xs font-medium transition cursor-pointer active:scale-[0.98]"
                 >
                   Issue Pass
                 </button>
@@ -409,24 +412,24 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
         {flowStep === 'success' && issuedTicket && (
           <div className="p-6 space-y-5 max-h-[85vh] overflow-y-auto">
             {/* Visual Admission Ticket Pass Card */}
-            <div className="bg-white rounded-xl border border-zinc-200 p-5 space-y-4 max-w-md mx-auto">
-              <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+            <div className="bg-white rounded-xl border border-[#EAEAEA] p-5 space-y-4 max-w-md mx-auto">
+              <div className="flex items-center justify-between border-b border-[#EAEAEA] pb-3">
                 <div>
-                  <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block">
+                  <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">
                     {issuedTicket.ticketTypeName}
                   </span>
-                  <h4 className="text-base font-semibold text-zinc-900 mt-0.5">
+                  <h4 className="font-serif text-base font-medium text-[#111111] mt-0.5">
                     {issuedTicket.eventName}
                   </h4>
                 </div>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-[#EDF3EC] text-[#346538] border border-[#DBEADB]">
                   READY
                 </span>
               </div>
 
               {/* Large Sharp QR Code */}
               <div className="flex flex-col items-center justify-center">
-                <div className="p-3 bg-white rounded-xl border border-zinc-900">
+                <div className="p-3 bg-white rounded-lg border border-[#111111]">
                   {qrDataUrl ? (
                     <img
                       src={qrDataUrl}
@@ -434,50 +437,50 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                       className="w-48 h-48 block"
                     />
                   ) : (
-                    <div className="w-48 h-48 flex items-center justify-center bg-zinc-50 text-xs text-zinc-400">
+                    <div className="w-48 h-48 flex items-center justify-center bg-[#F7F6F3] text-xs text-zinc-400">
                       Generating...
                     </div>
                   )}
                 </div>
 
                 <div className="mt-2.5 flex items-center gap-1.5">
-                  <span className="font-mono text-xs font-medium text-zinc-800 bg-zinc-50 px-2 py-0.5 rounded border border-zinc-200">
-                    {issuedTicket.ticketNumber}
+                  <span className="font-mono text-xs font-medium text-[#111111] bg-[#FBFBFA] px-2 py-0.5 rounded-[4px] border border-[#EAEAEA]">
+                    <kbd>{issuedTicket.ticketNumber}</kbd>
                   </span>
                   <button
                     type="button"
                     onClick={handleCopyTicketNumber}
-                    className="p-1 text-zinc-400 hover:text-zinc-700 transition cursor-pointer"
+                    className="p-1 text-zinc-400 hover:text-[#111111] transition cursor-pointer"
                     title="Copy Ticket ID"
                   >
-                    {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    {isCopied ? <Check className="w-3.5 h-3.5 text-[#346538]" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
                 </div>
               </div>
 
               {/* Ticket Details Grid */}
-              <div className="grid grid-cols-2 gap-2 text-left bg-zinc-50 p-3 rounded-lg text-xs border border-zinc-100">
+              <div className="grid grid-cols-2 gap-2 text-left bg-[#FBFBFA] p-3 rounded-lg text-xs border border-[#EAEAEA] font-mono">
                 <div>
-                  <span className="text-[10px] text-zinc-400 block uppercase">Attendee</span>
-                  <span className="font-medium text-zinc-900 truncate block">
+                  <span className="text-[10px] text-zinc-400 block uppercase font-sans">Attendee</span>
+                  <span className="font-medium text-[#111111] truncate block font-sans">
                     {issuedTicket.customerName}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-zinc-400 block uppercase">Price</span>
-                  <span className="font-mono font-medium text-zinc-900">
+                  <span className="text-[10px] text-zinc-400 block uppercase font-sans">Price</span>
+                  <span className="font-semibold text-[#111111]">
                     ${issuedTicket.price.toFixed(2)}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-zinc-400 block uppercase">Date</span>
-                  <span className="text-zinc-700">
+                  <span className="text-[10px] text-zinc-400 block uppercase font-sans">Date</span>
+                  <span className="text-[#787774]">
                     {issuedTicket.eventDate}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-zinc-400 block uppercase">Time</span>
-                  <span className="text-zinc-700">
+                  <span className="text-[10px] text-zinc-400 block uppercase font-sans">Time</span>
+                  <span className="text-[#787774]">
                     {issuedTicket.eventTime}
                   </span>
                 </div>
@@ -490,7 +493,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                 type="button"
                 onClick={handleDownloadQr}
                 disabled={!qrDataUrl || isDownloading}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-medium flex items-center justify-center gap-2 transition cursor-pointer"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-[6px] bg-[#111111] hover:bg-[#222222] text-white text-xs font-medium flex items-center justify-center gap-2 transition cursor-pointer active:scale-[0.98]"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>{isDownloading ? 'Downloading...' : 'Download Pass (.png)'}</span>
@@ -500,7 +503,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                 <button
                   type="button"
                   onClick={() => onTestScanTicket(issuedTicket)}
-                  className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-white hover:bg-zinc-50 text-zinc-900 border border-zinc-200 text-xs font-medium flex items-center justify-center gap-2 transition cursor-pointer"
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-[6px] bg-white hover:bg-[#F7F6F3] text-[#111111] border border-[#EAEAEA] text-xs font-medium flex items-center justify-center gap-2 transition cursor-pointer"
                 >
                   <ShieldCheck className="w-3.5 h-3.5 text-zinc-700" />
                   <span>Test Scan at Gate</span>
@@ -508,21 +511,21 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
               )}
             </div>
 
-            <div className="flex items-center justify-center gap-4 pt-1 text-xs text-zinc-400">
+            <div className="flex items-center justify-center gap-4 pt-1 text-xs text-[#787774]">
               <button
                 type="button"
                 onClick={handleResetForAnother}
-                className="hover:text-zinc-900 underline cursor-pointer"
+                className="hover:text-[#111111] underline cursor-pointer"
               >
-                Issue Another
+                Issue Another Pass
               </button>
               <span>•</span>
               <button
                 type="button"
                 onClick={handleClose}
-                className="hover:text-zinc-900 underline cursor-pointer"
+                className="hover:text-[#111111] underline cursor-pointer"
               >
-                Close
+                Close Window
               </button>
             </div>
           </div>

@@ -8,10 +8,10 @@ import {
   CheckCircle2,
   Ticket as TicketIcon,
   ArrowRight,
-  UserCheck,
 } from 'lucide-react';
 import { EventItem, TicketType, PaymentMethod, Ticket, OrderItem } from '../../types';
 import { useTicketContext } from '../../context/TicketContext';
+import { useBodyScrollLock } from '../../utils/scrollLock';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -42,6 +42,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     order: OrderItem;
     tickets: Ticket[];
   } | null>(null);
+
+  // Lock background scrolling when checkout modal is open
+  useBodyScrollLock(isOpen && Boolean(event) && Boolean(ticketType));
 
   // Sync with current user when opening or auth changes, ensure completedOrder is reset
   React.useEffect(() => {
@@ -107,59 +110,59 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-white rounded-xl shadow-xl overflow-hidden text-zinc-900 border border-zinc-200 my-8">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
-          <div>
-            <h3 className="font-semibold text-base text-zinc-900">
-              {completedOrder ? 'Order Confirmed' : 'Checkout'}
-            </h3>
-            <p className="text-xs text-zinc-400">
-              {completedOrder
-                ? 'Your admission pass has been issued'
-                : 'Direct digital admission pass with QR validation'}
-            </p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 overflow-y-auto overscroll-contain">
+      <div className="relative w-full max-w-lg double-bezel-tray-lg shadow-[0_24px_50px_rgba(0,0,0,0.15)] my-8 p-2">
+        <div className="double-bezel-core-lg overflow-hidden text-[#111111]">
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[#111111]/[0.06]">
+            <div>
+              <h3 className="font-semibold text-base text-[#111111]">
+                {completedOrder ? 'Order Confirmed' : 'Checkout'}
+              </h3>
+              <p className="text-xs text-[#787774]">
+                {completedOrder
+                  ? 'Your verified passes have been issued'
+                  : 'Direct digital admission pass with live QR validation'}
+              </p>
+            </div>
+            <button
+              onClick={handleReset}
+              className="w-8 h-8 rounded-full bg-white/95 hover:bg-white text-zinc-600 hover:text-[#111111] border border-[#111111]/[0.08] shadow-xs flex items-center justify-center transition-spring cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
-          <button
-            onClick={handleReset}
-            className="p-1.5 text-zinc-400 hover:text-zinc-700 rounded-md hover:bg-zinc-100 transition cursor-pointer"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
 
         {/* Content */}
         {completedOrder ? (
           /* SUCCESS CONFIRMATION VIEW */
           <div className="p-6 text-center space-y-5">
-            <div className="w-10 h-10 bg-zinc-950 text-white rounded-lg flex items-center justify-center mx-auto shadow-2xs">
+            <div className="w-10 h-10 bg-[#111111] text-white rounded-lg flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-5 h-5 stroke-[2]" />
             </div>
 
             <div className="space-y-1">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#346538] bg-[#EDF3EC] px-2.5 py-0.5 rounded-full border border-[#DBEADB] font-semibold">
                 Payment Confirmed
               </span>
-              <h4 className="text-lg font-semibold text-zinc-900 pt-1">
+              <h4 className="font-serif text-xl font-medium text-[#111111] pt-1">
                 Thank You, {completedOrder.order.customerName}
               </h4>
-              <p className="text-xs text-zinc-500 font-mono">
-                Order Ref: {completedOrder.order.orderNumber}
+              <p className="text-xs text-[#787774] font-mono">
+                Order Reference: <kbd>{completedOrder.order.orderNumber}</kbd>
               </p>
             </div>
 
             {/* Generated Tickets Card */}
-            {/* Generated Tickets Card */}
-            <div className="p-4 bg-zinc-50 rounded-lg border border-zinc-100 text-left space-y-3">
-              <div className="flex items-center justify-between border-b border-zinc-200/60 pb-2.5 text-xs">
+            <div className="p-4 bg-[#FBFBFA] rounded-lg border border-[#EAEAEA] text-left space-y-3">
+              <div className="flex items-center justify-between border-b border-[#EAEAEA] pb-2.5 text-xs">
                 <div>
-                  <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Event</span>
-                  <h5 className="font-semibold text-zinc-900">{event.name}</h5>
+                  <span className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider block">Event</span>
+                  <h5 className="font-semibold text-[#111111]">{event.name}</h5>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Issued</span>
-                  <span className="font-medium text-zinc-700">
+                  <span className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider block">Issued</span>
+                  <span className="font-medium text-[#111111]">
                     {completedOrder.tickets.length} Digital {completedOrder.tickets.length > 1 ? 'Passes' : 'Pass'}
                   </span>
                 </div>
@@ -169,16 +172,16 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 {completedOrder.tickets.map((t) => (
                   <div
                     key={t.id}
-                    className="p-2.5 bg-white rounded-md border border-zinc-200 flex items-center justify-between text-xs"
+                    className="p-2.5 bg-white rounded-[6px] border border-[#EAEAEA] flex items-center justify-between text-xs"
                   >
                     <div className="flex items-center gap-2">
                       <TicketIcon className="w-3.5 h-3.5 text-zinc-600" />
                       <div>
-                        <span className="font-mono font-medium text-zinc-900">{t.ticketNumber}</span>
-                        <span className="text-zinc-400 ml-2">({t.customerName})</span>
+                        <span className="font-mono font-medium text-[#111111]">{t.ticketNumber}</span>
+                        <span className="text-[#787774] ml-2 font-sans">({t.customerName})</span>
                       </div>
                     </div>
-                    <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-mono font-medium rounded border border-emerald-200">
+                    <span className="px-2 py-0.5 bg-[#EDF3EC] text-[#346538] text-[10px] font-mono font-medium rounded-full border border-[#DBEADB]">
                       VALID
                     </span>
                   </div>
@@ -186,17 +189,19 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </div>
             </div>
 
-            <div className="pt-2 flex flex-col sm:flex-row gap-2">
+            <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
               <button
                 onClick={handleViewTickets}
-                className="flex-1 py-2.5 px-4 bg-zinc-950 hover:bg-zinc-800 text-white font-medium rounded-lg transition-colors text-xs flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                className="group flex-1 py-2.5 pl-5 pr-2 bg-[#111111] hover:bg-[#222222] text-white font-medium rounded-full transition-spring text-xs flex items-center justify-between cursor-pointer active:scale-[0.98] shadow-xs"
               >
                 <span>View Digital Pass</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <span className="btn-nested-icon w-6 h-6 rounded-full bg-white/15 flex items-center justify-center group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+                  <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
+                </span>
               </button>
               <button
                 onClick={handleReset}
-                className="py-2.5 px-4 bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-700 font-medium rounded-lg transition-colors text-xs cursor-pointer"
+                className="py-2.5 px-5 bg-white hover:bg-[#F7F6F3] border border-[#111111]/[0.08] text-zinc-700 font-medium rounded-full transition text-xs cursor-pointer shadow-2xs"
               >
                 Back to Events
               </button>
@@ -206,18 +211,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           /* CHECKOUT FORM VIEW */
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
             {/* Order Summary banner */}
-            <div className="p-3.5 bg-zinc-50 rounded-lg border border-zinc-100 flex items-center justify-between">
+            <div className="p-3.5 bg-[#FBFBFA] rounded-lg border border-[#EAEAEA] flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">
                   {event.name}
                 </span>
-                <span className="text-xs font-semibold text-zinc-900">
+                <span className="text-xs font-semibold text-[#111111]">
                   {quantity}x {ticketType.name}
                 </span>
               </div>
               <div className="text-right">
-                <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Total</span>
-                <span className="text-base font-bold text-zinc-900 font-mono">
+                <span className="text-[10px] text-zinc-400 font-mono uppercase tracking-wider block">Total Due</span>
+                <span className="text-base font-bold text-[#111111] font-mono">
                   ${total.toFixed(2)}
                 </span>
               </div>
@@ -226,10 +231,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             {/* Customer Information Form */}
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
-                <h4 className="font-medium text-[11px] uppercase tracking-wider text-zinc-400">
+                <h4 className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
                   Attendee Information
                 </h4>
-                <span className={`text-[10px] font-mono ${isLoggedIn ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                <span className="text-[10px] font-mono text-[#787774]">
                   {isLoggedIn ? `Signed in: ${currentUser.name}` : 'Guest Checkout'}
                 </span>
               </div>
@@ -244,8 +249,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Chan Dara"
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-900"
+                    placeholder="e.g. Rathana Kem"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
                   />
                 </div>
 
@@ -259,7 +264,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="012 345 678"
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 font-mono focus:outline-none focus:border-zinc-900"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] font-mono focus:outline-none focus:border-[#111111]"
                   />
                 </div>
 
@@ -272,8 +277,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="chandara@gmail.com"
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-900"
+                    placeholder="attendee@example.com"
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
                   />
                 </div>
 
@@ -285,8 +290,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     type="text"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Seating preferences, accessibility..."
-                    className="w-full px-3 py-2 bg-white border border-zinc-200 rounded-md text-xs text-zinc-900 focus:outline-none focus:border-zinc-900"
+                    placeholder="Seating preferences or accessibility needs..."
+                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
                   />
                 </div>
               </div>
@@ -294,7 +299,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
             {/* Payment Method Selector */}
             <div className="space-y-2 pt-1">
-              <h4 className="font-medium text-[11px] uppercase tracking-wider text-zinc-400">
+              <h4 className="font-mono text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
                 Payment Method
               </h4>
 
@@ -302,49 +307,49 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('QR_PAYMENT')}
-                  className={`p-2.5 rounded-md border text-center transition-colors flex flex-col items-center gap-0.5 cursor-pointer ${
+                  className={`p-2.5 rounded-[6px] border text-center transition-colors flex flex-col items-center gap-0.5 cursor-pointer ${
                     paymentMethod === 'QR_PAYMENT'
-                      ? 'border-zinc-950 bg-zinc-50 font-medium text-zinc-900'
-                      : 'border-zinc-200 hover:border-zinc-300 text-zinc-600'
+                      ? 'border-[#111111] bg-[#F7F6F3] font-medium text-[#111111]'
+                      : 'border-[#EAEAEA] hover:border-zinc-300 text-zinc-600 bg-white'
                   }`}
                 >
                   <QrCode className="w-4 h-4 text-zinc-800" />
                   <span className="text-xs font-medium">QR Pay</span>
-                  <span className="text-[10px] text-zinc-400">Bakong KHQR</span>
+                  <span className="text-[10px] text-zinc-400 font-mono">Bakong KHQR</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('CARD')}
-                  className={`p-2.5 rounded-md border text-center transition-colors flex flex-col items-center gap-0.5 cursor-pointer ${
+                  className={`p-2.5 rounded-[6px] border text-center transition-colors flex flex-col items-center gap-0.5 cursor-pointer ${
                     paymentMethod === 'CARD'
-                      ? 'border-zinc-950 bg-zinc-50 font-medium text-zinc-900'
-                      : 'border-zinc-200 hover:border-zinc-300 text-zinc-600'
+                      ? 'border-[#111111] bg-[#F7F6F3] font-medium text-[#111111]'
+                      : 'border-[#EAEAEA] hover:border-zinc-300 text-zinc-600 bg-white'
                   }`}
                 >
                   <CreditCard className="w-4 h-4 text-zinc-800" />
                   <span className="text-xs font-medium">Card</span>
-                  <span className="text-[10px] text-zinc-400">Visa / Master</span>
+                  <span className="text-[10px] text-zinc-400 font-mono">Visa / Master</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('ONLINE')}
-                  className={`p-2.5 rounded-md border text-center transition-colors flex flex-col items-center gap-0.5 cursor-pointer ${
+                  className={`p-2.5 rounded-[6px] border text-center transition-colors flex flex-col items-center gap-0.5 cursor-pointer ${
                     paymentMethod === 'ONLINE'
-                      ? 'border-zinc-950 bg-zinc-50 font-medium text-zinc-900'
-                      : 'border-zinc-200 hover:border-zinc-300 text-zinc-600'
+                      ? 'border-[#111111] bg-[#F7F6F3] font-medium text-[#111111]'
+                      : 'border-[#EAEAEA] hover:border-zinc-300 text-zinc-600 bg-white'
                   }`}
                 >
                   <Globe className="w-4 h-4 text-zinc-800" />
                   <span className="text-xs font-medium">Online Bank</span>
-                  <span className="text-[10px] text-zinc-400">ABA Pay</span>
+                  <span className="text-[10px] text-zinc-400 font-mono">ABA Pay</span>
                 </button>
               </div>
             </div>
 
             {/* Security Note */}
-            <div className="flex items-center gap-1.5 text-[11px] text-zinc-400 pt-1">
+            <div className="flex items-center gap-1.5 text-[11px] text-[#787774] pt-1 font-mono">
               <Lock className="w-3 h-3 text-zinc-400" />
               <span>Encrypted checkout with real-time pass generation.</span>
             </div>
@@ -353,24 +358,26 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting || !name || !phone || !email}
-              className="w-full py-2.5 px-5 bg-zinc-950 hover:bg-zinc-800 disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-medium rounded-lg transition-colors shadow-xs flex items-center justify-center gap-2 text-xs cursor-pointer"
+              className="group w-full py-2.5 pl-6 pr-2 bg-[#111111] hover:bg-[#222222] disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-medium rounded-full transition-spring flex items-center justify-between text-xs cursor-pointer active:scale-[0.98] shadow-xs"
             >
               {isSubmitting ? (
-                <>
+                <div className="flex items-center gap-2 mx-auto py-0.5">
                   <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   <span>Issuing Passes...</span>
-                </>
+                </div>
               ) : (
                 <>
                   <span>Pay ${total.toFixed(2)} & Issue Digital Passes</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <span className="btn-nested-icon w-6 h-6 rounded-full bg-white/15 flex items-center justify-center group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+                    <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
+                  </span>
                 </>
               )}
             </button>
           </form>
         )}
+        </div>
       </div>
     </div>
   );
 };
-

@@ -18,6 +18,7 @@ import { UserSettingsModal } from './components/profile/UserSettingsModal';
 import { OnlineBookingModal } from './components/customer/OnlineBookingModal';
 import { EventItem, TicketType, Ticket, UserRole } from './types';
 import { Compass, Ticket as TicketIcon, Camera, Shield, HelpCircle, LogIn } from 'lucide-react';
+import { useBodyScrollLock } from './utils/scrollLock';
 
 function AppContent() {
   const { events, tickets, currentUser, isLoggedIn, currentRole } = useTicketContext();
@@ -39,6 +40,18 @@ function AppContent() {
   const [isOnlineBookingOpen, setIsOnlineBookingOpen] = useState(false);
   const [isAssistedPurchaseOpen, setIsAssistedPurchaseOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  // Top-level umbrella lock for all customer, staff, and order modals
+  const isAnyModalOpen = Boolean(
+    selectedEventDetails ||
+    checkoutData ||
+    activeDigitalTicket ||
+    isScannerOpen ||
+    isOnlineBookingOpen ||
+    isAssistedPurchaseOpen ||
+    isSettingsOpen
+  );
+  useBodyScrollLock(isAnyModalOpen);
 
   // Guest booking gate state: remembers what a guest tried to book
   const [pendingBooking, setPendingBooking] = useState<{
@@ -109,7 +122,7 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] flex flex-col font-sans text-zinc-900 pb-20 md:pb-0 selection:bg-zinc-900 selection:text-white">
+    <div className="min-h-screen bg-[#FBFBFA] flex flex-col font-sans text-[#111111] pb-20 md:pb-0 selection:bg-[#111111] selection:text-white">
       {/* Top Navbar */}
       <Navbar
         currentView={currentView}
@@ -128,8 +141,8 @@ function AppContent() {
         onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
-      {/* Main Page Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      {/* Main Page Area with Generous Macro-Whitespace */}
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 md:py-20">
         {currentView === 'events' && (
           <EventsCatalogView
             events={events}
@@ -233,29 +246,29 @@ function AppContent() {
         onClose={() => setIsSettingsOpen(false)}
       />
 
-      {/* Mobile Docked Minimalist Navigation Bar */}
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-zinc-200/90 py-1 px-4">
-        <div className="max-w-md mx-auto flex items-center justify-around">
+      {/* Mobile Floating Island Capsule Dock */}
+      <div className="md:hidden fixed bottom-3 inset-x-0 z-40 px-4 pointer-events-none">
+        <div className="max-w-xs mx-auto rounded-full bg-[#FFFFFF]/95 backdrop-blur-xl border border-[#111111]/[0.08] shadow-[0_12px_36px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] py-1.5 px-3 flex items-center justify-around pointer-events-auto">
           <button
             type="button"
             onClick={() => setCurrentView('events')}
-            className={`flex flex-col items-center gap-0.5 py-1 px-3 transition-colors cursor-pointer select-none ${
-              currentView === 'events' ? 'text-zinc-950 font-medium' : 'text-zinc-400 hover:text-zinc-600'
+            className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-full transition-colors cursor-pointer select-none ${
+              currentView === 'events' ? 'text-[#111111] font-semibold' : 'text-zinc-400 hover:text-zinc-600'
             }`}
           >
             <Compass className="w-4 h-4" />
-            <span className="text-[10px]">Events</span>
+            <span className="text-[9px] font-medium">Events</span>
           </button>
 
           <button
             type="button"
             onClick={() => setCurrentView('my-tickets')}
-            className={`flex flex-col items-center gap-0.5 py-1 px-3 transition-colors cursor-pointer select-none ${
-              currentView === 'my-tickets' ? 'text-zinc-950 font-medium' : 'text-zinc-400 hover:text-zinc-600'
+            className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-full transition-colors cursor-pointer select-none ${
+              currentView === 'my-tickets' ? 'text-[#111111] font-semibold' : 'text-zinc-400 hover:text-zinc-600'
             }`}
           >
             <TicketIcon className="w-4 h-4" />
-            <span className="text-[10px]">Passes</span>
+            <span className="text-[9px] font-medium">Passes</span>
           </button>
 
           {/* Center Scan QR button for staff and admin */}
@@ -263,7 +276,7 @@ function AppContent() {
             <button
               type="button"
               onClick={() => setIsScannerOpen(true)}
-              className="flex items-center justify-center w-8 h-8 bg-zinc-950 text-white rounded-md hover:bg-zinc-800 transition-colors cursor-pointer select-none"
+              className="flex items-center justify-center w-8 h-8 bg-[#111111] text-white rounded-full hover:bg-[#222222] transition-colors cursor-pointer select-none shadow-xs active:scale-95"
               title="Scan QR"
             >
               <Camera className="w-4 h-4" />
@@ -274,14 +287,14 @@ function AppContent() {
             <button
               type="button"
               onClick={() => setCurrentView(currentRole === 'ADMIN' ? 'admin' : 'staff')}
-              className={`flex flex-col items-center gap-0.5 py-1 px-3 transition-colors cursor-pointer select-none ${
+              className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-full transition-colors cursor-pointer select-none ${
                 currentView === 'staff' || currentView === 'admin'
-                  ? 'text-zinc-950 font-medium'
+                  ? 'text-[#111111] font-semibold'
                   : 'text-zinc-400 hover:text-zinc-600'
               }`}
             >
               {currentRole === 'ADMIN' ? <Shield className="w-4 h-4" /> : <HelpCircle className="w-4 h-4" />}
-              <span className="text-[10px]">{currentRole === 'ADMIN' ? 'Console' : 'Staff'}</span>
+              <span className="text-[9px] font-medium">{currentRole === 'ADMIN' ? 'Console' : 'Staff'}</span>
             </button>
           )}
 
@@ -289,15 +302,21 @@ function AppContent() {
             <button
               type="button"
               onClick={() => setIsSettingsOpen(true)}
-              className="flex flex-col items-center gap-0.5 py-1 px-2.5 transition-colors cursor-pointer text-zinc-600 hover:text-zinc-900 select-none"
+              className="flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-full transition-colors cursor-pointer text-zinc-600 hover:text-[#111111] select-none"
               title={`Account Settings (${currentUser.name})`}
             >
-              <img
-                src={currentUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}
-                alt={currentUser.name}
-                className="w-4 h-4 rounded-full object-cover ring-1 ring-zinc-200"
-              />
-              <span className="text-[10px] font-medium truncate max-w-[48px]">
+              {currentUser.avatar ? (
+                <img
+                  src={currentUser.avatar}
+                  alt={currentUser.name}
+                  className="w-4 h-4 rounded-full object-cover border border-[#111111]/[0.08]"
+                />
+              ) : (
+                <div className="w-4 h-4 rounded-full bg-[#111111] text-white flex items-center justify-center text-[9px] font-mono font-medium">
+                  {currentUser.name.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <span className="text-[9px] font-medium truncate max-w-[48px]">
                 {currentUser.name.split(' ')[0]}
               </span>
             </button>
@@ -305,33 +324,37 @@ function AppContent() {
             <button
               type="button"
               onClick={() => setCurrentView('auth')}
-              className={`flex flex-col items-center gap-0.5 py-1 px-3 transition-colors cursor-pointer select-none ${
-                currentView === 'auth' ? 'text-zinc-950 font-medium' : 'text-zinc-400 hover:text-zinc-600'
+              className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-full transition-colors cursor-pointer select-none ${
+                currentView === 'auth' ? 'text-[#111111] font-semibold' : 'text-zinc-400 hover:text-zinc-600'
               }`}
             >
               <LogIn className="w-4 h-4" />
-              <span className="text-[10px]">Sign In</span>
+              <span className="text-[9px] font-medium">Sign In</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Modern Minimalist Footer */}
-      <footer className="border-t border-zinc-200/80 bg-white py-8 px-4 text-xs text-zinc-400 mt-auto">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <span className="font-semibold text-xs text-zinc-900 tracking-tight">
+      {/* Utilitarian Editorial Luxury Footer */}
+      <footer className="border-t border-[#111111]/[0.06] bg-[#FBFBFA] py-10 px-4 text-xs text-[#787774] mt-auto">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 rounded-full bg-[#111111] text-white flex items-center justify-center text-[10px] font-mono">
+              TP
+            </div>
+            <span className="font-semibold text-xs text-[#111111] tracking-tight">
               TicketPass
             </span>
             <span className="text-zinc-300">/</span>
-            <p className="text-zinc-500 text-xs">Direct digital ticketing and checkpoint admission</p>
+            <p className="text-[#787774] text-xs">Direct digital admission pass architecture</p>
           </div>
-          <div className="flex items-center gap-4 text-zinc-400 text-xs">
-            <span>Events</span>
-            <span>•</span>
-            <span>Passes</span>
-            <span>•</span>
-            <span>Gate Checkpoint</span>
+          <div className="flex items-center gap-4 text-[#787774] text-xs font-mono">
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#346538] animate-pulse" />
+              <span className="text-[11px] text-zinc-500">Gate Checkpoint Online</span>
+            </div>
+            <span className="text-zinc-300">•</span>
+            <span className="text-[11px]">Encrypted QR Tokens</span>
           </div>
         </div>
       </footer>
