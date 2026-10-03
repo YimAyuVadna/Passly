@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { EventItem } from '../../types';
 
 interface EventCardProps {
@@ -112,10 +112,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onSelect, isFeature
                 </span>
               </div>
 
-              <span className="inline-flex items-center gap-2 pl-4 pr-1.5 py-1.5 rounded-full bg-[#0B0F17]/[0.04] group-hover:bg-[#0B0F17] text-zinc-700 group-hover:text-white border border-[#C5A059]/20 group-hover:border-[#C5A059]/40 transition-all duration-200 text-xs font-medium shadow-2xs group-hover:shadow-xs">
-                <span>Reserve Pass</span>
-                <span className="w-5 h-5 rounded-full bg-[#C5A059]/15 text-[#8F681B] group-hover:bg-[#C5A059] group-hover:text-white flex items-center justify-center transition-colors">
-                  <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <span className="inline-flex items-center gap-2 pl-4 pr-1.5 py-1.5 rounded-full bg-[#0B0F17]/[0.05] group-hover:bg-[#0B0F17] text-[#111111] group-hover:text-white border border-[#C5A059]/25 group-hover:border-[#C5A059]/60 group-hover:shadow-[0_4px_16px_rgba(11,15,23,0.18)] transition-all duration-300 text-xs font-medium select-none">
+                <span>Details</span>
+                <span className="w-5 h-5 rounded-full bg-[#C5A059]/25 group-hover:bg-gradient-to-r group-hover:from-[#D4AF37] group-hover:to-[#C5A059] group-hover:scale-110 group-hover:shadow-[0_0_10px_rgba(212,175,55,0.35)] flex items-center justify-center shrink-0 transition-all duration-300">
+                  <ArrowRight className="w-3 h-3 text-black stroke-[2.2] transition-colors" />
                 </span>
               </span>
             </div>
@@ -181,10 +181,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onSelect, isFeature
             From ${minPrice.toFixed(2)}
           </span>
 
-          <span className="inline-flex items-center gap-1.5 pl-3 pr-1.5 py-1 rounded-full bg-[#0B0F17]/[0.04] group-hover:bg-[#0B0F17] text-zinc-700 group-hover:text-white border border-[#C5A059]/20 group-hover:border-[#C5A059]/40 transition-all duration-200 text-[11px] font-medium">
+          <span className="inline-flex items-center gap-1.5 pl-3 pr-1.5 py-1 rounded-full bg-[#0B0F17]/[0.05] group-hover:bg-[#0B0F17] text-[#111111] group-hover:text-white border border-[#C5A059]/25 group-hover:border-[#C5A059]/60 group-hover:shadow-[0_4px_14px_rgba(11,15,23,0.16)] transition-all duration-300 text-[11px] font-medium select-none">
             <span>Details</span>
-            <span className="w-4 h-4 rounded-full bg-[#C5A059]/15 text-[#8F681B] group-hover:bg-[#C5A059] group-hover:text-white flex items-center justify-center transition-colors">
-              <ArrowUpRight className="w-2.5 h-2.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            <span className="w-4 h-4 rounded-full bg-[#C5A059]/25 group-hover:bg-gradient-to-r group-hover:from-[#D4AF37] group-hover:to-[#C5A059] group-hover:scale-110 group-hover:shadow-[0_0_8px_rgba(212,175,55,0.35)] flex items-center justify-center shrink-0 transition-all duration-300">
+              <ArrowRight className="w-2.5 h-2.5 text-black stroke-[2.2] transition-colors" />
             </span>
           </span>
         </div>
