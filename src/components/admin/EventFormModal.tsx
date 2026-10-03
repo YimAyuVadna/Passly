@@ -28,7 +28,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
   const [category, setCategory] = useState<string>(initialEvent?.category || 'Concert');
   const [image, setImage] = useState(
     initialEvent?.image ||
-      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1779419183221-df0bb6fdad1d?w=800&auto=format&fit=crop&q=80'
   );
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
   const [date, setDate] = useState(initialEvent?.date || '2026-11-25');
@@ -301,7 +301,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                       type="button"
                       onClick={() =>
                         setImage(
-                          'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80'
+                          'https://images.unsplash.com/photo-1779419183221-df0bb6fdad1d?w=800&auto=format&fit=crop&q=80'
                         )
                       }
                       className="px-2 py-2 text-[#787774] hover:text-[#9F2F2D] rounded-[4px] text-xs transition cursor-pointer"

@@ -49,9 +49,9 @@ export const DigitalTicketModal: React.FC<DigitalTicketModalProps> = ({
       <div className="relative w-full max-w-sm double-bezel-tray-lg shadow-[0_24px_50px_rgba(0,0,0,0.15)] print:border-none print:shadow-none my-8 p-2">
         <div className="double-bezel-core-lg overflow-hidden text-[#111111]">
           {/* Top Header Actions */}
-          <div className="flex items-center justify-between px-5 py-3 border-b border-[#111111]/[0.06] print:hidden">
+          <div className="flex items-center justify-between px-5 py-3 border-b border-[#C5A059]/15 print:hidden">
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full bg-[#111111] text-white flex items-center justify-center">
+              <div className="w-5 h-5 rounded-full bg-[#0B0F17] text-[#D4AF37] border border-[#C5A059]/30 flex items-center justify-center">
                 <TicketIcon className="w-3 h-3" />
               </div>
               <span className="font-semibold text-xs text-[#111111]">Admission Pass</span>
@@ -60,20 +60,20 @@ export const DigitalTicketModal: React.FC<DigitalTicketModalProps> = ({
               <button
                 onClick={handlePrint}
                 title="Print Pass"
-                className="w-7 h-7 rounded-full text-zinc-400 hover:text-[#111111] hover:bg-[#111111]/[0.04] transition flex items-center justify-center cursor-pointer"
+                className="w-7 h-7 rounded-full text-zinc-400 hover:text-[#0B0F17] hover:bg-[#C5A059]/10 transition flex items-center justify-center cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={handleCopyCode}
                 title="Copy Ticket ID"
-                className="w-7 h-7 rounded-full text-zinc-400 hover:text-[#111111] hover:bg-[#111111]/[0.04] transition flex items-center justify-center cursor-pointer"
+                className="w-7 h-7 rounded-full text-zinc-400 hover:text-[#0B0F17] hover:bg-[#C5A059]/10 transition flex items-center justify-center cursor-pointer"
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-[#346538]" /> : <Copy className="w-3.5 h-3.5" />}
+                {copied ? <Check className="w-3.5 h-3.5 text-[#065F46]" /> : <Copy className="w-3.5 h-3.5" />}
               </button>
               <button
                 onClick={onClose}
-                className="w-7 h-7 rounded-full text-zinc-400 hover:text-[#111111] hover:bg-[#111111]/[0.04] transition flex items-center justify-center ml-0.5 cursor-pointer"
+                className="w-7 h-7 rounded-full text-zinc-400 hover:text-[#0B0F17] hover:bg-[#C5A059]/10 transition flex items-center justify-center ml-0.5 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -82,16 +82,16 @@ export const DigitalTicketModal: React.FC<DigitalTicketModalProps> = ({
 
           {/* Multi-pass switcher */}
           {allOrderTickets.length > 1 && onSelectTicket && (
-            <div className="px-5 py-2 bg-[#FBFBFA] border-b border-[#111111]/[0.06] flex items-center gap-1.5 overflow-x-auto print:hidden">
-              <span className="text-[11px] font-mono text-zinc-400 shrink-0">Pass:</span>
+            <div className="px-5 py-2 bg-[#FAF8F5] border-b border-[#C5A059]/15 flex items-center gap-1.5 overflow-x-auto print:hidden">
+              <span className="text-[11px] font-mono text-[#8F681B] shrink-0 font-medium">Pass:</span>
               {allOrderTickets.map((t, idx) => (
                 <button
                   key={t.id}
                   onClick={() => onSelectTicket(t)}
                   className={`px-2.5 py-0.5 rounded-full text-xs font-mono transition shrink-0 cursor-pointer ${
                     t.id === ticket.id
-                      ? 'bg-[#111111] text-white font-medium shadow-xs'
-                      : 'bg-white text-zinc-600 hover:bg-[#F4F4F2] border border-[#111111]/[0.08]'
+                      ? 'bg-[#0B0F17] text-[#FAF8F5] border border-[#C5A059]/40 font-medium shadow-xs'
+                      : 'bg-white text-zinc-600 hover:bg-[#FDF8EE] border border-[#C5A059]/20'
                   }`}
                 >
                   #{idx + 1}
@@ -101,19 +101,19 @@ export const DigitalTicketModal: React.FC<DigitalTicketModalProps> = ({
           )}
 
           {/* Printable Ticket Body */}
-          <div ref={printRef} className="p-4 bg-[#FBFBFA]">
+          <div ref={printRef} className="p-4 bg-[#FAF8F5]">
             {/* Ticket Card Double-Bezel Container */}
-            <div className="border border-[#111111]/[0.08] rounded-2xl overflow-hidden bg-white shadow-xs">
+            <div className="border border-[#C5A059]/25 rounded-2xl overflow-hidden bg-white shadow-xs">
               {/* Top Pass Header */}
-              <div className="p-5 space-y-3 border-b border-[#111111]/[0.06]">
+              <div className="p-5 space-y-3 border-b border-[#C5A059]/15">
                 <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 bg-[#E1F3FE] text-[#1F6C9F] rounded-full text-[9px] font-mono font-semibold tracking-[0.16em] uppercase">
+                  <span className="px-2.5 py-0.5 bg-[#EFF6FF] text-[#1E40AF] border border-[#BFDBFE]/60 rounded-full text-[9px] font-mono font-semibold tracking-[0.16em] uppercase">
                     {ticket.ticketTypeName}
                   </span>
                   <span
                     className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-medium uppercase ${
                       ticket.status === 'VALID'
-                        ? 'bg-[#EDF3EC] text-[#346538] border border-[#DBEADB]'
+                        ? 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]'
                         : ticket.status === 'USED'
                         ? 'bg-[#F4F4F2] text-[#787774] border border-[#EAEAEA]'
                         : 'bg-[#FDEBEC] text-[#9F2F2D] border border-[#F8D7DA]'
@@ -127,28 +127,28 @@ export const DigitalTicketModal: React.FC<DigitalTicketModalProps> = ({
                 {ticket.eventName}
               </h4>
 
-              <div className="space-y-1 text-xs text-[#787774] font-mono">
+              <div className="space-y-1 text-xs text-[#8F681B] font-mono">
                 <div className="flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-zinc-400" />
+                  <Calendar className="w-3.5 h-3.5 text-[#B88B2A]" />
                   <span>{ticket.eventDate}</span>
-                  <span className="text-zinc-300">•</span>
-                  <Clock className="w-3.5 h-3.5 text-zinc-400" />
+                  <span className="text-[#C5A059]/50">•</span>
+                  <Clock className="w-3.5 h-3.5 text-[#B88B2A]" />
                   <span>{ticket.eventTime}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                  <MapPin className="w-3.5 h-3.5 text-[#B88B2A] shrink-0" />
                   <span className="truncate">{ticket.eventLocation}</span>
                 </div>
               </div>
             </div>
 
             {/* Perforated Divider */}
-            <div className="border-t border-dashed border-[#EAEAEA]" />
+            <div className="border-t border-dashed border-[#C5A059]/30" />
 
             {/* QR Code Section */}
             <div className="p-5 text-center space-y-3 bg-white">
               <div className="inline-block relative">
-                <div className="p-3 bg-white rounded-lg border border-[#111111] inline-block">
+                <div className="p-3 bg-white rounded-xl border border-[#C5A059]/40 shadow-xs inline-block">
                   <QRCodeDisplay value={ticket.qrToken} size={150} />
                 </div>
                 {ticket.status === 'USED' && (
@@ -185,7 +185,7 @@ export const DigitalTicketModal: React.FC<DigitalTicketModalProps> = ({
               </div>
 
               {/* Ticket Details Grid */}
-              <div className="pt-3 border-t border-[#EAEAEA] grid grid-cols-2 gap-2 text-left text-xs font-mono">
+              <div className="pt-3 border-t border-[#C5A059]/20 grid grid-cols-2 gap-2 text-left text-xs font-mono">
                 <div>
                   <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-sans">Pass ID</span>
                   <span className="font-semibold text-[#111111] text-xs">
@@ -206,14 +206,14 @@ export const DigitalTicketModal: React.FC<DigitalTicketModalProps> = ({
                 </div>
                 <div>
                   <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-sans">Price</span>
-                  <span className="font-semibold text-[#111111] text-xs">
+                  <span className="font-semibold text-[#9A7424] text-xs">
                     ${ticket.price.toFixed(2)}
                   </span>
                 </div>
               </div>
 
               {ticket.usedAt && (
-                <div className="p-2 bg-[#FBFBFA] border border-[#EAEAEA] rounded-[6px] text-[11px] text-[#787774] text-left font-mono">
+                <div className="p-2 bg-[#FAF8F5] border border-[#C5A059]/20 rounded-[6px] text-[11px] text-[#787774] text-left font-mono">
                   <span className="font-medium block text-[#111111]">Checked In:</span>
                   <span>
                     {new Date(ticket.usedAt).toLocaleTimeString()} • {ticket.usedBy || 'Staff'}
@@ -225,11 +225,11 @@ export const DigitalTicketModal: React.FC<DigitalTicketModalProps> = ({
         </div>
 
         {/* Bottom Bar */}
-        <div className="px-5 py-3 bg-white border-t border-[#111111]/[0.06] flex items-center justify-between text-xs text-[#787774] print:hidden">
-          <span className="text-[11px] font-mono">Verified Admission Pass</span>
+        <div className="px-5 py-3 bg-white border-t border-[#C5A059]/15 flex items-center justify-between text-xs text-[#787774] print:hidden">
+          <span className="text-[11px] font-mono text-[#065F46] font-medium">Verified Admission Pass</span>
           <button
             onClick={onClose}
-            className="px-5 py-1.5 bg-[#111111] hover:bg-[#222222] text-white font-medium rounded-full transition-spring text-xs cursor-pointer active:scale-[0.98] shadow-xs"
+            className="px-5 py-1.5 bg-gradient-to-r from-[#D4AF37] to-[#C5A059] hover:from-[#DFC04E] hover:to-[#B88B2A] text-[#0B0F17] font-semibold rounded-full transition-spring text-xs cursor-pointer active:scale-[0.98] shadow-[0_4px_20px_rgba(212,175,55,0.25)]"
           >
             Done
           </button>

@@ -11,7 +11,7 @@ html {
   overflow-y: scroll;
   scrollbar-gutter: stable;
   scroll-behavior: smooth;
-  background-color: #FBFBFA;
+  background-color: #FAF8F5;
 }
 
 /* Background scroll lock when modals or drawers are open */
@@ -25,7 +25,7 @@ body {
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   -webkit-tap-highlight-color: transparent;
   overflow-x: hidden;
-  background-color: #FBFBFA;
+  background-color: #FAF8F5;
   color: #111111;
   line-height: 1.6;
 }
@@ -34,40 +34,46 @@ body {
 :root {
   --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --gold-primary: #C5A059;
+  --gold-rich: #B88B2A;
+  --gold-rim: rgba(197, 160, 89, 0.22);
+  --gold-glow: rgba(197, 160, 89, 0.12);
 }
 
 .transition-spring {
   transition: all 0.35s var(--ease-spring);
 }
 
-/* Double-Bezel (Doppelrand / Nested Enclosure Architecture) */
+/* Double-Bezel (Doppelrand / Concentric Luxury Enclosure Architecture) */
 .double-bezel-tray {
-  background-color: rgba(17, 17, 17, 0.025);
-  border: 1px solid rgba(17, 17, 17, 0.06);
+  background-color: rgba(197, 160, 89, 0.035);
+  border: 1px solid rgba(197, 160, 89, 0.18);
   padding: 0.375rem;
   border-radius: 1.25rem;
+  box-shadow: 0 4px 20px -2px rgba(197, 160, 89, 0.05);
 }
 
 .double-bezel-tray-lg {
-  background-color: rgba(17, 17, 17, 0.025);
-  border: 1px solid rgba(17, 17, 17, 0.06);
+  background-color: rgba(197, 160, 89, 0.045);
+  border: 1px solid rgba(197, 160, 89, 0.22);
   padding: 0.5rem;
   border-radius: 1.5rem;
+  box-shadow: 0 8px 30px -4px rgba(197, 160, 89, 0.07);
 }
 
 .double-bezel-core {
   background-color: #FFFFFF;
   border-radius: calc(1.25rem - 0.375rem);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 1px 2px rgba(0, 0, 0, 0.025);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.95), 0 1px 3px rgba(197, 160, 89, 0.05);
 }
 
 .double-bezel-core-lg {
   background-color: #FFFFFF;
   border-radius: calc(1.5rem - 0.5rem);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9), 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.95), 0 1px 4px rgba(197, 160, 89, 0.06);
 }
 
-/* Micro Eyebrow Badge (Section 4.C) */
+/* Micro Eyebrow Badge */
 .eyebrow-pill {
   display: inline-flex;
   align-items: center;
@@ -87,6 +93,50 @@ body {
   justify-content: center;
   border-radius: 9999px;
   transition: transform 0.3s var(--ease-spring);
+}
+
+/* High-End Luxury Color & Jewel-Tone Tokens */
+.luxury-gold-pill {
+  background-color: #FDF8EE;
+  color: #8F681B;
+  border: 1px solid rgba(197, 160, 89, 0.28);
+}
+
+.luxury-emerald-pill {
+  background-color: #ECFDF5;
+  color: #065F46;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.luxury-sapphire-pill {
+  background-color: #EFF6FF;
+  color: #1E40AF;
+  border: 1px solid rgba(37, 99, 235, 0.25);
+}
+
+.luxury-amethyst-pill {
+  background-color: #FAF5FF;
+  color: #6B21A8;
+  border: 1px solid rgba(147, 51, 234, 0.25);
+}
+
+.luxury-amber-pill {
+  background-color: #FFFBEB;
+  color: #92400E;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+/* Luxury Gilded Buttons */
+.btn-gold-sheen {
+  background: linear-gradient(135deg, #D4AF37 0%, #C5A059 50%, #B88B2A 100%);
+  color: #0B0F17;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(197, 160, 89, 0.25);
+}
+
+.btn-gold-sheen:hover {
+  background: linear-gradient(135deg, #DFC04E 0%, #CEAA61 50%, #A87D20 100%);
+  box-shadow: 0 6px 20px rgba(197, 160, 89, 0.32);
 }
 
 /* Desaturated Muted Pastel Utility Classes */
@@ -165,3 +215,35 @@ kbd {
 .animate-laser {
   animation: laser-sweep 2.4s ease-in-out infinite;
 }
+
+/* Audio Visualizer Equalizer Animations */
+@keyframes soundwave-1 {
+  0%, 100% { height: 4px; }
+  50% { height: 16px; }
+}
+@keyframes soundwave-2 {
+  0%, 100% { height: 14px; }
+  50% { height: 6px; }
+}
+@keyframes soundwave-3 {
+  0%, 100% { height: 7px; }
+  50% { height: 18px; }
+}
+@keyframes soundwave-4 {
+  0%, 100% { height: 15px; }
+  50% { height: 5px; }
+}
+
+.animate-wave-1 {
+  animation: soundwave-1 1.1s ease-in-out infinite;
+}
+.animate-wave-2 {
+  animation: soundwave-2 0.85s ease-in-out infinite;
+}
+.animate-wave-3 {
+  animation: soundwave-3 1.3s ease-in-out infinite;
+}
+.animate-wave-4 {
+  animation: soundwave-4 0.95s ease-in-out infinite;
+}
+

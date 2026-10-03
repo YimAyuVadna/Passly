@@ -74,7 +74,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-3 sm:top-4 z-40 px-3 sm:px-6 lg:px-8 pointer-events-none transition-all">
-      <div className="max-w-6xl mx-auto rounded-full bg-[#FFFFFF]/90 backdrop-blur-xl border border-[#111111]/[0.08] shadow-[0_8px_30px_rgb(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] p-1.5 px-3 sm:px-4 pointer-events-auto">
+      <div className="max-w-6xl mx-auto rounded-full bg-[#FFFFFF]/92 backdrop-blur-xl border border-[#C5A059]/25 shadow-[0_8px_30px_rgba(197,160,89,0.08),0_1px_3px_rgba(0,0,0,0.03)] p-1.5 px-3 sm:px-4 pointer-events-auto">
         <div className="flex items-center justify-between h-11 sm:h-12 gap-3 sm:gap-4">
           {/* Logo & Navigation */}
           <div className="flex items-center gap-4 sm:gap-6">
@@ -83,17 +83,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => onChangeView('events')}
               className="flex items-center gap-2 text-left group focus:outline-none cursor-pointer select-none"
             >
-              <div className="w-6 h-6 rounded-full bg-[#111111] text-white flex items-center justify-center shadow-xs">
+              <div className="w-6 h-6 rounded-full bg-[#0B0F17] text-[#D4AF37] border border-[#C5A059]/30 flex items-center justify-center shadow-xs">
                 <Ticket className="w-3.5 h-3.5 stroke-[2]" />
               </div>
               <span className="font-semibold text-xs sm:text-sm tracking-tight text-[#111111] flex items-center gap-1.5">
                 TicketPass
-                <span className="text-[9px] font-mono uppercase tracking-[0.18em] text-zinc-400 font-medium px-1.5 py-0.5 rounded-full bg-[#111111]/[0.04]">Direct</span>
+                <span className="text-[9px] font-mono uppercase tracking-[0.18em] text-[#8F681B] font-medium px-1.5 py-0.5 rounded-full bg-[#FDF8EE] border border-[#C5A059]/25">Direct</span>
               </span>
             </motion.button>
 
             {/* Desktop Segmented Navigation */}
-            <nav className="hidden md:flex items-center gap-1 bg-[#111111]/[0.03] p-1 rounded-full border border-[#111111]/[0.05] relative">
+            <nav className="hidden md:flex items-center gap-1 bg-[#0B0F17]/[0.03] p-1 rounded-full border border-[#C5A059]/15 relative">
               {navTabs
                 .filter((tab) => tab.show)
                 .map((tab) => {
@@ -106,20 +106,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                       onClick={() => onChangeView(tab.id)}
                       className={`relative px-3 py-1 rounded-full text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer z-10 select-none ${
                         isActive
-                          ? 'text-[#111111] font-semibold'
+                          ? 'text-[#0B0F17] font-semibold'
                           : 'text-zinc-500 hover:text-zinc-900'
                       }`}
                     >
                       {isActive && (
                         <motion.div
                           layoutId="navbar-active-pill"
-                          className="absolute inset-0 rounded-full bg-white border border-[#111111]/[0.06] -z-10 shadow-[0_1px_3px_rgba(0,0,0,0.05)]"
+                          className="absolute inset-0 rounded-full bg-white border border-[#C5A059]/35 -z-10 shadow-[0_2px_8px_rgba(197,160,89,0.12)]"
                           transition={{ type: 'spring', bounce: 0.12, duration: 0.3 }}
                         />
                       )}
                       <Icon
                         className={`w-3.5 h-3.5 ${
-                          isActive ? 'text-[#111111]' : 'text-zinc-400'
+                          isActive ? 'text-[#B88B2A]' : 'text-zinc-400'
                         }`}
                       />
                       <span>{tab.label}</span>
@@ -137,9 +137,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 whileTap={{ scale: 0.98 }}
                 onClick={onOpenOnlineBooking}
                 title="Simulate Online Client Pass Purchase & QR Generation"
-                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-[#F7F6F3] text-[#111111] border border-[#111111]/[0.08] rounded-full text-xs font-medium transition-spring cursor-pointer select-none shadow-xs"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-[#FDF8EE] text-[#111111] hover:text-[#8F681B] border border-[#C5A059]/20 hover:border-[#C5A059]/40 rounded-full text-xs font-medium transition-spring cursor-pointer select-none shadow-xs"
               >
-                <Ticket className="w-3.5 h-3.5 text-zinc-500" />
+                <Ticket className="w-3.5 h-3.5 text-[#B88B2A]" />
                 <span>Simulate Pass</span>
               </motion.button>
             )}
@@ -152,10 +152,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                     whileTap={{ scale: 0.98 }}
                     onClick={onOpenScanner}
                     title="Scan QR Code"
-                    className="group inline-flex items-center justify-between gap-2 pl-3 pr-1.5 py-1 bg-[#111111] hover:bg-[#222222] text-white rounded-full text-xs font-medium transition-spring cursor-pointer select-none shadow-xs"
+                    className="group inline-flex items-center justify-between gap-2 pl-3 pr-1.5 py-1 bg-[#0B0F17] hover:bg-[#161B26] text-white border border-[#C5A059]/30 rounded-full text-xs font-medium transition-spring cursor-pointer select-none shadow-xs"
                   >
                     <span>Scan QR</span>
-                    <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <span className="w-5 h-5 rounded-full bg-[#C5A059] text-white flex items-center justify-center group-hover:scale-105 transition-transform">
                       <Camera className="w-3 h-3 text-white" />
                     </span>
                   </motion.button>
@@ -164,13 +164,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                     whileTap={{ scale: 0.98 }}
                     onClick={onOpenAssistedPurchase}
                     title="Staff Assisted Purchase"
-                    className="px-3 py-1 bg-white hover:bg-[#F7F6F3] text-zinc-800 border border-[#111111]/[0.08] rounded-full text-xs font-medium transition-spring flex items-center gap-1.5 cursor-pointer select-none shadow-xs"
+                    className="px-3 py-1 bg-[#FDF8EE] hover:bg-[#F8EED8] text-[#8F681B] border border-[#C5A059]/30 rounded-full text-xs font-medium transition-spring flex items-center gap-1.5 cursor-pointer select-none shadow-xs"
                   >
-                    <ShoppingBag className="w-3.5 h-3.5 text-zinc-500" />
+                    <ShoppingBag className="w-3.5 h-3.5 text-[#8F681B]" />
                     <span>Box Office</span>
                   </motion.button>
                 </div>
-                <div className="h-4 w-px bg-[#111111]/[0.08] hidden sm:block mx-0.5" />
+                <div className="h-4 w-px bg-[#C5A059]/20 hidden sm:block mx-0.5" />
               </>
             )}
 
@@ -180,18 +180,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <motion.button
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center gap-2 pl-1 pr-2.5 py-0.5 rounded-full bg-white hover:bg-[#F7F6F3] border border-[#111111]/[0.08] transition-colors focus:outline-none cursor-pointer select-none shadow-xs"
+                  className="flex items-center gap-2 pl-1 pr-2.5 py-0.5 rounded-full bg-white hover:bg-[#FDF8EE] border border-[#C5A059]/25 hover:border-[#C5A059]/40 transition-colors focus:outline-none cursor-pointer select-none shadow-xs"
                   title="User Profile & Settings"
                 >
                   {currentUser.avatar ? (
                     <img
                       src={currentUser.avatar}
                       alt={currentUser.name}
-                      className="w-5 h-5 rounded-full object-cover border border-[#111111]/[0.08]"
+                      className="w-5 h-5 rounded-full object-cover border border-[#C5A059]/30"
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <div className="w-5 h-5 rounded-full bg-[#111111] text-white flex items-center justify-center text-[10px] font-mono font-medium">
+                    <div className="w-5 h-5 rounded-full bg-[#0B0F17] text-[#D4AF37] border border-[#C5A059]/30 flex items-center justify-center text-[10px] font-mono font-medium">
                       {currentUser.name.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -200,7 +200,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       {currentUser.name}
                     </span>
                   </div>
-                  <ChevronDown className="w-3 h-3 text-zinc-400" />
+                  <ChevronDown className="w-3 h-3 text-[#B88B2A]" />
                 </motion.button>
 
                 {/* User Profile Dropdown with Double-Bezel Framing */}

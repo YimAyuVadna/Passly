@@ -399,7 +399,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-[6px] bg-[#111111] hover:bg-[#222222] text-white text-xs font-medium transition cursor-pointer active:scale-[0.98]"
+                  className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#C5A059] hover:from-[#DFC04E] hover:to-[#B88B2A] text-[#0B0F17] text-xs font-semibold transition cursor-pointer active:scale-[0.98] shadow-[0_4px_20px_rgba(212,175,55,0.25)]"
                 >
                   Issue Pass
                 </button>
@@ -493,9 +493,9 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                 type="button"
                 onClick={handleDownloadQr}
                 disabled={!qrDataUrl || isDownloading}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-[6px] bg-[#111111] hover:bg-[#222222] text-white text-xs font-medium flex items-center justify-center gap-2 transition cursor-pointer active:scale-[0.98]"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#C5A059] hover:from-[#DFC04E] hover:to-[#B88B2A] text-[#0B0F17] text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer active:scale-[0.98] shadow-[0_4px_20px_rgba(212,175,55,0.25)]"
               >
-                <Download className="w-3.5 h-3.5" />
+                <Download className="w-3.5 h-3.5 stroke-[2.2]" />
                 <span>{isDownloading ? 'Downloading...' : 'Download Pass (.png)'}</span>
               </button>
 
@@ -503,9 +503,9 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                 <button
                   type="button"
                   onClick={() => onTestScanTicket(issuedTicket)}
-                  className="w-full sm:w-auto px-5 py-2.5 rounded-[6px] bg-white hover:bg-[#F7F6F3] text-[#111111] border border-[#EAEAEA] text-xs font-medium flex items-center justify-center gap-2 transition cursor-pointer"
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-white hover:bg-[#FDF8EE] text-[#111111] border border-[#C5A059]/30 text-xs font-medium flex items-center justify-center gap-2 transition cursor-pointer shadow-2xs"
                 >
-                  <ShieldCheck className="w-3.5 h-3.5 text-zinc-700" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#B88B2A]" />
                   <span>Test Scan at Gate</span>
                 </button>
               )}

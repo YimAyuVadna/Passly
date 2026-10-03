@@ -88,29 +88,32 @@ export const MyTicketsView: React.FC<MyTicketsViewProps> = ({
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      {/* Wallet Header */}
-      <section className="double-bezel-tray-lg shadow-xs">
-        <div className="double-bezel-core-lg p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <span className="eyebrow-pill bg-[#111111]/[0.04] text-zinc-600 border border-[#111111]/[0.06] mb-1">
+      {/* Wallet Header - Screenshot 2 Obsidian & Gold Theme */}
+      <section className="p-2 sm:p-2.5 rounded-3xl bg-[#0B0F17] border border-[#C5A059]/30 shadow-[0_24px_60px_rgba(11,15,23,0.35)]">
+        <div className="rounded-2xl bg-gradient-to-br from-[#111625] via-[#141A29] to-[#0D121F] border border-[#C5A059]/20 p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-white relative overflow-hidden">
+          {/* Subtle ambient light gradient */}
+          <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-[#C5A059]/[0.08] blur-3xl pointer-events-none" />
+
+          <div className="space-y-1 relative z-10">
+            <span className="eyebrow-pill bg-[#C5A059]/15 text-[#E5CA8F] border border-[#C5A059]/30 mb-1">
               Passes
             </span>
-            <h1 className="font-serif text-2xl sm:text-3xl font-medium tracking-tight text-[#111111]">
-              Digital Wallet
+            <h1 className="font-serif text-2xl sm:text-3xl font-medium tracking-tight text-white">
+              Digital <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F6E6C2] via-[#E5CA8F] to-[#D4AF37]">Wallet</span>
             </h1>
-            <p className="text-xs text-[#787774]">
+            <p className="text-xs text-zinc-300">
               Admission passes and entrance QR codes for upcoming events.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 relative z-10 w-full sm:w-auto">
             <button
               onClick={onBrowseEvents}
-              className="group inline-flex items-center justify-between gap-3 pl-4 pr-1.5 py-1.5 bg-[#111111] hover:bg-[#222222] text-white rounded-full text-xs font-medium transition-spring cursor-pointer active:scale-[0.98] shadow-xs"
+              className="group inline-flex items-center justify-between gap-3 pl-5 pr-2 py-2 bg-gradient-to-r from-[#D4AF37] to-[#C5A059] hover:from-[#DFC04E] hover:to-[#B88B2A] text-[#0B0F17] font-semibold rounded-full text-xs transition-spring cursor-pointer active:scale-[0.98] shadow-[0_4px_20px_rgba(212,175,55,0.25)] w-full sm:w-auto"
             >
               <span>Explore Events</span>
-              <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
-                <ArrowRight className="w-3 h-3 stroke-[2]" />
+              <span className="w-6 h-6 rounded-full bg-[#0B0F17] text-[#D4AF37] flex items-center justify-center group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+                <ArrowRight className="w-3.5 h-3.5 stroke-[2.2]" />
               </span>
             </button>
           </div>
@@ -120,12 +123,12 @@ export const MyTicketsView: React.FC<MyTicketsViewProps> = ({
       {/* Filter and Search Bar */}
       <section className="flex flex-col sm:flex-row items-center justify-between gap-3">
         {/* Segmented Filter Control */}
-        <div className="flex items-center gap-1 bg-[#111111]/[0.03] p-1 rounded-full border border-[#111111]/[0.05] w-full sm:w-auto">
+        <div className="flex items-center gap-1 bg-[#0B0F17]/[0.03] p-1 rounded-full border border-[#C5A059]/15 w-full sm:w-auto">
           <button
             onClick={() => setActiveFilter('UPCOMING')}
             className={`px-3.5 py-1 rounded-full text-xs font-medium transition cursor-pointer flex-1 sm:flex-none ${
               activeFilter === 'UPCOMING'
-                ? 'bg-white text-[#111111] font-semibold border border-[#111111]/[0.06] shadow-xs'
+                ? 'bg-white text-[#0B0F17] font-semibold border border-[#C5A059]/35 shadow-xs'
                 : 'text-zinc-500 hover:text-zinc-900'
             }`}
           >
@@ -135,7 +138,7 @@ export const MyTicketsView: React.FC<MyTicketsViewProps> = ({
             onClick={() => setActiveFilter('USED')}
             className={`px-3.5 py-1 rounded-full text-xs font-medium transition cursor-pointer flex-1 sm:flex-none ${
               activeFilter === 'USED'
-                ? 'bg-white text-[#111111] font-semibold border border-[#111111]/[0.06] shadow-xs'
+                ? 'bg-white text-[#0B0F17] font-semibold border border-[#C5A059]/35 shadow-xs'
                 : 'text-zinc-500 hover:text-zinc-900'
             }`}
           >
@@ -145,7 +148,7 @@ export const MyTicketsView: React.FC<MyTicketsViewProps> = ({
             onClick={() => setActiveFilter('ALL')}
             className={`px-3.5 py-1 rounded-full text-xs font-medium transition cursor-pointer flex-1 sm:flex-none ${
               activeFilter === 'ALL'
-                ? 'bg-white text-[#111111] font-semibold border border-[#111111]/[0.06] shadow-xs'
+                ? 'bg-white text-[#0B0F17] font-semibold border border-[#C5A059]/35 shadow-xs'
                 : 'text-zinc-500 hover:text-zinc-900'
             }`}
           >
@@ -155,13 +158,13 @@ export const MyTicketsView: React.FC<MyTicketsViewProps> = ({
 
         {/* Search Input */}
         <div className="relative w-full sm:w-64">
-          <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-[#B88B2A] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search passes..."
-            className="w-full pl-9 pr-4 py-1.5 bg-white border border-[#111111]/[0.08] rounded-full text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition shadow-2xs"
+            className="w-full pl-9 pr-4 py-1.5 bg-white border border-[#C5A059]/25 rounded-full text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059]/25 transition shadow-2xs"
           />
         </div>
       </section>
@@ -177,21 +180,21 @@ export const MyTicketsView: React.FC<MyTicketsViewProps> = ({
               <div
                 key={ticket.id}
                 onClick={() => onSelectTicket(ticket)}
-                className="group double-bezel-tray hover:border-[#111111]/25 hover:shadow-[0_12px_32px_rgba(0,0,0,0.05)] transition-all cursor-pointer active:scale-[0.99]"
+                className="group double-bezel-tray hover:border-[#C5A059]/40 hover:shadow-[0_12px_32px_rgba(197,160,89,0.1)] transition-all cursor-pointer active:scale-[0.99]"
               >
                 <div className="double-bezel-core p-5 flex flex-col justify-between space-y-4 h-full">
                   <div>
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs text-[#787774]">
+                          <span className="font-mono text-xs text-[#8F681B]">
                             {ticket.ticketNumber}
                           </span>
-                          <span className="text-[9px] uppercase font-mono px-2 py-0.5 rounded-full bg-[#E1F3FE] text-[#1F6C9F] font-semibold tracking-[0.16em]">
+                          <span className="text-[9px] uppercase font-mono px-2 py-0.5 rounded-full bg-[#EFF6FF] text-[#1E40AF] border border-[#BFDBFE]/60 font-semibold tracking-[0.16em]">
                             {ticket.ticketTypeName}
                           </span>
                         </div>
-                        <h4 className="font-serif text-lg font-medium text-[#111111] group-hover:text-zinc-600 transition-colors mt-1.5 leading-snug tracking-tight">
+                        <h4 className="font-serif text-lg font-medium text-[#111111] group-hover:text-[#B88B2A] transition-colors mt-1.5 leading-snug tracking-tight">
                           {ticket.eventName}
                         </h4>
                       </div>
@@ -199,7 +202,7 @@ export const MyTicketsView: React.FC<MyTicketsViewProps> = ({
                       <span
                         className={`px-2.5 py-0.5 text-[10px] font-mono font-medium rounded-full uppercase shrink-0 ${
                           isValid
-                            ? 'bg-[#EDF3EC] text-[#346538] border border-[#DBEADB]'
+                            ? 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]'
                             : isUsed
                             ? 'bg-[#F4F4F2] text-[#787774] border border-[#EAEAEA]'
                             : 'bg-[#FDEBEC] text-[#9F2F2D] border border-[#F8D7DA]'
@@ -209,7 +212,7 @@ export const MyTicketsView: React.FC<MyTicketsViewProps> = ({
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 text-xs text-[#787774] bg-[#FBFBFA] p-3 rounded-xl border border-[#111111]/[0.06] mt-3.5 font-mono">
+                    <div className="grid grid-cols-2 gap-2 text-xs text-[#787774] bg-[#FAF8F5] p-3 rounded-xl border border-[#C5A059]/15 mt-3.5 font-mono">
                       <div className="space-y-0.5">
                         <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-sans">Date & Time</span>
                         <span className="font-medium text-[#111111] block">{ticket.eventDate}</span>
@@ -223,7 +226,7 @@ export const MyTicketsView: React.FC<MyTicketsViewProps> = ({
                     </div>
                   </div>
 
-                  <div className="pt-2.5 flex items-center justify-between border-t border-[#111111]/[0.06] text-xs">
+                  <div className="pt-2.5 flex items-center justify-between border-t border-[#C5A059]/15 text-xs">
                     <span className="font-mono text-zinc-400 text-[11px]">
                       Ref: <kbd>{ticket.orderNumber}</kbd>
                     </span>
@@ -234,11 +237,11 @@ export const MyTicketsView: React.FC<MyTicketsViewProps> = ({
                         e.stopPropagation();
                         onSelectTicket(ticket);
                       }}
-                      className="group/btn inline-flex items-center gap-1.5 pl-3 pr-1.5 py-1 bg-[#111111] hover:bg-[#222222] text-white rounded-full text-xs font-medium transition-spring cursor-pointer active:scale-[0.98] shadow-xs"
+                      className="group/btn inline-flex items-center gap-1.5 pl-3 pr-1.5 py-1 bg-[#0B0F17]/[0.04] group-hover:bg-[#0B0F17] text-zinc-700 group-hover:text-white border border-[#C5A059]/20 group-hover:border-[#C5A059]/40 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer active:scale-[0.98] shadow-2xs group-hover:shadow-xs"
                     >
                       <span>Pass</span>
-                      <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center group-hover/btn:scale-105 transition-transform">
-                        <QrCode className="w-3 h-3 text-white" />
+                      <span className="w-5 h-5 rounded-full bg-[#C5A059]/15 text-[#8F681B] group-hover:bg-[#C5A059] group-hover:text-white flex items-center justify-center transition-colors">
+                        <QrCode className="w-3 h-3" />
                       </span>
                     </button>
                   </div>

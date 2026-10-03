@@ -16,6 +16,7 @@ import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AuthView } from './components/auth/AuthView';
 import { UserSettingsModal } from './components/profile/UserSettingsModal';
 import { OnlineBookingModal } from './components/customer/OnlineBookingModal';
+import { BackgroundAudioPlayer } from './components/common/BackgroundAudioPlayer';
 import { EventItem, TicketType, Ticket, UserRole } from './types';
 import { Compass, Ticket as TicketIcon, Camera, Shield, HelpCircle, LogIn } from 'lucide-react';
 import { useBodyScrollLock } from './utils/scrollLock';
@@ -122,7 +123,7 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FBFBFA] flex flex-col font-sans text-[#111111] pb-20 md:pb-0 selection:bg-[#111111] selection:text-white">
+    <div className="min-h-screen bg-[#FAF8F5] flex flex-col font-sans text-[#111111] pb-28 md:pb-0 selection:bg-[#0B0F17] selection:text-[#F6E6C2]">
       {/* Top Navbar */}
       <Navbar
         currentView={currentView}
@@ -246,14 +247,17 @@ function AppContent() {
         onClose={() => setIsSettingsOpen(false)}
       />
 
+      {/* Atmospheric Background Audio Player (No mp4 video, ambient classical stream) */}
+      <BackgroundAudioPlayer />
+
       {/* Mobile Floating Island Capsule Dock */}
       <div className="md:hidden fixed bottom-3 inset-x-0 z-40 px-4 pointer-events-none">
-        <div className="max-w-xs mx-auto rounded-full bg-[#FFFFFF]/95 backdrop-blur-xl border border-[#111111]/[0.08] shadow-[0_12px_36px_rgba(0,0,0,0.08),0_1px_2px_rgba(0,0,0,0.04)] py-1.5 px-3 flex items-center justify-around pointer-events-auto">
+        <div className="max-w-xs mx-auto rounded-full bg-[#FFFFFF]/95 backdrop-blur-xl border border-[#C5A059]/25 shadow-[0_12px_36px_rgba(197,160,89,0.1),0_1px_3px_rgba(0,0,0,0.03)] py-1.5 px-3 flex items-center justify-around pointer-events-auto">
           <button
             type="button"
             onClick={() => setCurrentView('events')}
             className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-full transition-colors cursor-pointer select-none ${
-              currentView === 'events' ? 'text-[#111111] font-semibold' : 'text-zinc-400 hover:text-zinc-600'
+              currentView === 'events' ? 'text-[#B88B2A] font-semibold' : 'text-zinc-400 hover:text-zinc-600'
             }`}
           >
             <Compass className="w-4 h-4" />
@@ -264,7 +268,7 @@ function AppContent() {
             type="button"
             onClick={() => setCurrentView('my-tickets')}
             className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-full transition-colors cursor-pointer select-none ${
-              currentView === 'my-tickets' ? 'text-[#111111] font-semibold' : 'text-zinc-400 hover:text-zinc-600'
+              currentView === 'my-tickets' ? 'text-[#B88B2A] font-semibold' : 'text-zinc-400 hover:text-zinc-600'
             }`}
           >
             <TicketIcon className="w-4 h-4" />
@@ -276,7 +280,7 @@ function AppContent() {
             <button
               type="button"
               onClick={() => setIsScannerOpen(true)}
-              className="flex items-center justify-center w-8 h-8 bg-[#111111] text-white rounded-full hover:bg-[#222222] transition-colors cursor-pointer select-none shadow-xs active:scale-95"
+              className="flex items-center justify-center w-8 h-8 bg-[#0B0F17] text-[#D4AF37] border border-[#C5A059]/30 rounded-full hover:bg-[#161B26] transition-colors cursor-pointer select-none shadow-xs active:scale-95"
               title="Scan QR"
             >
               <Camera className="w-4 h-4" />
@@ -289,7 +293,7 @@ function AppContent() {
               onClick={() => setCurrentView(currentRole === 'ADMIN' ? 'admin' : 'staff')}
               className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-full transition-colors cursor-pointer select-none ${
                 currentView === 'staff' || currentView === 'admin'
-                  ? 'text-[#111111] font-semibold'
+                  ? 'text-[#B88B2A] font-semibold'
                   : 'text-zinc-400 hover:text-zinc-600'
               }`}
             >
@@ -309,10 +313,10 @@ function AppContent() {
                 <img
                   src={currentUser.avatar}
                   alt={currentUser.name}
-                  className="w-4 h-4 rounded-full object-cover border border-[#111111]/[0.08]"
+                  className="w-4 h-4 rounded-full object-cover border border-[#C5A059]/30"
                 />
               ) : (
-                <div className="w-4 h-4 rounded-full bg-[#111111] text-white flex items-center justify-center text-[9px] font-mono font-medium">
+                <div className="w-4 h-4 rounded-full bg-[#0B0F17] text-[#D4AF37] border border-[#C5A059]/30 flex items-center justify-center text-[9px] font-mono font-medium">
                   {currentUser.name.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -325,7 +329,7 @@ function AppContent() {
               type="button"
               onClick={() => setCurrentView('auth')}
               className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-full transition-colors cursor-pointer select-none ${
-                currentView === 'auth' ? 'text-[#111111] font-semibold' : 'text-zinc-400 hover:text-zinc-600'
+                currentView === 'auth' ? 'text-[#B88B2A] font-semibold' : 'text-zinc-400 hover:text-zinc-600'
               }`}
             >
               <LogIn className="w-4 h-4" />
@@ -336,24 +340,24 @@ function AppContent() {
       </div>
 
       {/* Utilitarian Editorial Luxury Footer */}
-      <footer className="border-t border-[#111111]/[0.06] bg-[#FBFBFA] py-10 px-4 text-xs text-[#787774] mt-auto">
+      <footer className="border-t border-[#C5A059]/15 bg-[#FAF8F5] py-10 px-4 text-xs text-[#787774] mt-auto">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full bg-[#111111] text-white flex items-center justify-center text-[10px] font-mono">
+            <div className="w-5 h-5 rounded-full bg-[#0B0F17] text-[#D4AF37] border border-[#C5A059]/30 flex items-center justify-center text-[10px] font-mono">
               TP
             </div>
             <span className="font-semibold text-xs text-[#111111] tracking-tight">
               TicketPass
             </span>
-            <span className="text-zinc-300">/</span>
+            <span className="text-[#C5A059]/40">/</span>
             <p className="text-[#787774] text-xs">Direct digital admission pass architecture</p>
           </div>
           <div className="flex items-center gap-4 text-[#787774] text-xs font-mono">
             <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#346538] animate-pulse" />
-              <span className="text-[11px] text-zinc-500">Gate Checkpoint Online</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#059669] animate-pulse" />
+              <span className="text-[11px] text-[#065F46] font-medium">Gate Checkpoint Online</span>
             </div>
-            <span className="text-zinc-300">•</span>
+            <span className="text-[#C5A059]/40">•</span>
             <span className="text-[11px]">Encrypted QR Tokens</span>
           </div>
         </div>

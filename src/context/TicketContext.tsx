@@ -104,27 +104,31 @@ export interface ValidationResponse {
 
 export const DEFAULT_HERO_BANNER: HeroBannerConfig = {
   enabled: true,
-  tag: 'Featured Experience',
-  category: 'Concert',
-  title: 'Neon Pulse EDM Night 2026',
-  description: 'The premier electronic dance music experience featuring world-class international DJs, laser visualizers, pyrotechnics, and an electrifying acoustic soundstage.',
-  date: '2026-10-25',
-  startTime: '19:00',
-  location: 'Diamond Island Exhibition Center',
-  image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1600&auto=format&fit=crop&q=80',
-  buttonText: 'Reserve Tickets',
-  eventId: 'evt-1',
+  tag: 'Featured Cambodian Experience',
+  category: 'Heritage & Running',
+  title: 'Angkor Sunrise International Marathon 2026',
+  description: 'Experience dawn breaking across the majestic stone spires of Angkor Wat. Official certified timing, temple trail routes, and celebration finish at Angkor Archaeological Park.',
+  date: '2026-11-08',
+  startTime: '05:30',
+  location: 'Angkor Archaeological Park',
+  image: 'https://images.unsplash.com/photo-1779419183221-df0bb6fdad1d?w=1600&auto=format&fit=crop&q=80',
+  buttonText: 'Reserve Pass',
+  eventId: 'evt-6',
 };
 
 export const DEFAULT_CATEGORIES: string[] = [
   'All',
   'Concert',
+  'Running',
+  'Night Market',
+  'Food & Wine',
   'Conference',
   'Cinema',
   'Sports',
   'Theater',
   'Festival',
   'Exhibition',
+  'Workshop',
 ];
 
 interface TicketContextType {
@@ -216,7 +220,26 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() =>
     loadStorage(STORAGE_KEYS.IS_LOGGED_IN, true)
   );
-  const [events, setEvents] = useState<EventItem[]>(() => loadStorage(STORAGE_KEYS.EVENTS, INITIAL_EVENTS));
+  const [events, setEvents] = useState<EventItem[]>(() => {
+    const loaded = loadStorage<EventItem[]>(STORAGE_KEYS.EVENTS, INITIAL_EVENTS);
+    const existingIds = new Set(loaded.map((e) => e.id));
+    const missing = INITIAL_EVENTS.filter((e) => !existingIds.has(e.id));
+    const repaired = loaded.map((e) => {
+      const fresh = INITIAL_EVENTS.find((ie) => ie.id === e.id);
+      if (fresh) {
+        // Sync verified authentic Cambodian photography and fresh venue details
+        return {
+          ...e,
+          image: fresh.image,
+          name: fresh.name,
+          location: fresh.location,
+          address: fresh.address,
+        };
+      }
+      return e;
+    });
+    return missing.length > 0 ? [...repaired, ...missing] : repaired;
+  });
   const [orders, setOrders] = useState<OrderItem[]>(() => loadStorage(STORAGE_KEYS.ORDERS, INITIAL_ORDERS));
   const [tickets, setTickets] = useState<Ticket[]>(() => {
     const loaded = loadStorage(STORAGE_KEYS.TICKETS, INITIAL_TICKETS);
@@ -233,12 +256,19 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(() =>
     loadStorage(STORAGE_KEYS.AUDIT_LOGS, INITIAL_AUDIT_LOGS)
   );
-  const [heroBanner, setHeroBanner] = useState<HeroBannerConfig>(() =>
-    loadStorage(STORAGE_KEYS.HERO_BANNER, DEFAULT_HERO_BANNER)
-  );
-  const [categories, setCategories] = useState<string[]>(() =>
-    loadStorage(STORAGE_KEYS.CATEGORIES, DEFAULT_CATEGORIES)
-  );
+  const [heroBanner, setHeroBanner] = useState<HeroBannerConfig>(() => {
+    const loaded = loadStorage<HeroBannerConfig>(STORAGE_KEYS.HERO_BANNER, DEFAULT_HERO_BANNER);
+    if (!loaded.image || loaded.image.includes('photo-1470225620780')) {
+      return DEFAULT_HERO_BANNER;
+    }
+    return loaded;
+  });
+  const [categories, setCategories] = useState<string[]>(() => {
+    const loaded = loadStorage<string[]>(STORAGE_KEYS.CATEGORIES, DEFAULT_CATEGORIES);
+    const existingLower = new Set(loaded.map((c) => c.toLowerCase()));
+    const missing = DEFAULT_CATEGORIES.filter((c) => !existingLower.has(c.toLowerCase()));
+    return missing.length > 0 ? [...loaded, ...missing] : loaded;
+  });
   const [mlScanStats, setMlScanStats] = useState<MLScanStats>(() =>
     loadStorage(STORAGE_KEYS.ML_STATS, INITIAL_ML_STATS)
   );

@@ -192,16 +192,16 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
               <button
                 onClick={handleViewTickets}
-                className="group flex-1 py-2.5 pl-5 pr-2 bg-[#111111] hover:bg-[#222222] text-white font-medium rounded-full transition-spring text-xs flex items-center justify-between cursor-pointer active:scale-[0.98] shadow-xs"
+                className="group flex-1 py-2.5 pl-5 pr-2 bg-gradient-to-r from-[#D4AF37] to-[#C5A059] hover:from-[#DFC04E] hover:to-[#B88B2A] text-[#0B0F17] font-semibold rounded-full transition-spring text-xs flex items-center justify-between cursor-pointer active:scale-[0.98] shadow-[0_4px_20px_rgba(212,175,55,0.25)]"
               >
                 <span>View Digital Pass</span>
-                <span className="btn-nested-icon w-6 h-6 rounded-full bg-white/15 flex items-center justify-center group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
-                  <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
+                <span className="btn-nested-icon w-6 h-6 rounded-full bg-[#0B0F17] text-[#D4AF37] flex items-center justify-center group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+                  <ArrowRight className="w-3.5 h-3.5 stroke-[2.2]" />
                 </span>
               </button>
               <button
                 onClick={handleReset}
-                className="py-2.5 px-5 bg-white hover:bg-[#F7F6F3] border border-[#111111]/[0.08] text-zinc-700 font-medium rounded-full transition text-xs cursor-pointer shadow-2xs"
+                className="py-2.5 px-5 bg-white hover:bg-[#FDF8EE] border border-[#C5A059]/30 text-zinc-700 font-medium rounded-full transition text-xs cursor-pointer shadow-2xs"
               >
                 Back to Events
               </button>
@@ -309,11 +309,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   onClick={() => setPaymentMethod('QR_PAYMENT')}
                   className={`p-2.5 rounded-[6px] border text-center transition-colors flex flex-col items-center gap-0.5 cursor-pointer ${
                     paymentMethod === 'QR_PAYMENT'
-                      ? 'border-[#111111] bg-[#F7F6F3] font-medium text-[#111111]'
-                      : 'border-[#EAEAEA] hover:border-zinc-300 text-zinc-600 bg-white'
+                      ? 'border-[#C5A059] bg-[#FDF8EE] font-medium text-[#0B0F17] shadow-xs'
+                      : 'border-[#EAEAEA] hover:border-[#C5A059]/40 text-zinc-600 bg-white'
                   }`}
                 >
-                  <QrCode className="w-4 h-4 text-zinc-800" />
+                  <QrCode className="w-4 h-4 text-[#B88B2A]" />
                   <span className="text-xs font-medium">QR Pay</span>
                   <span className="text-[10px] text-zinc-400 font-mono">Bakong KHQR</span>
                 </button>
@@ -323,11 +323,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   onClick={() => setPaymentMethod('CARD')}
                   className={`p-2.5 rounded-[6px] border text-center transition-colors flex flex-col items-center gap-0.5 cursor-pointer ${
                     paymentMethod === 'CARD'
-                      ? 'border-[#111111] bg-[#F7F6F3] font-medium text-[#111111]'
-                      : 'border-[#EAEAEA] hover:border-zinc-300 text-zinc-600 bg-white'
+                      ? 'border-[#C5A059] bg-[#FDF8EE] font-medium text-[#0B0F17] shadow-xs'
+                      : 'border-[#EAEAEA] hover:border-[#C5A059]/40 text-zinc-600 bg-white'
                   }`}
                 >
-                  <CreditCard className="w-4 h-4 text-zinc-800" />
+                  <CreditCard className="w-4 h-4 text-[#B88B2A]" />
                   <span className="text-xs font-medium">Card</span>
                   <span className="text-[10px] text-zinc-400 font-mono">Visa / Master</span>
                 </button>
@@ -337,11 +337,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   onClick={() => setPaymentMethod('ONLINE')}
                   className={`p-2.5 rounded-[6px] border text-center transition-colors flex flex-col items-center gap-0.5 cursor-pointer ${
                     paymentMethod === 'ONLINE'
-                      ? 'border-[#111111] bg-[#F7F6F3] font-medium text-[#111111]'
-                      : 'border-[#EAEAEA] hover:border-zinc-300 text-zinc-600 bg-white'
+                      ? 'border-[#C5A059] bg-[#FDF8EE] font-medium text-[#0B0F17] shadow-xs'
+                      : 'border-[#EAEAEA] hover:border-[#C5A059]/40 text-zinc-600 bg-white'
                   }`}
                 >
-                  <Globe className="w-4 h-4 text-zinc-800" />
+                  <Globe className="w-4 h-4 text-[#B88B2A]" />
                   <span className="text-xs font-medium">Online Bank</span>
                   <span className="text-[10px] text-zinc-400 font-mono">ABA Pay</span>
                 </button>
@@ -350,7 +350,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
             {/* Security Note */}
             <div className="flex items-center gap-1.5 text-[11px] text-[#787774] pt-1 font-mono">
-              <Lock className="w-3 h-3 text-zinc-400" />
+              <Lock className="w-3 h-3 text-[#B88B2A]" />
               <span>Encrypted checkout with real-time pass generation.</span>
             </div>
 
@@ -358,18 +358,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting || !name || !phone || !email}
-              className="group w-full py-2.5 pl-6 pr-2 bg-[#111111] hover:bg-[#222222] disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-medium rounded-full transition-spring flex items-center justify-between text-xs cursor-pointer active:scale-[0.98] shadow-xs"
+              className="group w-full py-2.5 pl-6 pr-2 bg-gradient-to-r from-[#D4AF37] to-[#C5A059] hover:from-[#DFC04E] hover:to-[#B88B2A] disabled:opacity-40 disabled:pointer-events-none text-[#0B0F17] font-semibold rounded-full transition-spring flex items-center justify-between text-xs cursor-pointer active:scale-[0.98] shadow-[0_4px_20px_rgba(212,175,55,0.25)]"
             >
               {isSubmitting ? (
                 <div className="flex items-center gap-2 mx-auto py-0.5">
-                  <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-3.5 h-3.5 border-2 border-[#0B0F17] border-t-transparent rounded-full animate-spin" />
                   <span>Issuing Passes...</span>
                 </div>
               ) : (
                 <>
                   <span>Pay ${total.toFixed(2)} & Issue Digital Passes</span>
-                  <span className="btn-nested-icon w-6 h-6 rounded-full bg-white/15 flex items-center justify-center group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
-                    <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
+                  <span className="btn-nested-icon w-6 h-6 rounded-full bg-[#0B0F17] text-[#D4AF37] flex items-center justify-center group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+                    <ArrowRight className="w-3.5 h-3.5 stroke-[2.2]" />
                   </span>
                 </>
               )}
