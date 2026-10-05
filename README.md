@@ -433,6 +433,15 @@ TicketPass/
 
 ---
 
+## 📢 Recent Updates
+
+- Added **ShareTicketModal** component for easy ticket sharing via QR and link.
+- Updated repository remote to **Passly**; clone with `git clone https://github.com/YimAyuVadna/Passly.git`.
+- Refreshed UI theme and gold palette across components.
+- Updated documentation to reflect new repo location.
+
+
+
 ## 🔒 Environment & Security
 
 - **Zero External API Keys**: TicketPass is completely self-contained. It requires no external API keys, third-party authentication tokens, or cloud billing accounts to operate.
