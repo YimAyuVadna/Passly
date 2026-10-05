@@ -35,6 +35,8 @@ export const AdminDashboard: React.FC = () => {
     addUser,
     heroBanner,
     categories,
+    ticketLimit,
+    updateTicketLimit,
   } = useTicketContext();
 
   const [activeTab, setActiveTab] = useState<
@@ -846,6 +848,108 @@ export const AdminDashboard: React.FC = () => {
                   <span>{cat}</span>
                 </span>
               ))}
+            </div>
+          </div>
+
+          {/* Ticket Purchase Limit Policy Section */}
+          <div className="bg-[#FFFFFF] rounded-[8px] p-5 sm:p-6 border border-[#EAEAEA] space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#EAEAEA] pb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-serif text-base font-medium text-[#111111]">User Ticket Buying Limit</h3>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-medium ${
+                      ticketLimit.enabled
+                        ? 'bg-[#EDF3EC] text-[#346538] border border-[#D5E3D3]'
+                        : 'bg-[#F4F4F2] text-[#787774] border border-[#EAEAEA]'
+                    }`}
+                  >
+                    {ticketLimit.enabled ? `ACTIVE: MAX ${ticketLimit.maxPerOrder} PASSES` : 'UNRESTRICTED'}
+                  </span>
+                </div>
+                <p className="text-xs text-[#787774] mt-0.5">
+                  Set the maximum number of tickets a customer can purchase per checkout to prevent scalping and bulk hoarding.
+                </p>
+              </div>
+
+              {/* Master Toggle */}
+              <div className="flex items-center gap-3 shrink-0">
+                <span className="text-xs text-[#787774] font-medium">
+                  {ticketLimit.enabled ? 'Limit Enforced' : 'No Limit'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => updateTicketLimit({ enabled: !ticketLimit.enabled })}
+                  className={`w-11 h-6 flex items-center rounded-full p-1 transition cursor-pointer ${
+                    ticketLimit.enabled ? 'bg-[#111111]' : 'bg-[#EAEAEA]'
+                  }`}
+                  aria-label="Toggle user ticket buying limit"
+                >
+                  <div
+                    className={`bg-white w-4 h-4 rounded-full shadow-md transform transition ${
+                      ticketLimit.enabled ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+
+            {/* Configurable Limit Controls */}
+            <div className={`space-y-4 transition ${ticketLimit.enabled ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <span className="text-xs font-semibold text-[#111111] block">
+                    Maximum Passes Allowed Per Order
+                  </span>
+                  <span className="text-[11px] text-[#787774]">
+                    Select a standard preset or adjust with custom quantity stepper
+                  </span>
+                </div>
+
+                {/* Stepper + Input */}
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={!ticketLimit.enabled || ticketLimit.maxPerOrder <= 1}
+                    onClick={() => updateTicketLimit({ maxPerOrder: Math.max(1, ticketLimit.maxPerOrder - 1) })}
+                    className="w-8 h-8 rounded-[6px] bg-white border border-[#EAEAEA] flex items-center justify-center text-[#111111] hover:bg-[#F7F6F3] disabled:opacity-30 transition cursor-pointer font-bold text-sm"
+                  >
+                    -
+                  </button>
+                  <div className="px-3 py-1 bg-[#FBFBFA] border border-[#EAEAEA] rounded-[6px] text-center min-w-[50px]">
+                    <span className="font-mono text-sm font-semibold text-[#111111]">
+                      {ticketLimit.maxPerOrder}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={!ticketLimit.enabled || ticketLimit.maxPerOrder >= 50}
+                    onClick={() => updateTicketLimit({ maxPerOrder: Math.min(50, ticketLimit.maxPerOrder + 1) })}
+                    className="w-8 h-8 rounded-[6px] bg-white border border-[#EAEAEA] flex items-center justify-center text-[#111111] hover:bg-[#F7F6F3] disabled:opacity-30 transition cursor-pointer font-bold text-sm"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* Quick Presets */}
+              <div className="flex items-center gap-2 pt-1 flex-wrap">
+                <span className="text-[11px] font-mono text-[#787774] mr-1">Quick Presets:</span>
+                {[1, 2, 4, 6, 8, 10, 12].map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => updateTicketLimit({ maxPerOrder: preset, enabled: true })}
+                    className={`px-3 py-1 rounded-[6px] text-xs font-mono transition cursor-pointer ${
+                      ticketLimit.enabled && ticketLimit.maxPerOrder === preset
+                        ? 'bg-[#111111] text-white font-medium border border-[#111111]'
+                        : 'bg-[#FBFBFA] hover:bg-[#F4F4F2] text-[#111111] border border-[#EAEAEA]'
+                    }`}
+                  >
+                    {preset} {preset === 1 ? 'pass' : 'passes'}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>

@@ -45,7 +45,7 @@ class MLPredictionHandler(BaseHTTPRequestHandler):
             self.end_headers()
             response = {
                 "status": "online",
-                "service": "TicketPass ML #1 Decision Tree Backend",
+                "service": "Passly ML #1 Decision Tree Backend",
                 "version": "1.0.0",
                 "endpoints": {
                     "POST /predict": "Send JSON order features to predict DIGITAL vs PHYSICAL",

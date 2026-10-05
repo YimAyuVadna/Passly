@@ -7,6 +7,7 @@ import {
   QrCode,
   Search,
   ArrowRight,
+  Share2,
 } from 'lucide-react';
 import { Ticket } from '../../types';
 import { useTicketContext } from '../../context/TicketContext';
@@ -186,13 +187,19 @@ export const MyTicketsView: React.FC<MyTicketsViewProps> = ({
                   <div>
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-mono text-xs text-[#8F681B]">
                             {ticket.ticketNumber}
                           </span>
                           <span className="text-[9px] uppercase font-mono px-2 py-0.5 rounded-full bg-[#EFF6FF] text-[#1E40AF] border border-[#BFDBFE]/60 font-semibold tracking-[0.16em]">
                             {ticket.ticketTypeName}
                           </span>
+                          {ticket.isShared && (
+                            <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0] font-medium flex items-center gap-1">
+                              <Share2 className="w-2.5 h-2.5 text-[#059669]" />
+                              <span>{ticket.sharedToName ? `Shared to ${ticket.sharedToName}` : 'Shared'}</span>
+                            </span>
+                          )}
                         </div>
                         <h4 className="font-serif text-lg font-medium text-[#111111] group-hover:text-[#B88B2A] transition-colors mt-1.5 leading-snug tracking-tight">
                           {ticket.eventName}
@@ -219,9 +226,13 @@ export const MyTicketsView: React.FC<MyTicketsViewProps> = ({
                         <span className="text-[11px] text-[#787774]">{ticket.eventTime}</span>
                       </div>
                       <div className="space-y-0.5">
-                        <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-sans">Venue</span>
+                        <span className="text-[10px] text-zinc-400 uppercase tracking-wider block font-sans">
+                          {ticket.sharedToName ? 'Pass Holder' : 'Venue'}
+                        </span>
                         <span className="font-medium text-[#111111] truncate block">{ticket.eventLocation}</span>
-                        <span className="text-[11px] text-[#787774] truncate block font-sans">{ticket.customerName}</span>
+                        <span className="text-[11px] text-[#787774] truncate block font-sans">
+                          {ticket.sharedToName ? `Recipient: ${ticket.sharedToName}` : ticket.customerName}
+                        </span>
                       </div>
                     </div>
                   </div>

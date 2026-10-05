@@ -22,7 +22,7 @@ import { Compass, Ticket as TicketIcon, Camera, Shield, HelpCircle, LogIn } from
 import { useBodyScrollLock } from './utils/scrollLock';
 
 function AppContent() {
-  const { events, tickets, currentUser, isLoggedIn, currentRole } = useTicketContext();
+  const { events, tickets, currentUser, isLoggedIn, currentRole, markTicketAsShared, importSharedTicket } = useTicketContext();
 
   const [currentView, setCurrentView] = useState<
     'events' | 'my-tickets' | 'staff' | 'admin' | 'auth'
@@ -61,11 +61,81 @@ function AppContent() {
     quantity: number;
   } | null>(null);
   const [authNotice, setAuthNotice] = useState<string | null>(null);
+  const [isSharedRecipientView, setIsSharedRecipientView] = useState(false);
 
   // Tickets in the same order as the active ticket (for multi-pass switcher)
   const orderTickets = activeDigitalTicket
     ? tickets.filter((t) => t.orderId === activeDigitalTicket.orderId)
     : [];
+
+  // Check URL query parameters for direct shared ticket access (?ticketId=...&shared=1&to=...&tdata=...)
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const sharedTicketId = urlParams.get('ticketId') || urlParams.get('pass');
+    const isShared = urlParams.get('shared') === '1' || urlParams.get('shared') === 'true';
+    const recipientParam = urlParams.get('to') || urlParams.get('recipient') || urlParams.get('getter');
+    const tdataParam = urlParams.get('tdata');
+
+    if (sharedTicketId) {
+      const cleanTo = recipientParam ? decodeURIComponent(recipientParam).trim() : undefined;
+      let matched = tickets.find(
+        (t) => t.id === sharedTicketId || t.ticketNumber === sharedTicketId
+      );
+
+      // Cross-device resilience: if ticket is not in local storage on recipient device, reconstruct from tdata payload
+      if (!matched && tdataParam) {
+        try {
+          const parsed = JSON.parse(decodeURIComponent(escape(atob(tdataParam))));
+          if (parsed && (parsed.id === sharedTicketId || parsed.tkt === sharedTicketId || !sharedTicketId)) {
+            const reconstructedTicket: Ticket = {
+              id: parsed.id || sharedTicketId,
+              ticketNumber: parsed.tkt,
+              orderId: parsed.ord ? `ord-${parsed.ord}` : `ord-shared-${Date.now()}`,
+              orderNumber: parsed.ord || `ORD-${parsed.tkt}`,
+              eventId: parsed.ev || 'ev-001',
+              eventName: parsed.evName || 'Event Admission',
+              eventDate: parsed.date || new Date().toISOString().split('T')[0],
+              eventTime: parsed.time || '19:00',
+              eventLocation: parsed.loc || 'Main Entrance Gate',
+              customerId: 'cust-remote',
+              customerName: parsed.cust || 'Purchaser',
+              customerPhone: '',
+              customerEmail: '',
+              ticketTypeId: 'tier-shared',
+              ticketTypeName: parsed.type || 'General Pass',
+              price: Number(parsed.price) || 0,
+              qrToken: parsed.qr || parsed.tkt,
+              status: 'VALID',
+              isShared: true,
+              sharedAt: new Date().toISOString(),
+              sharedToName: cleanTo || parsed.to,
+              createdAt: new Date().toISOString(),
+            };
+            importSharedTicket(reconstructedTicket);
+            matched = reconstructedTicket;
+          }
+        } catch (err) {
+          console.error('Failed to parse shared tdata parameter:', err);
+        }
+      }
+
+      if (matched) {
+        const populatedTicket: Ticket = {
+          ...matched,
+          ...(cleanTo ? { sharedToName: cleanTo } : {}),
+          ...(isShared ? { isShared: true } : {}),
+        };
+        setActiveDigitalTicket(populatedTicket);
+        if (isShared) {
+          setIsSharedRecipientView(true);
+        }
+        if (cleanTo && (!matched.sharedToName || !matched.isShared)) {
+          markTicketAsShared(matched.id, cleanTo);
+        }
+      }
+    }
+  }, [tickets, markTicketAsShared, importSharedTicket]);
 
   // Strict Role Guard: Redirect customers and unauthenticated guests away from staff or admin views
   React.useEffect(() => {
@@ -209,9 +279,24 @@ function AppContent() {
 
       <DigitalTicketModal
         ticket={activeDigitalTicket}
-        onClose={() => setActiveDigitalTicket(null)}
-        allOrderTickets={orderTickets}
+        onClose={() => {
+          setActiveDigitalTicket(null);
+          setIsSharedRecipientView(false);
+          if (typeof window !== 'undefined' && window.location.search) {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('ticketId');
+            url.searchParams.delete('pass');
+            url.searchParams.delete('shared');
+            url.searchParams.delete('to');
+            url.searchParams.delete('recipient');
+            url.searchParams.delete('getter');
+            url.searchParams.delete('tdata');
+            window.history.replaceState({}, '', url.pathname + (url.search ? url.search : ''));
+          }
+        }}
+        allOrderTickets={isSharedRecipientView ? [] : orderTickets}
         onSelectTicket={(t) => setActiveDigitalTicket(t)}
+        isSharedView={isSharedRecipientView}
       />
 
       {/* Checkpoint Scanner: Staff gate operations or direct Online Booking Test Scanner */}
@@ -343,14 +428,14 @@ function AppContent() {
       <footer className="border-t border-[#C5A059]/15 bg-[#FAF8F5] py-10 px-4 text-xs text-[#787774] mt-auto">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full bg-[#0B0F17] text-[#D4AF37] border border-[#C5A059]/30 flex items-center justify-center text-[10px] font-mono">
-              TP
+            <div className="w-5 h-5 rounded-full bg-[#0B0F17] text-[#D4AF37] border border-[#C5A059]/30 flex items-center justify-center text-[10px] font-mono font-medium">
+              P
             </div>
             <span className="font-semibold text-xs text-[#111111] tracking-tight">
-              TicketPass
+              Passly
             </span>
             <span className="text-[#C5A059]/40">/</span>
-            <p className="text-[#787774] text-xs">Direct digital admission pass architecture</p>
+            <p className="text-[#787774] text-xs">Digital admission pass architecture</p>
           </div>
           <div className="flex items-center gap-4 text-[#787774] text-xs font-mono">
             <div className="flex items-center gap-1.5">

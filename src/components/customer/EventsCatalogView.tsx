@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Search,
   Calendar,
@@ -12,6 +12,8 @@ import {
   Zap,
   QrCode,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { EventItem } from '../../types';
 import { EventCard } from './EventCard';
@@ -40,6 +42,49 @@ export const EventsCatalogView: React.FC<EventsCatalogViewProps> = ({
   const [isHeroModalOpen, setIsHeroModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isCreateEventModalOpen, setIsCreateEventModalOpen] = useState(false);
+
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateCategoryScroll = () => {
+    const el = categoryScrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 6);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 6);
+  };
+
+  useEffect(() => {
+    updateCategoryScroll();
+    const el = categoryScrollRef.current;
+    if (el) {
+      el.addEventListener('scroll', updateCategoryScroll, { passive: true });
+      window.addEventListener('resize', updateCategoryScroll);
+    }
+    return () => {
+      if (el) el.removeEventListener('scroll', updateCategoryScroll);
+      window.removeEventListener('resize', updateCategoryScroll);
+    };
+  }, [categories]);
+
+  const handleScrollCategories = (direction: 'left' | 'right') => {
+    const el = categoryScrollRef.current;
+    if (!el) return;
+    el.scrollBy({
+      left: direction === 'left' ? -220 : 220,
+      behavior: 'smooth',
+    });
+  };
+
+  const handleCategoryClick = (cat: string, e: React.MouseEvent<HTMLButtonElement>) => {
+    setSelectedCategory(cat);
+    // Smoothly scroll clicked tab into center so next filters are shown and onward
+    e.currentTarget.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'center',
+      block: 'nearest',
+    });
+  };
 
   // Lock background scrolling when any storefront modal is open
   useBodyScrollLock(isHeroModalOpen || isCategoryModalOpen || isCreateEventModalOpen);
@@ -195,48 +240,83 @@ export const EventsCatalogView: React.FC<EventsCatalogViewProps> = ({
 
       {/* Filter & Search Bar */}
       <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-b border-[#C5A059]/15 pb-4">
-        {/* Category Tabs & Manage Trigger */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-          {categories.map((cat) => {
-            const isSelected = selectedCategory.toLowerCase() === cat.toLowerCase();
-            return (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3.5 py-1.5 rounded-full text-xs transition-spring shrink-0 cursor-pointer ${
-                  isSelected
-                    ? 'bg-[#0B0F17] text-[#FAF8F5] border border-[#C5A059]/40 font-medium shadow-xs'
-                    : 'text-zinc-600 hover:text-[#0B0F17] hover:bg-[#C5A059]/[0.08]'
-                }`}
-              >
-                {cat}
-              </button>
-            );
-          })}
+        {/* Category Tabs with Navigation Controls */}
+        <div className="relative flex-1 min-w-0 flex items-center">
+          {/* Scroll Left Button */}
+          {canScrollLeft && (
+            <button
+              type="button"
+              onClick={() => handleScrollCategories('left')}
+              aria-label="Scroll categories left"
+              className="absolute left-0 z-10 w-6 h-6 rounded-full bg-white/95 backdrop-blur-xs border border-[#C5A059]/30 text-[#8F681B] hover:text-[#0B0F17] hover:bg-[#FDF8EE] flex items-center justify-center shadow-xs transition-colors shrink-0 -translate-x-1 cursor-pointer"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+          )}
 
-          {/* Admin & Senior Staff Controls */}
-          {canManageStorefront && (
-            <div className="flex items-center gap-1.5 shrink-0 ml-2 pl-2 border-l border-[#C5A059]/20">
-              <button
-                type="button"
-                onClick={() => setIsCreateEventModalOpen(true)}
-                className="px-3 py-1.5 rounded-full text-xs font-medium bg-[#FDF8EE] hover:bg-[#F8EED8] text-[#8F681B] border border-[#C5A059]/25 transition cursor-pointer flex items-center gap-1"
-                title="Admin / Senior Staff: Create New Event"
-              >
-                <Plus className="w-3 h-3" />
-                <span>New Event</span>
-              </button>
+          <div
+            ref={categoryScrollRef}
+            data-hide-scrollbar
+            onWheel={(e) => {
+              if (e.deltaY !== 0) {
+                e.currentTarget.scrollLeft += e.deltaY;
+              }
+            }}
+            className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 no-scrollbar scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar]:h-0 w-full"
+          >
+            {categories.map((cat) => {
+              const isSelected = selectedCategory.toLowerCase() === cat.toLowerCase();
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={(e) => handleCategoryClick(cat, e)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs shrink-0 cursor-pointer select-none outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 focus-visible:ring-0 transition-colors duration-150 ${
+                    isSelected
+                      ? 'bg-[#0B0F17] text-[#FAF8F5] border border-[#C5A059]/40 font-medium shadow-xs'
+                      : 'border border-transparent text-zinc-600 hover:text-[#0B0F17] hover:bg-[#C5A059]/[0.08]'
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
 
-              <button
-                type="button"
-                onClick={() => setIsCategoryModalOpen(true)}
-                className="px-3 py-1.5 rounded-full text-xs font-medium bg-[#FDF8EE] hover:bg-[#F8EED8] text-[#8F681B] border border-[#C5A059]/25 transition cursor-pointer"
-                title="Admin / Senior Staff: Edit Category List"
-              >
-                <span>Edit Categories</span>
-              </button>
-            </div>
+            {/* Admin & Senior Staff Controls */}
+            {canManageStorefront && (
+              <div className="flex items-center gap-1.5 shrink-0 ml-2 pl-2 border-l border-[#C5A059]/20">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateEventModalOpen(true)}
+                  className="px-3 py-1.5 rounded-full text-xs font-medium bg-[#FDF8EE] hover:bg-[#F8EED8] text-[#8F681B] border border-[#C5A059]/25 transition-colors cursor-pointer flex items-center gap-1 outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 select-none shrink-0"
+                  title="Admin / Senior Staff: Create New Event"
+                >
+                  <Plus className="w-3 h-3" />
+                  <span>New Event</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsCategoryModalOpen(true)}
+                  className="px-3 py-1.5 rounded-full text-xs font-medium bg-[#FDF8EE] hover:bg-[#F8EED8] text-[#8F681B] border border-[#C5A059]/25 transition-colors cursor-pointer outline-none focus:outline-none focus-visible:outline-none ring-0 focus:ring-0 select-none shrink-0"
+                  title="Admin / Senior Staff: Edit Category List"
+                >
+                  <span>Edit Categories</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Scroll Right Button */}
+          {canScrollRight && (
+            <button
+              type="button"
+              onClick={() => handleScrollCategories('right')}
+              aria-label="Scroll categories right"
+              className="absolute right-0 z-10 w-6 h-6 rounded-full bg-white/95 backdrop-blur-xs border border-[#C5A059]/30 text-[#8F681B] hover:text-[#0B0F17] hover:bg-[#FDF8EE] flex items-center justify-center shadow-xs transition-colors shrink-0 translate-x-1 cursor-pointer"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
           )}
         </div>
 

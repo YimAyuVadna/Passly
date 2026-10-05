@@ -81,14 +81,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             <motion.button
               whileTap={{ scale: 0.98 }}
               onClick={() => onChangeView('events')}
-              className="flex items-center gap-2 text-left group focus:outline-none cursor-pointer select-none"
+              className="flex items-center text-left group focus:outline-none cursor-pointer select-none"
             >
-              <div className="w-6 h-6 rounded-full bg-[#0B0F17] text-[#D4AF37] border border-[#C5A059]/30 flex items-center justify-center shadow-xs">
-                <Ticket className="w-3.5 h-3.5 stroke-[2]" />
-              </div>
-              <span className="font-semibold text-xs sm:text-sm tracking-tight text-[#111111] flex items-center gap-1.5">
-                TicketPass
-                <span className="text-[9px] font-mono uppercase tracking-[0.18em] text-[#8F681B] font-medium px-1.5 py-0.5 rounded-full bg-[#FDF8EE] border border-[#C5A059]/25">Direct</span>
+              <span className="font-semibold text-sm sm:text-base tracking-tight text-[#111111]">
+                Passly
               </span>
             </motion.button>
 

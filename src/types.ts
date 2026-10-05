@@ -96,6 +96,9 @@ export interface Ticket {
   price: number;
   qrToken: string; // Secure token encoded into the QR code
   status: TicketStatus;
+  isShared?: boolean;
+  sharedAt?: string;
+  sharedToName?: string;
   usedAt?: string;
   usedBy?: string; // Staff member who validated it
   createdAt: string;
@@ -169,4 +172,9 @@ export interface MLScanStats {
   physicalCount: number;
   digitalPercent: number;
   physicalPercent: number;
+}
+
+export interface TicketLimitConfig {
+  enabled: boolean;
+  maxPerOrder: number;
 }

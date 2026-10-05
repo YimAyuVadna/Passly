@@ -30,6 +30,17 @@ body {
   line-height: 1.6;
 }
 
+/* Prevent unwanted browser focus outlines on click/tap */
+button,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
 /* Custom Cubic-Bezier Transitions for Real-World Mass & Kinetic Tension */
 :root {
   --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
@@ -170,7 +181,12 @@ kbd {
   font-size: 0.75rem;
 }
 
-/* Sleek minimalist scrollbar */
+/* Sleek minimalist scrollbar across standard CSS and WebKit */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #EAEAEA transparent;
+}
+
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
@@ -186,11 +202,95 @@ kbd {
   background: #D4D4D4;
 }
 
+/* Utility to hide scrollbars while preserving full scrollability */
+.no-scrollbar,
+.scrollbar-none,
+[data-hide-scrollbar] {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar,
+[data-hide-scrollbar]::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 /* Print utilities for ticket passes */
+#printable-ticket-area {
+  display: none;
+}
+
 @media print {
+  @page {
+    margin: 8mm;
+    size: portrait;
+  }
+
+  html,
   body {
     background: #ffffff !important;
+    color: #111111 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
+
+  /* When printing tickets, completely hide the application #root
+     so that the background website takes 0 pages and 0 height */
+  body:has(#printable-ticket-area) #root,
+  body.passly-ticket-modal-open #root,
+  body.passly-printing-tickets #root {
+    display: none !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Show ONLY the dedicated printable container as an in-flow document block */
+  body:has(#printable-ticket-area) #printable-ticket-area,
+  body.passly-ticket-modal-open #printable-ticket-area,
+  body.passly-printing-tickets #printable-ticket-area,
+  #printable-ticket-area {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  /* Each ticket pass sits on its own dedicated page without mid-pass splitting */
+  .print-ticket-page {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 82mm !important;
+    margin: 0 auto !important;
+    padding: 4mm 0 10mm 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Prevent trailing empty blank pages after the final ticket pass */
+  .print-ticket-page:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
   .print\:hidden {
     display: none !important;
   }

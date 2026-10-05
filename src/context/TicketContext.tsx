@@ -15,6 +15,7 @@ import {
   HeroBannerConfig,
   MLTicketType,
   MLScanStats,
+  TicketLimitConfig,
 } from '../types';
 import {
   INITIAL_USERS,
@@ -131,6 +132,11 @@ export const DEFAULT_CATEGORIES: string[] = [
   'Workshop',
 ];
 
+export const DEFAULT_TICKET_LIMIT: TicketLimitConfig = {
+  enabled: true,
+  maxPerOrder: 6,
+};
+
 interface TicketContextType {
   currentUser: User;
   currentRole: UserRole;
@@ -144,6 +150,8 @@ interface TicketContextType {
   heroBanner: HeroBannerConfig;
   categories: string[];
   mlScanStats: MLScanStats;
+  ticketLimit: TicketLimitConfig;
+  updateTicketLimit: (updates: Partial<TicketLimitConfig>) => void;
   getOrderByTicketId: (ticketId: string) => OrderItem | undefined;
   recordMLScan: (type: MLTicketType) => void;
   updateHeroBanner: (updates: Partial<HeroBannerConfig>) => void;
@@ -156,6 +164,8 @@ interface TicketContextType {
   purchaseTickets: (params: PurchaseParams) => { order: OrderItem; tickets: Ticket[] };
   validateTicketByQr: (qrTokenOrTicketNo: string, staffUser?: User) => ValidationResponse;
   markTicketStatus: (ticketId: string, status: TicketStatus, notes?: string) => void;
+  markTicketAsShared: (ticketId: string, sharedToName?: string) => void;
+  importSharedTicket: (ticket: Ticket) => void;
   createEvent: (eventData: Omit<EventItem, 'id' | 'createdAt'>) => EventItem;
   updateEvent: (eventId: string, updates: Partial<EventItem>) => void;
   deleteEvent: (eventId: string) => void;
@@ -184,6 +194,7 @@ const STORAGE_KEYS = {
   HERO_BANNER: 'dtbp_hero_banner_v2',
   CATEGORIES: 'dtbp_categories_v2',
   ML_STATS: 'dtbp_ml_stats_v2',
+  TICKET_LIMIT: 'passly_ticket_limit_v2',
 };
 
 function loadStorage<T>(key: string, fallback: T): T {
@@ -272,6 +283,9 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [mlScanStats, setMlScanStats] = useState<MLScanStats>(() =>
     loadStorage(STORAGE_KEYS.ML_STATS, INITIAL_ML_STATS)
   );
+  const [ticketLimit, setTicketLimit] = useState<TicketLimitConfig>(() =>
+    loadStorage(STORAGE_KEYS.TICKET_LIMIT, DEFAULT_TICKET_LIMIT)
+  );
 
   const currentUser = users.find((u) => u.id === currentUserId) || users[0];
   const currentRole = currentUser.role;
@@ -322,6 +336,35 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     saveStorage(STORAGE_KEYS.ML_STATS, mlScanStats);
   }, [mlScanStats]);
 
+  useEffect(() => {
+    saveStorage(STORAGE_KEYS.TICKET_LIMIT, ticketLimit);
+  }, [ticketLimit]);
+
+  const updateTicketLimit = (updates: Partial<TicketLimitConfig>) => {
+    setTicketLimit((prev) => {
+      const next = { ...prev, ...updates };
+      if (typeof next.maxPerOrder === 'number') {
+        next.maxPerOrder = Math.max(1, Math.min(50, Math.floor(next.maxPerOrder)));
+      }
+      saveStorage(STORAGE_KEYS.TICKET_LIMIT, next);
+
+      const logEntry: AuditLog = {
+        id: `aud-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        action: 'UPDATE_TICKET_LIMIT',
+        details: `Updated ticket buying limit policy: enabled=${next.enabled}, maxPerOrder=${next.maxPerOrder}`,
+        performedBy: currentUser ? `${currentUser.name} (${currentUser.role})` : 'Admin',
+        timestamp: new Date().toISOString(),
+      };
+      setAuditLogs((prevLogs) => {
+        const nextLogs = [logEntry, ...prevLogs];
+        saveStorage(STORAGE_KEYS.AUDIT_LOGS, nextLogs);
+        return nextLogs;
+      });
+
+      return next;
+    });
+  };
+
   const switchUser = (userId: string) => {
     const found = users.find((u) => u.id === userId);
     if (found) {
@@ -363,7 +406,10 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const orderNumber = `ORD-2026-${String(orderSeq).padStart(5, '0')}`;
     const orderId = `ord-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
 
-    const totalAmount = ticketType.price * quantity;
+    const effectiveQuantity = ticketLimit.enabled && source === 'ONLINE'
+      ? Math.min(quantity, ticketLimit.maxPerOrder)
+      : quantity;
+    const totalAmount = ticketType.price * effectiveQuantity;
 
     // Check if customer is existing or create/associate
     let custId = currentUser.id;
@@ -385,7 +431,7 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       eventName: event.name,
       ticketTypeId: ticketType.id,
       ticketTypeName: ticketType.name,
-      quantity,
+      quantity: effectiveQuantity,
       unitPrice: ticketType.price,
       totalAmount,
       paymentStatus: 'PAID',
@@ -414,13 +460,13 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     const generatedTickets: Ticket[] = [];
     const baseNow = Date.now();
-    for (let i = 1; i <= quantity; i++) {
+    for (let i = 1; i <= effectiveQuantity; i++) {
       const ticketSeq = maxTicketSeq + i;
       const ticketNumber = `TKT-2026-${String(ticketSeq).padStart(6, '0')}`;
       const tokenSalt = `${baseNow.toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}-${i}`;
       const qrToken = `${ticketNumber}-SEC-${tokenSalt}`;
 
-      const tktName = quantity > 1 && i > 1 ? `${customerInfo.name} (Guest ${i})` : customerInfo.name;
+      const tktName = effectiveQuantity > 1 && i > 1 ? `${customerInfo.name} (Guest ${i})` : customerInfo.name;
 
       const newTicket: Ticket = {
         id: `tkt-${baseNow}-${i}-${Math.random().toString(36).substring(2, 6)}`,
@@ -454,7 +500,7 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           ...e,
           ticketTypes: e.ticketTypes.map((tt) => {
             if (tt.id !== ticketType.id) return tt;
-            const newSold = tt.sold + quantity;
+            const newSold = tt.sold + effectiveQuantity;
             return {
               ...tt,
               sold: newSold,
@@ -474,7 +520,7 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const newAudit: AuditLog = {
       id: `audit-${Date.now()}`,
       action: source === 'STAFF_ASSISTED' ? 'STAFF_PURCHASE' : 'ONLINE_PURCHASE',
-      details: `Created order ${orderNumber} for ${quantity}x ${ticketType.name} ($${totalAmount}) for ${customerInfo.name}`,
+      details: `Created order ${orderNumber} for ${effectiveQuantity}x ${ticketType.name} ($${totalAmount}) for ${customerInfo.name}`,
       performedBy: staffCreator ? `${staffCreator.name} (${staffCreator.role})` : customerInfo.name,
       timestamp: orderTimestamp,
     };
@@ -892,26 +938,34 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     ticketsRef.current = currentTickets.map((t) => (t.id === targetTicket.id ? updatedTicket : t));
     setTickets((prev) => prev.map((t) => (t.id === targetTicket.id ? updatedTicket : t)));
 
+    const attendeeLabel = targetTicket.sharedToName
+      ? `${targetTicket.sharedToName} (shared via ${targetTicket.customerName})`
+      : targetTicket.customerName;
+
     const scanLog: ScanLog = {
       id: `scan-${Date.now()}`,
       ticketId: targetTicket.id,
       ticketNumber: targetTicket.ticketNumber,
       eventId: targetTicket.eventId,
       eventName: targetTicket.eventName,
-      customerName: targetTicket.customerName,
+      customerName: attendeeLabel,
       staffId: effectiveStaff.id,
       staffName: staffLabel,
       result: 'VALID',
       scannedAt: now,
       deviceInfo: 'Camera / Web Scanner',
-      notes: 'First scan: Entry approved. Ticket permanently updated to USED.',
+      notes: targetTicket.sharedToName
+        ? `First scan: Entry approved for guest ${targetTicket.sharedToName} (shared by ${targetTicket.customerName}). Ticket permanently updated to USED.`
+        : 'First scan: Entry approved. Ticket permanently updated to USED.',
     };
     setScanLogs((prev) => [scanLog, ...prev]);
 
     const audit: AuditLog = {
       id: `audit-${Date.now()}`,
       action: 'TICKET_CHECKIN',
-      details: `Validated ticket ${targetTicket.ticketNumber} (${targetTicket.ticketTypeName}) for ${targetTicket.customerName}`,
+      details: targetTicket.sharedToName
+        ? `Validated ticket ${targetTicket.ticketNumber} (${targetTicket.ticketTypeName}) for guest ${targetTicket.sharedToName} (shared via ${targetTicket.customerName})`
+        : `Validated ticket ${targetTicket.ticketNumber} (${targetTicket.ticketTypeName}) for ${targetTicket.customerName}`,
       performedBy: staffLabel,
       timestamp: now,
     };
@@ -921,7 +975,9 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       status: 'VALID',
       ticket: updatedTicket,
       event,
-      message: 'Ticket validated successfully! Allow attendee entry.',
+      message: targetTicket.sharedToName
+        ? `Ticket validated successfully! Allow attendee ${targetTicket.sharedToName} (shared via ${targetTicket.customerName}) entry.`
+        : 'Ticket validated successfully! Allow attendee entry.',
     };
   };
 
@@ -947,6 +1003,57 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       timestamp: now,
     };
     setAuditLogs((prev) => [audit, ...prev]);
+  };
+
+  const markTicketAsShared = (ticketId: string, sharedToName?: string) => {
+    const now = new Date().toISOString();
+    const cleanSharedName = sharedToName ? sharedToName.trim() : undefined;
+    setTickets((prev) => {
+      const next = prev.map((t) => {
+        if (t.id !== ticketId) return t;
+        return {
+          ...t,
+          isShared: true,
+          sharedAt: now,
+          sharedToName: cleanSharedName || t.sharedToName,
+        };
+      });
+      saveStorage(STORAGE_KEYS.TICKETS, next);
+      ticketsRef.current = next;
+      return next;
+    });
+
+    const audit: AuditLog = {
+      id: `audit-${Date.now()}`,
+      action: 'TICKET_SHARED',
+      details: `Ticket ${ticketId} shared with friend${cleanSharedName ? ` (${cleanSharedName})` : ''}`,
+      performedBy: currentUser ? `${currentUser.name} (${currentUser.role})` : 'Purchaser',
+      timestamp: now,
+    };
+    setAuditLogs((prev) => {
+      const next = [audit, ...prev];
+      saveStorage(STORAGE_KEYS.AUDIT_LOGS, next);
+      return next;
+    });
+  };
+
+  const importSharedTicket = (importedTicket: Ticket) => {
+    setTickets((prev) => {
+      const exists = prev.find((t) => t.id === importedTicket.id || t.ticketNumber === importedTicket.ticketNumber);
+      let next: Ticket[];
+      if (exists) {
+        next = prev.map((t) =>
+          t.id === importedTicket.id || t.ticketNumber === importedTicket.ticketNumber
+            ? { ...t, ...importedTicket }
+            : t
+        );
+      } else {
+        next = [importedTicket, ...prev];
+      }
+      saveStorage(STORAGE_KEYS.TICKETS, next);
+      ticketsRef.current = next;
+      return next;
+    });
   };
 
   const createEvent = (eventData: Omit<EventItem, 'id' | 'createdAt'>): EventItem => {
@@ -1176,6 +1283,8 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         heroBanner,
         categories,
         mlScanStats,
+        ticketLimit,
+        updateTicketLimit,
         getOrderByTicketId,
         recordMLScan,
         updateHeroBanner,
@@ -1188,6 +1297,8 @@ export const TicketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         purchaseTickets,
         validateTicketByQr,
         markTicketStatus,
+        markTicketAsShared,
+        importSharedTicket,
         createEvent,
         updateEvent,
         deleteEvent,

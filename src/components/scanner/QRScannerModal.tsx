@@ -892,9 +892,19 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
 
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                      <span className="text-[#787774] text-[10px] uppercase font-mono block">Attendee</span>
-                      <p className="font-medium text-[#111111]">{validationResult.ticket.customerName}</p>
-                      <p className="text-[#787774] text-[11px] font-mono">{validationResult.ticket.customerPhone}</p>
+                      <span className="text-[#787774] text-[10px] uppercase font-mono block">
+                        {validationResult.ticket.sharedToName ? 'Guest / Pass Holder' : 'Attendee'}
+                      </span>
+                      <p className="font-medium text-[#111111]">
+                        {validationResult.ticket.sharedToName || validationResult.ticket.customerName}
+                      </p>
+                      {validationResult.ticket.sharedToName ? (
+                        <p className="text-[#8F681B] text-[11px] font-mono">
+                          Shared by {validationResult.ticket.customerName}
+                        </p>
+                      ) : (
+                        <p className="text-[#787774] text-[11px] font-mono">{validationResult.ticket.customerPhone}</p>
+                      )}
                     </div>
                     <div>
                       <span className="text-[#787774] text-[10px] uppercase font-mono block">Schedule</span>

@@ -3,8 +3,8 @@ import { Volume2, VolumeX, Play, Pause, Sliders, ChevronDown } from 'lucide-reac
 import { motion, AnimatePresence } from 'framer-motion';
 
 const YOUTUBE_VIDEO_ID = 'rifTkEXFb_U';
-const STORAGE_KEY_PLAYING = 'ticketpass_ambient_sound_playing';
-const STORAGE_KEY_VOLUME = 'ticketpass_ambient_sound_volume';
+const STORAGE_KEY_PLAYING = 'passly_ambient_sound_playing';
+const STORAGE_KEY_VOLUME = 'passly_ambient_sound_volume';
 
 export function BackgroundAudioPlayer() {
   const iframeRef = useRef<HTMLIFrameElement>(null);

@@ -49,7 +49,7 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
   const totalStaffRevenue = staffSalesOrders.reduce((sum, o) => sum + o.totalAmount, 0);
   const totalSoldToday = orders.reduce((sum, o) => sum + o.quantity, 0);
 
-  // Ticket Search query matching Ticket ID, Order ID, Customer Name, Phone, Email
+  // Ticket Search query matching Ticket ID, Order ID, Customer Name, Guest Name, Phone, Email
   const matchedTickets = searchQuery.trim()
     ? tickets.filter((t) => {
         const q = searchQuery.toLowerCase().trim();
@@ -57,6 +57,7 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
           t.ticketNumber.toLowerCase().includes(q) ||
           t.orderNumber.toLowerCase().includes(q) ||
           t.customerName.toLowerCase().includes(q) ||
+          (t.sharedToName && t.sharedToName.toLowerCase().includes(q)) ||
           t.customerPhone.includes(q) ||
           t.customerEmail.toLowerCase().includes(q) ||
           t.eventName.toLowerCase().includes(q)
@@ -71,8 +72,12 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
   });
 
   const handleManualValidate = (ticket: Ticket) => {
-    markTicketStatus(ticket.id, 'USED', `Manual validation by staff ${currentUser.name}`);
-    setManualValidationSuccess(`Ticket ${ticket.ticketNumber} validated manually. Attendee admitted.`);
+    const attendeeLabel = ticket.sharedToName || ticket.customerName;
+    const note = ticket.sharedToName
+      ? `Manual validation by staff ${currentUser.name} for guest ${ticket.sharedToName} (shared via ${ticket.customerName})`
+      : `Manual validation by staff ${currentUser.name}`;
+    markTicketStatus(ticket.id, 'USED', note);
+    setManualValidationSuccess(`Ticket ${ticket.ticketNumber} validated manually for ${attendeeLabel}. Attendee admitted.`);
     setTimeout(() => setManualValidationSuccess(null), 4000);
   };
 
@@ -335,8 +340,13 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
                     </div>
 
                     <div className="text-xs text-[#787774] space-y-0.5 border-t border-[#EAEAEA] pt-2 text-[11px]">
-                      <p>
+                      <p className="flex items-center gap-1.5 flex-wrap">
                         <span className="text-zinc-400">Customer:</span> {t.customerName}
+                        {t.sharedToName && (
+                          <span className="px-1.5 py-0.5 rounded bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0] text-[10px] font-mono">
+                            Guest: {t.sharedToName}
+                          </span>
+                        )}
                       </p>
                       <p className="font-mono">
                         <span className="text-zinc-400 font-sans">Phone:</span> {t.customerPhone} •{' '}

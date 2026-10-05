@@ -27,7 +27,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   onClose,
   onProceedToCheckout,
 }) => {
-  const { isLoggedIn } = useTicketContext();
+  const { isLoggedIn, ticketLimit } = useTicketContext();
   const [selectedTypeId, setSelectedTypeId] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
 
@@ -40,10 +40,13 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
     event.ticketTypes.find((t) => t.id === selectedTypeId) || event.ticketTypes[0];
   const remaining = currentTicketType ? currentTicketType.quantity - currentTicketType.sold : 0;
   const isAvailable = remaining > 0;
+  const maxAllowed = ticketLimit?.enabled
+    ? Math.min(remaining, ticketLimit.maxPerOrder)
+    : remaining;
   const subtotal = currentTicketType ? currentTicketType.price * quantity : 0;
 
   const handleIncrement = () => {
-    if (quantity < Math.min(remaining, 10)) {
+    if (quantity < maxAllowed) {
       setQuantity((q) => q + 1);
     }
   };
@@ -86,20 +89,20 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto overscroll-contain">
       <div className="relative w-full max-w-xl double-bezel-tray-lg shadow-[0_24px_50px_rgba(11,15,23,0.3)] my-8 max-h-[90vh] flex flex-col p-2">
-        <div className="double-bezel-core-lg overflow-hidden flex flex-col max-h-full">
+        <div className="relative double-bezel-core-lg overflow-hidden flex flex-col max-h-full">
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-white text-zinc-600 hover:text-[#0B0F17] border border-[#C5A059]/25 shadow-xs flex items-center justify-center transition-spring cursor-pointer"
+            className="absolute top-3.5 right-3.5 z-20 w-8 h-8 rounded-full bg-white/95 hover:bg-white text-zinc-600 hover:text-[#0B0F17] border border-[#C5A059]/25 shadow-xs flex items-center justify-center transition-spring cursor-pointer"
             aria-label="Close dialog"
           >
             <X className="w-4 h-4" />
           </button>
 
         {/* Scrollable Modal Body */}
-        <div className="overflow-y-auto flex-1 overscroll-contain">
+        <div className="overflow-y-auto flex-1 overscroll-contain no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {/* Framed Poster */}
-          <div className="relative aspect-[16/9] w-full bg-[#FAF8F5] overflow-hidden border-b border-[#C5A059]/15">
+          <div className="relative aspect-[16/9] w-full bg-[#111111] overflow-hidden border-b border-[#C5A059]/15">
             <img
               src={event.image}
               alt={event.name}
@@ -109,7 +112,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                   target.src = FALLBACK_EVENT_IMAGE;
                 }
               }}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover block"
               referrerPolicy="no-referrer"
             />
           </div>
@@ -227,7 +230,11 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
               <div className="p-3.5 bg-[#FBFBFA] rounded-lg border border-[#EAEAEA] flex items-center justify-between">
                 <div>
                   <span className="font-medium text-xs text-[#111111] block">Quantity</span>
-                  <span className="text-[11px] text-zinc-400">Up to 10 passes per checkout</span>
+                  <span className="text-[11px] text-zinc-400">
+                    {ticketLimit?.enabled
+                      ? `Limit: up to ${ticketLimit.maxPerOrder} passes per checkout`
+                      : 'Choose admission quantity'}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -243,7 +250,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
                   </span>
                   <button
                     onClick={handleIncrement}
-                    disabled={quantity >= Math.min(remaining, 10)}
+                    disabled={quantity >= maxAllowed}
                     className="w-7 h-7 rounded-[4px] bg-white border border-[#EAEAEA] flex items-center justify-center text-[#111111] hover:bg-[#F7F6F3] disabled:opacity-30 transition cursor-pointer"
                   >
                     <Plus className="w-3 h-3" />
