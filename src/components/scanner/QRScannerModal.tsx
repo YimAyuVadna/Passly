@@ -656,7 +656,7 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#111111]/40 backdrop-blur-xs p-4 overflow-y-auto overscroll-contain">
-      <div className="relative w-full max-w-lg bg-[#FFFFFF] border border-[#EAEAEA] rounded-[8px] overflow-hidden text-[#111111] flex flex-col max-h-[92vh]">
+      <div className="relative w-full max-w-lg sm:max-w-xl bg-[#FFFFFF] border border-[#EAEAEA] rounded-[8px] overflow-hidden text-[#111111] flex flex-col max-h-[92vh]">
         {/* Hidden file input for photo upload across all tabs */}
         <input
           ref={fileInputRef}
@@ -679,30 +679,6 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Booth Standby Loop Mode Toggle */}
-            <button
-              onClick={() => {
-                const next = !isStandbyMode;
-                setIsStandbyMode(next);
-                if (next && activeTab !== 'camera') {
-                  setActiveTab('camera');
-                }
-              }}
-              title={isStandbyMode ? 'Disable Booth Standby Mode' : 'Enable Booth Standby Mode (Auto-Loop Scans for Self-Check-in)'}
-              className={`px-2.5 py-1 text-xs rounded-[6px] font-medium transition cursor-pointer flex items-center gap-1.5 border ${
-                isStandbyMode
-                  ? 'bg-[#EDF3EC] text-[#346538] border-[#D5E3D3]'
-                  : 'bg-[#FBFBFA] text-[#787774] border-[#EAEAEA] hover:text-[#111111]'
-              }`}
-            >
-              <Repeat
-                className={`w-3 h-3 ${isStandbyMode ? 'text-[#346538] animate-spin' : 'text-[#787774]'}`}
-                style={isStandbyMode ? { animationDuration: '6s' } : undefined}
-              />
-              <span className="text-[11px] font-mono">Booth Loop</span>
-              {isStandbyMode && <span className="w-1.5 h-1.5 rounded-full bg-[#346538] animate-pulse" />}
-            </button>
-
             <button
               onClick={() => setSoundEnabled(!soundEnabled)}
               title={soundEnabled ? 'Mute Chime' : 'Enable Chime'}
@@ -1041,7 +1017,7 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <div className="relative aspect-square max-w-xs mx-auto bg-[#111111] rounded-[8px] overflow-hidden border border-[#EAEAEA]">
+                      <div className="relative aspect-square w-full max-w-sm sm:max-w-md mx-auto bg-[#111111] rounded-[8px] overflow-hidden border border-[#EAEAEA]">
                         <video
                           ref={videoRef}
                           autoPlay
@@ -1262,7 +1238,7 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
                       type="text"
                       value={manualCode}
                       onChange={(e) => setManualCode(e.target.value)}
-                      placeholder="e.g. TKT-2026-000928"
+                      placeholder="TKT-2026-000928"
                       className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-[#111111] font-mono text-xs focus:outline-none focus:border-[#111111] transition"
                       autoFocus
                     />

@@ -209,7 +209,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Neon Horizon Festival 2026"
+                placeholder="Neon Horizon Festival 2026"
                 className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs sm:text-sm text-[#111111] placeholder:text-[#A1A19E] focus:outline-none focus:border-[#111111] transition"
               />
             </div>
@@ -393,7 +393,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                   required
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="e.g. Diamond Island Hall A"
+                  placeholder="Diamond Island Hall A"
                   className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs sm:text-sm text-[#111111] placeholder:text-[#A1A19E] focus:outline-none focus:border-[#111111] transition"
                 />
               </div>
@@ -406,7 +406,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                   type="text"
                   value={organizer}
                   onChange={(e) => setOrganizer(e.target.value)}
-                  placeholder="e.g. Sonic Entertainment"
+                  placeholder="Sonic Entertainment"
                   className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs sm:text-sm text-[#111111] placeholder:text-[#A1A19E] focus:outline-none focus:border-[#111111] transition"
                 />
               </div>
@@ -452,7 +452,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                       type="text"
                       value={tt.name}
                       onChange={(e) => handleUpdateTicketTier(idx, 'name', e.target.value)}
-                      placeholder="Tier Name (e.g. VIP Pass)"
+                      placeholder="Tier Name (VIP Pass)"
                       className="font-medium text-xs sm:text-sm bg-[#FFFFFF] px-3 py-1.5 border border-[#EAEAEA] rounded-[6px] flex-1 text-[#111111] focus:outline-none focus:border-[#111111]"
                     />
 
@@ -504,7 +504,7 @@ export const EventFormModal: React.FC<EventFormModalProps> = ({
                     type="text"
                     value={tt.description}
                     onChange={(e) => handleUpdateTicketTier(idx, 'description', e.target.value)}
-                    placeholder="Short tier perks (e.g. includes drinks & priority gate access)"
+                    placeholder="Short tier perks (includes drinks & priority gate access)"
                     className="w-full px-3 py-1.5 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#555452] placeholder:text-[#A1A19E] focus:outline-none focus:border-[#111111]"
                   />
                 </div>

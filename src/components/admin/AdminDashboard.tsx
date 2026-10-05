@@ -887,7 +887,7 @@ export const AdminDashboard: React.FC = () => {
                   required
                   value={newStaffName}
                   onChange={(e) => setNewStaffName(e.target.value)}
-                  placeholder="e.g. Rachel Green"
+                  placeholder="Rachel Green"
                   className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-[#A1A19E] focus:outline-none focus:border-[#111111] transition"
                 />
               </div>

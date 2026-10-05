@@ -245,7 +245,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                   <select
                     value={selectedEventId}
                     onChange={(e) => setSelectedEventId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] cursor-pointer"
+                    className="w-full pl-3.5 pr-10 py-2.5 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] cursor-pointer"
                   >
                     {activeEvents.map((ev) => (
                       <option key={ev.id} value={ev.id}>
@@ -262,7 +262,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                   <select
                     value={selectedTierId}
                     onChange={(e) => setSelectedTierId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] cursor-pointer"
+                    className="w-full pl-3.5 pr-10 py-2.5 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] cursor-pointer"
                   >
                     {availableTiers.map((tier) => (
                       <option key={tier.id} value={tier.id}>
@@ -296,7 +296,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="e.g. Rathana Kem"
+                    placeholder="Rathana Kem"
                     className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
                   />
                 </div>
@@ -354,7 +354,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                   <select
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
-                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] cursor-pointer"
+                    className="w-full pl-3.5 pr-10 py-2.5 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] cursor-pointer"
                   >
                     <option value="ONLINE">ABA KHQR / E-Wallet</option>
                     <option value="CARD">Credit / Debit Card</option>
@@ -369,7 +369,7 @@ export const OnlineBookingModal: React.FC<OnlineBookingModalProps> = ({
                   <select
                     value={leadTimeHours}
                     onChange={(e) => setLeadTimeHours(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] cursor-pointer"
+                    className="w-full pl-3.5 pr-10 py-2.5 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] cursor-pointer"
                   >
                     <option value={48}>48 Hours in Advance (Standard)</option>
                     <option value={168}>7 Days in Advance (Early)</option>

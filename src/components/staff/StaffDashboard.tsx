@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Camera,
   ShoppingBag,
   Search,
   CheckCircle2,
@@ -18,13 +17,12 @@ import { CategoryManageModal } from '../admin/CategoryManageModal';
 import { EventFormModal } from '../admin/EventFormModal';
 
 interface StaffDashboardProps {
-  onOpenScanner: () => void;
+  onOpenScanner?: () => void;
   onOpenAssistedPurchase: () => void;
   onSelectTicket: (ticket: Ticket) => void;
 }
 
 export const StaffDashboard: React.FC<StaffDashboardProps> = ({
-  onOpenScanner,
   onOpenAssistedPurchase,
   onSelectTicket,
 }) => {
@@ -100,18 +98,10 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
           {/* Action Buttons */}
           <div className="flex items-center gap-2">
             <button
-              onClick={onOpenScanner}
+              onClick={onOpenAssistedPurchase}
               className="px-4 py-2.5 bg-[#111111] hover:bg-[#222222] text-white font-medium rounded-[6px] transition flex items-center gap-2 text-xs cursor-pointer active:scale-[0.98]"
             >
-              <Camera className="w-4 h-4 text-zinc-300" />
-              <span>Scan QR Pass</span>
-            </button>
-
-            <button
-              onClick={onOpenAssistedPurchase}
-              className="px-4 py-2.5 bg-white hover:bg-[#F7F6F3] text-[#111111] font-medium rounded-[6px] border border-[#EAEAEA] transition flex items-center gap-2 text-xs cursor-pointer"
-            >
-              <ShoppingBag className="w-4 h-4 text-zinc-600" />
+              <ShoppingBag className="w-4 h-4 text-zinc-300" />
               <span>Box Office Sale</span>
             </button>
           </div>
@@ -160,23 +150,11 @@ export const StaffDashboard: React.FC<StaffDashboardProps> = ({
 
       {/* Pass Distribution Statistics Card */}
       <div className="bg-white rounded-xl border border-[#EAEAEA] p-5 text-[#111111]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#EAEAEA] pb-3">
-          <div>
-            <h3 className="text-sm font-semibold text-[#111111]">Pass Verification Telemetry</h3>
-            <p className="text-xs text-[#787774] mt-0.5">
-              Ratio of verified admissions: Digital Online vs Box Office Counter.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              onClick={onOpenScanner}
-              className="px-3 py-1.5 bg-[#F4F4F2] hover:bg-zinc-200 text-[#111111] rounded-[6px] text-xs font-medium transition flex items-center gap-1.5 cursor-pointer"
-            >
-              <Camera className="w-3.5 h-3.5" />
-              <span>Launch Scanner</span>
-            </button>
-          </div>
+        <div className="border-b border-[#EAEAEA] pb-3">
+          <h3 className="text-sm font-semibold text-[#111111]">Pass Verification Telemetry</h3>
+          <p className="text-xs text-[#787774] mt-0.5">
+            Ratio of verified admissions: Digital Online vs Box Office Counter.
+          </p>
         </div>
 
         {/* Breakdown Statistics */}

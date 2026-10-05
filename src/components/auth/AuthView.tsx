@@ -68,7 +68,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
       onAuthSuccess(targetRole);
     } else {
       setSignInError(
-        'Account not found. Select a demo persona or enter a registered email (e.g. chandara@gmail.com).'
+        'Account not found. Select a demo persona or enter a registered email (chandara@gmail.com).'
       );
     }
   };
@@ -288,7 +288,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                         required
                         value={signInIdentifier}
                         onChange={(e) => setSignInIdentifier(e.target.value)}
-                        placeholder="e.g. chandara@gmail.com or 012 345 678"
+                        placeholder="chandara@gmail.com or 012 345 678"
                         className="w-full pl-9 pr-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                       />
                     </div>
@@ -367,7 +367,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
                         required
                         value={signUpName}
                         onChange={(e) => setSignUpName(e.target.value)}
-                        placeholder="e.g. Chan Dara"
+                        placeholder="Chan Dara"
                         className="w-full pl-9 pr-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                       />
                     </div>

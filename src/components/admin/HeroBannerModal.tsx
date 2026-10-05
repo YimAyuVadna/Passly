@@ -307,7 +307,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 required
                 value={tag}
                 onChange={(e) => setTag(e.target.value)}
-                placeholder="e.g. Featured Experience"
+                placeholder="Featured Experience"
                 className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
               />
             </div>
@@ -321,7 +321,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 required
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                placeholder="e.g. Concert, Conference"
+                placeholder="Concert, Conference"
                 className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
               />
             </div>
@@ -335,7 +335,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Neon Pulse EDM Night 2026"
+                placeholder="Neon Pulse EDM Night 2026"
                 className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs font-medium text-[#111111] focus:outline-none focus:border-[#111111]"
               />
             </div>
@@ -380,7 +380,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Diamond Island Exhibition Center"
+                placeholder="Diamond Island Exhibition Center"
                 className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
               />
             </div>
@@ -391,7 +391,7 @@ export const HeroBannerModal: React.FC<HeroBannerModalProps> = ({ isOpen, onClos
                 type="text"
                 value={buttonText}
                 onChange={(e) => setButtonText(e.target.value)}
-                placeholder="e.g. Reserve Tickets"
+                placeholder="Reserve Tickets"
                 className="w-full px-3 py-2 bg-[#FFFFFF] border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111]"
               />
             </div>

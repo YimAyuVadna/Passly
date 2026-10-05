@@ -294,7 +294,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, on
                           required
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          placeholder="e.g. Chan Dara"
+                          placeholder="Chan Dara"
                           className="w-full pl-9 pr-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] transition"
                         />
                       </div>
@@ -311,7 +311,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, on
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          placeholder="e.g. chandara@gmail.com"
+                          placeholder="chandara@gmail.com"
                           className="w-full pl-9 pr-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] transition"
                         />
                       </div>
@@ -328,7 +328,7 @@ export const UserSettingsModal: React.FC<UserSettingsModalProps> = ({ isOpen, on
                           required
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
-                          placeholder="e.g. 012 345 678"
+                          placeholder="012 345 678"
                           className="w-full pl-9 pr-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs font-mono text-[#111111] focus:outline-none focus:border-[#111111] transition"
                         />
                       </div>

@@ -157,7 +157,7 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                       setSelectedTypeId(ev.ticketTypes[0].id);
                     }
                   }}
-                  className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] transition cursor-pointer"
+                  className="w-full pl-3.5 pr-10 py-2.5 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] transition cursor-pointer"
                 >
                   {events.map((ev) => (
                     <option key={ev.id} value={ev.id}>
@@ -175,7 +175,7 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                   <select
                     value={selectedTypeId || currentTicketType?.id}
                     onChange={(e) => setSelectedTypeId(e.target.value)}
-                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] transition cursor-pointer"
+                    className="w-full pl-3.5 pr-10 py-2.5 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] focus:outline-none focus:border-[#111111] transition cursor-pointer"
                   >
                     {activeTicketTypes.map((tt) => (
                       <option key={tt.id} value={tt.id}>
@@ -195,7 +195,7 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                     max={Math.min(remaining, 20)}
                     value={quantity}
                     onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs font-mono text-[#111111] focus:outline-none focus:border-[#111111] transition"
+                    className="w-full pl-3.5 pr-3 py-2.5 bg-white border border-[#EAEAEA] rounded-[6px] text-xs font-mono text-[#111111] focus:outline-none focus:border-[#111111] transition"
                   />
                 </div>
               </div>
@@ -217,8 +217,8 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                     required
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    placeholder="e.g. Chan Dara / Walk-in Guest"
-                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
+                    placeholder="Chan Dara / Walk-in Guest"
+                    className="w-full pl-3.5 pr-3.5 py-2.5 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                   />
                 </div>
 
@@ -231,8 +231,8 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                     required
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    placeholder="e.g. 012 345 678"
-                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs font-mono text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
+                    placeholder="012 345 678"
+                    className="w-full pl-3.5 pr-3.5 py-2.5 bg-white border border-[#EAEAEA] rounded-[6px] text-xs font-mono text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                   />
                 </div>
 
@@ -244,8 +244,8 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                     type="email"
                     value={customerEmail}
                     onChange={(e) => setCustomerEmail(e.target.value)}
-                    placeholder="e.g. customer@gmail.com"
-                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
+                    placeholder="customer@gmail.com"
+                    className="w-full pl-3.5 pr-3.5 py-2.5 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                   />
                 </div>
 
@@ -257,8 +257,8 @@ export const StaffAssistedPurchaseModal: React.FC<StaffAssistedPurchaseModalProp
                     type="text"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="e.g. Paid cash at counter gate 1"
-                    className="w-full px-3 py-2 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
+                    placeholder="Paid cash at counter gate 1"
+                    className="w-full pl-3.5 pr-3.5 py-2.5 bg-white border border-[#EAEAEA] rounded-[6px] text-xs text-[#111111] placeholder:text-zinc-400 focus:outline-none focus:border-[#111111] transition"
                   />
                 </div>
               </div>
