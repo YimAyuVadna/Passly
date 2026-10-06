@@ -1,21 +1,3 @@
-"""
-TicketPass — Python ML Backend API
-
-# Point 19: Backend Architecture
-React Frontend / Checkpoint Scanner
-        ↓  REST JSON request
-TicketPass Backend / API Layer
-        ↓  Ticket/Order attributes
-Python ML Backend (app.py : port 5000)
-        ↓  Loads ticket_classifier.pkl
-Decision Tree Model
-        ↓  Inference
-{"ticket_type": "DIGITAL", "prediction_code": 0}
-
-# Point 20: Development Phase 3 — Prediction API
-Provides a live POST /predict HTTP endpoint for ticket validation.
-"""
-
 import os
 import json
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -85,7 +67,7 @@ class MLPredictionHandler(BaseHTTPRequestHandler):
 </head>
 <body>
     <div class="container">
-        <h1>🎟️ TicketPass ML #1 <span class="badge">Decision Tree</span></h1>
+        <h1> TicketPass ML #1 <span class="badge">Decision Tree</span></h1>
         <p>This API receives ticket/order attributes and predicts whether the pass is <strong>DIGITAL (0)</strong> or <strong>PHYSICAL (1)</strong>.</p>
         
         <div class="btn-group">

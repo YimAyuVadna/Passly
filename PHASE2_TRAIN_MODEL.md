@@ -9,7 +9,6 @@
 | Item | Status |
 |---|---|
 | `ml-backend/data/training_data.csv` | ✅ Exists — 600 rows, 10 columns, already numeric/encoded |
-| `ml-backend/data/attendance_data.csv` | ✅ Exists (bonus dataset, not used for this classifier) |
 | `ml-backend/requirements.txt` | ✅ Has `scikit-learn`, `pandas`, `numpy`, `joblib`, `matplotlib` |
 | `ml-backend/train_model.py` | ❌ Missing — this phase creates it |
 | `ml-backend/ticket_classifier.pkl` | ❌ Missing — produced by running the script |

@@ -1,25 +1,3 @@
-"""
-TicketPass — Prediction Engine
-
-# Point 16: How Ticket Scanning Connects to ML
-Workflow:
-  1. Attendee scans QR code at entrance checkpoint
-  2. TicketPass decodes token and validates entry
-  3. Associated order details are extracted
-  4. 9 features are preprocessed
-  5. Decision Tree predicts: DIGITAL or PHYSICAL
-
-# Point 17: Example Prediction
-Demonstrates taking a sample validated order and returning the predicted ticket type.
-
-# Point 18: Important Distinction: Existing System vs ML
-  - Existing System (Core Software):
-      QR generation, camera scanning, ticket validation, database lookups, order CRUD.
-  - Machine Learning (#1 Classifier):
-      Pattern learning, feature extraction, and DIGITAL vs PHYSICAL classification.
-  * ML is an added intelligence layer, NOT a replacement for the ticketing engine.
-"""
-
 import os
 import joblib
 import pandas as pd
@@ -73,7 +51,7 @@ def predict_ticket_type(order_data: dict, model_bundle: dict = None) -> dict:
         "FRIDAY": 4, "SATURDAY": 5, "SUNDAY": 6
     }
 
-    # 1. Preprocess categorical values to numeric formats (Point 10)
+    # 1. Preprocess categorical values to numeric formats
     raw_payment = order_data.get("payment_method", order_data.get("paymentMethod", 0))
     if isinstance(raw_payment, str):
         payment_method = payment_map.get(raw_payment.upper(), 0)
@@ -112,7 +90,7 @@ def predict_ticket_type(order_data: dict, model_bundle: dict = None) -> dict:
 
     time_since_purchase_hours = float(order_data.get("time_since_purchase_hours", order_data.get("timeSincePurchaseHours", 24.0)))
 
-    # 2. Build feature dictionary ordered exactly by feature_columns (Point 8)
+    # 2. Build feature dictionary ordered exactly by feature_columns
     row = {
         "payment_method": payment_method,
         "unit_price": unit_price,
@@ -127,7 +105,7 @@ def predict_ticket_type(order_data: dict, model_bundle: dict = None) -> dict:
 
     df_input = pd.DataFrame([row])[feature_columns]
 
-    # 3. Model inference (Point 6 & Point 16)
+    # 3. Model inference
     pred_class_id = int(model.predict(df_input)[0])
     pred_label = label_map.get(pred_class_id, "UNKNOWN")
 
@@ -151,7 +129,7 @@ if __name__ == "__main__":
     print(" TicketPass — Predict DIGITAL or PHYSICAL")
     print("=" * 55)
 
-    # Example 1: Digital Ticket Profile (Point 17 example)
+    # Example 1: Digital Ticket Profile
     digital_sample = {
         "payment_method": "ABA",           # Online e-wallet (3)
         "unit_price": 15.0,
