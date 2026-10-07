@@ -2,6 +2,8 @@
 node_modules/
 .pnp
 .pnp.js
+bun.lock
+bun.lockb
 
 # Build & Test Outputs
 build/
@@ -53,3 +55,13 @@ test-results/
 # Agent & Orchestration State
 .omc/
 .kilo/
+
+# Compressed Archives
+*.rar
+*.zip
+*.7z
+*.tar.gz
+
+# Local Slide Presentations & Drafts
+*.pptx
+*.potx
